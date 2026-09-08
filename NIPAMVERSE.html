@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="NipamVerse - Learn, play and explore. Discover study materials, games, useful tools and more.">
+<meta name="keywords" content="NipamVerse, Nipam, study, games, tools, education">
+<meta name="author" content="Nipam">
+
+<title>NipamVerse — Learn • Play • Create</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#050807;
+    color:#f2fff7;
+    overflow-x:hidden;
+}
+
+/* BACKGROUND GLOW */
+
+body::before{
+    content:"";
+    position:fixed;
+    width:350px;
+    height:350px;
+    background:#00ff88;
+    filter:blur(150px);
+    opacity:.08;
+    top:-120px;
+    left:-120px;
+    z-index:-1;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:350px;
+    height:350px;
+    background:#00ff88;
+    filter:blur(150px);
+    opacity:.06;
+    bottom:-120px;
+    right:-120px;
+    z-index:-1;
+}
+
+/* HEADER */
+
+header{
+    min-height:75vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:30px 20px;
+}
+
+.logo{
+    width:95px;
+    height:95px;
+    border-radius:50%;
+    border:2px solid #00ff88;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    font-weight:bold;
+    color:#00ff88;
+    box-shadow:0 0 35px #00ff8840;
+    margin-bottom:25px;
+}
+
+header h1{
+    font-size:clamp(45px,11vw,80px);
+    letter-spacing:2px;
+    color:white;
+    text-shadow:0 0 30px #00ff8830;
+}
+
+header h1 span{
+    color:#00ff88;
+}
+
+header p{
+    margin-top:15px;
+    color:#91a197;
+    font-size:18px;
+}
+
+.hero-btn{
+    display:inline-block;
+    margin-top:32px;
+    padding:14px 30px;
+    border:1px solid #00ff88;
+    border-radius:30px;
+    background:#00ff8812;
+    color:#00ff88;
+    text-decoration:none;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.hero-btn:hover{
+    background:#00ff88;
+    color:#001b0d;
+    box-shadow:0 0 30px #00ff8860;
+}
+
+/* NAVIGATION */
+
+nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+    padding:16px;
+    text-align:center;
+    background:#050807e8;
+    backdrop-filter:blur(15px);
+    border-bottom:1px solid #00ff8820;
+}
+
+nav a{
+    color:#b7c6bd;
+    text-decoration:none;
+    margin:0 13px;
+    font-size:14px;
+    transition:.3s;
+}
+
+nav a:hover{
+    color:#00ff88;
+}
+
+/* SECTION */
+
+section{
+    max-width:1100px;
+    margin:auto;
+    padding:75px 20px;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.section-title h2{
+    font-size:35px;
+}
+
+.section-title span{
+    color:#00ff88;
+}
+
+.section-title p{
+    color:#7f8e85;
+    margin-top:10px;
+}
+
+/* SEARCH */
+
+.search{
+    display:flex;
+    justify-content:center;
+    margin-bottom:40px;
+}
+
+.search input{
+    width:100%;
+    max-width:600px;
+    padding:16px 22px;
+    border-radius:30px;
+    border:1px solid #00ff8830;
+    outline:none;
+    background:#0a100d;
+    color:white;
+    font-size:16px;
+}
+
+.search input:focus{
+    border-color:#00ff88;
+    box-shadow:0 0 25px #00ff8820;
+}
+
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(230px,1fr));
+    gap:22px;
+}
+
+.card{
+    padding:30px;
+    border:1px solid #00ff8818;
+    border-radius:20px;
+    background:
+    linear-gradient(145deg,#0b110e,#070a08);
+    transition:.3s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    border-color:#00ff8870;
+    box-shadow:0 15px 40px #00ff8812;
+}
+
+.icon{
+    font-size:43px;
+    margin-bottom:18px;
+}
+
+.card h3{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#829188;
+    line-height:1.6;
+    margin-bottom:22px;
+}
+
+.card button{
+    border:1px solid #00ff88;
+    background:#00ff8812;
+    color:#00ff88;
+    padding:11px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.card button:hover{
+    background:#00ff88;
+    color:#001b0d;
+}
+
+/* ABOUT */
+
+.about-box{
+    text-align:center;
+    background:#0b110e;
+    border:1px solid #00ff8818;
+    border-radius:20px;
+    padding:40px 25px;
+}
+
+.about-box p{
+    color:#98a69e;
+    line-height:1.8;
+}
+
+/* FOOTER */
+
+footer{
+    border-top:1px solid #00ff8815;
+    text-align:center;
+    padding:35px 20px;
+    color:#68766e;
+}
+
+footer strong{
+    color:#00ff88;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    header{
+        min-height:68vh;
+    }
+
+    header h1{
+        font-size:43px;
+    }
+
+    header p{
+        font-size:15px;
+    }
+
+    nav a{
+        margin:0 7px;
+    }
+
+    section{
+        padding:55px 18px;
+    }
+
+    .section-title h2{
+        font-size:29px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+
+<header id="home">
+
+    <div class="logo">N</div>
+
+    <h1>
+        Nipam<span>Verse</span>
+    </h1>
+
+    <p>
+        Learn • Play • Create
+    </p>
+
+    <a href="#resources" class="hero-btn">
+        Explore NipamVerse ↓
+    </a>
+
+</header>
+
+
+<!-- NAVIGATION -->
+
+<nav>
+
+    <a href="#home">Home</a>
+
+    <a href="#resources">Resources</a>
+
+    <a href="#about">About</a>
+
+</nav>
+
+
+<!-- RESOURCES -->
+
+<section id="resources">
+
+    <div class="section-title">
+
+        <h2>
+            Explore <span>NipamVerse</span>
+        </h2>
+
+        <p>
+            Useful things, all in one place.
+        </p>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search">
+
+        <input
+            type="text"
+            id="search"
+            placeholder="🔎 Search NipamVerse..."
+            onkeyup="searchCards()"
+        >
+
+    </div>
+
+
+    <!-- CARDS -->
+
+    <div class="cards">
+
+
+        <!-- STUDY -->
+
+        <div class="card">
+
+            <div class="icon">📚</div>
+
+            <h3>
+                Study Materials
+            </h3>
+
+            <p>
+                Notes, questions and useful
+                study resources.
+            </p>
+
+            <button
+                onclick="showMessage('Study Materials')">
+                Explore
+            </button>
+
+        </div>
+
+
+        <!-- GAMES -->
+
+        <div class="card">
+
+            <div class="icon">🎮</div>
+
+            <h3>
+                Games
+            </h3>
+
+            <p>
+                Play fun browser games
+                created for NipamVerse.
+            </p>
+
+            <button
+                onclick="showMessage('Games')">
+                Play
+            </button>
+
+        </div>
+
+
+        <!-- TOOLS -->
+
+        <div class="card">
+
+            <div class="icon">🧮</div>
+
+            <h3>
+                Useful Tools
+            </h3>
+
+            <p>
+                Simple and helpful online
+                tools.
+            </p>
+
+            <button
+                onclick="showMessage('Useful Tools')">
+                Open
+            </button>
+
+        </div>
+
+
+        <!-- IDEAS -->
+
+        <div class="card">
+
+            <div class="icon">💡</div>
+
+            <h3>
+                Tips & Ideas
+            </h3>
+
+            <p>
+                Interesting tips, ideas and
+                helpful information.
+            </p>
+
+            <button
+                onclick="showMessage('Tips & Ideas')">
+                Discover
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section id="about">
+
+    <div class="section-title">
+
+        <h2>
+            About <span>NipamVerse</span>
+        </h2>
+
+    </div>
+
+
+    <div class="about-box">
+
+        <p>
+
+            Welcome to NipamVerse 🌱
+
+            <br><br>
+
+            NipamVerse is a growing digital space
+            where you can discover useful study
+            materials, fun games, helpful tools
+            and interesting ideas.
+
+            <br><br>
+
+            <b>Learn • Play • Create</b>
+
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <p>
+        © 2026 <strong>NipamVerse</strong>
+    </p>
+
+    <p>
+        Made with 💚 by Nipam
+    </p>
+
+</footer>
+
+
+<script>
+
+/* BUTTON MESSAGE */
+
+function showMessage(name){
+
+    alert(
+        name +
+        " section is coming soon! 🚀"
+    );
+
+}
+
+
+/* SEARCH FUNCTION */
+
+function searchCards(){
+
+    let input =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase();
+
+    let cards =
+        document.querySelectorAll(".card");
+
+
+    cards.forEach(function(card){
+
+        let text =
+            card.innerText.toLowerCase();
+
+        if(text.includes(input)){
+
+            card.style.display="block";
+
+        }else{
+
+            card.style.display="none";
+
+        }
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
