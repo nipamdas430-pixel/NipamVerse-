@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Dart Game — NipamVerse</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:#050807;
+  color:white;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  overflow:hidden;
+}
+
+#app{
+  width:min(100%,650px);
+  padding:12px;
+  text-align:center;
+}
+
+h1{
+  color:#00ff66;
+  font-size:28px;
+  margin:5px 0 4px;
+  text-shadow:0 0 15px #00ff66;
+}
+
+#info{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0b1510;
+  border:1px solid #164c2b;
+  border-radius:12px;
+  padding:10px 15px;
+  margin:10px 0;
+  font-weight:bold;
+}
+
+#score{
+  color:#00ff66;
+}
+
+#best{
+  color:#aaa;
+}
+
+#gameBox{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  max-height:70vh;
+}
+
+canvas{
+  width:100%;
+  height:100%;
+  display:block;
+  background:#101714;
+  border:2px solid #174d2c;
+  border-radius:18px;
+  box-shadow:0 0 25px rgba(0,255,102,.12);
+  touch-action:none;
+}
+
+#message{
+  margin:10px 0;
+  color:#ccc;
+  font-size:14px;
+  min-height:20px;
+}
+
+button{
+  border:0;
+  border-radius:25px;
+  padding:12px 25px;
+  background:#00ff66;
+  color:#001b0b;
+  font-size:16px;
+  font-weight:bold;
+  box-shadow:0 0 15px rgba(0,255,102,.3);
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+#hint{
+  color:#777;
+  font-size:12px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <h1>🎯 DART MASTER</h1>
+
+  <div id="info">
+    <div id="score">Score: 0</div>
+    <div id="best">Best: 0</div>
+  </div>
+
+  <div id="gameBox">
+    <canvas id="game" width="600" height="600"></canvas>
+  </div>
+
+  <div id="message">Tap the target to throw the dart 🎯</div>
+
+  <button onclick="newGame()">🔄 New Game</button>
+
+  <div id="hint">
+    Hit the centre for maximum points!
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const W = 600;
+const H = 600;
+
+let score = 0;
+let best = Number(localStorage.getItem("nipam_dart_best")) || 0;
+let dartsLeft = 10;
+let targetX = 300;
+let targetY = 300;
+let targetR = 180;
+let dart = null;
+let throwing = false;
+
+document.getElementById("best").textContent = "Best: " + best;
+
+function randomTarget(){
+  targetX = 170 + Math.random() * 260;
+  targetY = 170 + Math.random() * 220;
+
+  targetR = 150 + Math.random() * 35;
+}
+
+function drawTarget(){
+
+  ctx.clearRect(0,0,W,H);
+
+  // background
+  const bg = ctx.createRadialGradient(
+    300,300,50,
+    300,300,420
+  );
+
+  bg.addColorStop(0,"#17251c");
+  bg.addColorStop(1,"#050807");
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  // target shadow
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR+7,0,Math.PI*2);
+  ctx.fillStyle="#000";
+  ctx.fill();
+
+  // outer ring
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR,0,Math.PI*2);
+  ctx.fillStyle="#eeeeee";
+  ctx.fill();
+
+  // red ring
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR*.78,0,Math.PI*2);
+  ctx.fillStyle="#d92727";
+  ctx.fill();
+
+  // white ring
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR*.62,0,Math.PI*2);
+  ctx.fillStyle="#f5f5f5";
+  ctx.fill();
+
+  // green ring
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR*.43,0,Math.PI*2);
+  ctx.fillStyle="#00a84f";
+  ctx.fill();
+
+  // red bull
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR*.20,0,Math.PI*2);
+  ctx.fillStyle="#e32626";
+  ctx.fill();
+
+  // bullseye
+  ctx.beginPath();
+  ctx.arc(targetX,targetY,targetR*.09,0,Math.PI*2);
+  ctx.fillStyle="#111";
+  ctx.fill();
+
+  // rings
+  ctx.strokeStyle="#222";
+  ctx.lineWidth=3;
+
+  for(let i=1;i<=4;i++){
+    ctx.beginPath();
+    ctx.arc(
+      targetX,
+      targetY,
+      targetR*(i/5),
+      0,
+      Math.PI*2
+    );
+    ctx.stroke();
+  }
+
+  // dart
+  if(dart){
+    drawDart(dart.x,dart.y,dart.angle);
+  }
+
+  // darts remaining
+  ctx.fillStyle="#fff";
+  ctx.font="bold 18px Arial";
+  ctx.fillText(
+    "Darts: " + dartsLeft,
+    20,
+    30
+  );
+}
+
+function drawDart(x,y,angle){
+
+  ctx.save();
+
+  ctx.translate(x,y);
+  ctx.rotate(angle);
+
+  // shaft
+  ctx.strokeStyle="#bbb";
+  ctx.lineWidth=5;
+
+  ctx.beginPath();
+  ctx.moveTo(-55,0);
+  ctx.lineTo(12,0);
+  ctx.stroke();
+
+  // dart tip
+  ctx.fillStyle="#ddd";
+
+  ctx.beginPath();
+  ctx.moveTo(15,0);
+  ctx.lineTo(2,-6);
+  ctx.lineTo(2,6);
+  ctx.closePath();
+  ctx.fill();
+
+  // flight
+  ctx.fillStyle="#00ff66";
+
+  ctx.beginPath();
+  ctx.moveTo(-55,0);
+  ctx.lineTo(-72,-12);
+  ctx.lineTo(-50,-4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-55,0);
+  ctx.lineTo(-72,12);
+  ctx.lineTo(-50,4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function calculateScore(x,y){
+
+  const dx = x-targetX;
+  const dy = y-targetY;
+  const distance = Math.sqrt(dx*dx + dy*dy);
+
+  if(distance < targetR*.09) return 100;
+  if(distance < targetR*.20) return 60;
+  if(distance < targetR*.43) return 40;
+  if(distance < targetR*.62) return 25;
+  if(distance < targetR*.78) return 15;
+  if(distance < targetR) return 10;
+
+  return 0;
+}
+
+function throwDart(x,y){
+
+  if(throwing || dartsLeft <= 0) return;
+
+  throwing = true;
+
+  const startX = 300;
+  const startY = 570;
+
+  const angle = Math.atan2(
+    targetY-y,
+    targetX-x
+  );
+
+  dart = {
+    x:startX,
+    y:startY,
+    angle:Math.atan2(
+      y-startY,
+      x-startX
+    )
+  };
+
+  const endX = x;
+  const endY = y;
+
+  const duration = 350;
+  const start = performance.now();
+
+  function animate(now){
+
+    const p = Math.min(
+      (now-start)/duration,
+      1
+    );
+
+    dart.x =
+      startX+(endX-startX)*p;
+
+    dart.y =
+      startY+(endY-startY)*p;
+
+    dart.angle = Math.atan2(
+      endY-startY,
+      endX-startX
+    );
+
+    drawTarget();
+
+    if(p<1){
+      requestAnimationFrame(animate);
+    }else{
+
+      const points =
+        calculateScore(endX,endY);
+
+      score += points;
+      dartsLeft--;
+
+      document.getElementById("score")
+        .textContent="Score: "+score;
+
+      if(points>0){
+        document.getElementById("message")
+          .textContent="🎯 Great shot! +" + points;
+      }else{
+        document.getElementById("message")
+          .textContent="❌ Miss!";
+      }
+
+      if(score>best){
+        best=score;
+        localStorage.setItem(
+          "nipam_dart_best",
+          best
+        );
+
+        document.getElementById("best")
+          .textContent="Best: "+best;
+      }
+
+      throwing=false;
+
+      if(dartsLeft<=0){
+
+        document.getElementById("message")
+          .textContent=
+          "🏆 Game Over! Final Score: "+score;
+
+      }else{
+
+        setTimeout(()=>{
+          dart=null;
+          randomTarget();
+          drawTarget();
+        },500);
+
+      }
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+canvas.addEventListener("pointerdown",function(e){
+
+  if(dartsLeft<=0 || throwing) return;
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const x =
+    (e.clientX-rect.left)
+    *W/rect.width;
+
+  const y =
+    (e.clientY-rect.top)
+    *H/rect.height;
+
+  throwDart(x,y);
+});
+
+function newGame(){
+
+  score=0;
+  dartsLeft=10;
+  dart=null;
+  throwing=false;
+
+  document.getElementById("score")
+    .textContent="Score: 0";
+
+  document.getElementById("message")
+    .textContent=
+    "Tap the target to throw the dart 🎯";
+
+  randomTarget();
+  drawTarget();
+}
+
+randomTarget();
+drawTarget();
+
+</script>
+
+</body>
+  </html>
