@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>NipamVerse — Metro Dash 3D</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#050807;
+ font-family:Arial,sans-serif;
+ touch-action:none;
+}
+canvas{display:block;width:100%;height:100%}
+
+#hud{
+ position:fixed;
+ top:12px;
+ left:0;
+ width:100%;
+ display:flex;
+ justify-content:space-around;
+ z-index:5;
+ pointer-events:none;
+}
+.box{
+ padding:7px 13px;
+ min-width:85px;
+ text-align:center;
+ color:white;
+ background:rgba(0,15,10,.78);
+ border:1px solid #00ff88;
+ border-radius:12px;
+ box-shadow:0 0 12px rgba(0,255,136,.35);
+}
+.box span{
+ display:block;
+ font-size:11px;
+ color:#00ff88;
+}
+.box b{font-size:18px}
+
+#controls{
+ position:fixed;
+ bottom:18px;
+ left:0;
+ width:100%;
+ display:flex;
+ justify-content:space-between;
+ padding:0 22px;
+ z-index:6;
+}
+.ctrl{
+ width:72px;
+ height:60px;
+ border-radius:17px;
+ border:2px solid #00ff88;
+ background:rgba(0,20,12,.8);
+ color:#00ff88;
+ font-size:28px;
+}
+.ctrl:active{transform:scale(.93)}
+
+#jump{
+ position:fixed;
+ bottom:20px;
+ left:50%;
+ transform:translateX(-50%);
+ width:90px;
+ height:55px;
+ border-radius:16px;
+ border:2px solid #00ff88;
+ background:rgba(0,20,12,.85);
+ color:#00ff88;
+ font-weight:bold;
+}
+
+#start,#over{
+ position:fixed;
+ inset:0;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ background:rgba(0,5,3,.9);
+ z-index:10;
+}
+#over{display:none}
+
+.panel{
+ width:min(90%,390px);
+ padding:28px;
+ text-align:center;
+ color:white;
+ background:#07110d;
+ border:1px solid #00ff88;
+ border-radius:22px;
+ box-shadow:0 0 35px rgba(0,255,136,.25);
+}
+.panel h1{
+ color:#00ff88;
+ text-shadow:0 0 12px #00ff88;
+}
+.panel button{
+ margin-top:12px;
+ padding:13px 24px;
+ border:0;
+ border-radius:12px;
+ background:#00ff88;
+ color:#00150b;
+ font-weight:bold;
+ font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+ <div class="box">
+  <span>SCORE</span>
+  <b id="score">0</b>
+ </div>
+ <div class="box">
+  <span>COINS</span>
+  <b id="coins">0</b>
+ </div>
+ <div class="box">
+  <span>BEST</span>
+  <b id="best">0</b>
+ </div>
+</div>
+
+<div id="controls">
+ <button class="ctrl" id="left">◀</button>
+ <button id="jump">JUMP ⬆</button>
+ <button class="ctrl" id="right">▶</button>
+</div>
+
+<div id="start">
+ <div class="panel">
+  <h1>🚇 METRO DASH 3D</h1>
+  <p>Run through the metro tracks!</p>
+  <p>Move left/right and jump over obstacles.</p>
+  <button onclick="startGame()">START RUN</button>
+ </div>
+</div>
+
+<div id="over">
+ <div class="panel">
+  <h1>💥 GAME OVER</h1>
+  <p>Score</p>
+  <h2 id="finalScore">0</h2>
+  <p id="bestText"></p>
+  <button onclick="restart()">RUN AGAIN</button>
+ </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+let running=false;
+let score=0;
+let coins=0;
+let best=Number(localStorage.getItem("nipam_metro_best")||0);
+
+let lane=1;
+let targetLane=1;
+
+let player={
+ x:0,
+ y:0,
+ vy:0,
+ jumping:false
+};
+
+let objects=[];
+let particles=[];
+
+let speed=7;
+let roadOffset=0;
+let spawnTimer=0;
+let coinTimer=0;
+
+let leftDown=false;
+let rightDown=false;
+
+document.getElementById("best").textContent=best;
+
+function resize(){
+ W=canvas.width=innerWidth;
+ H=canvas.height=innerHeight;
+ player.y=H*.76;
+ player.x=laneX(1);
+}
+
+window.addEventListener("resize",resize);
+resize();
+
+function roadWidth(){
+ return Math.min(W*.78,500);
+}
+
+function roadLeft(){
+ return (W-roadWidth())/2;
+}
+
+function laneWidth(){
+ return roadWidth()/3;
+}
+
+function laneX(n){
+ return roadLeft()+laneWidth()*n+laneWidth()/2;
+}
+
+function drawSky(){
+ let g=ctx.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,"#061914");
+ g.addColorStop(.5,"#0b2d20");
+ g.addColorStop(1,"#06100c");
+
+ ctx.fillStyle=g;
+ ctx.fillRect(0,0,W,H);
+
+ // moon
+ ctx.fillStyle="#d8fff0";
+ ctx.beginPath();
+ ctx.arc(W*.82,H*.13,25,0,Math.PI*2);
+ ctx.fill();
+
+ // buildings
+ for(let x=0;x<W;x+=45){
+  let h=60+(x*7%120);
+  ctx.fillStyle="#071510";
+  ctx.fillRect(x,H*.48-h,38,h);
+
+  ctx.fillStyle="#00a85b";
+  for(let yy=H*.48-h+12;yy<H*.48-10;yy+=18){
+   ctx.fillRect(x+8,yy,5,5);
+   ctx.fillRect(x+24,yy,5,5);
+  }
+ }
+}
+
+function drawTrack(){
+ let rw=roadWidth();
+ let rl=roadLeft();
+
+ ctx.fillStyle="#10251b";
+ ctx.fillRect(0,0,W,H);
+
+ // main track
+ ctx.fillStyle="#262a28";
+ ctx.fillRect(rl,0,rw,H);
+
+ // side green glow
+ ctx.fillStyle="#00a85b";
+ ctx.fillRect(rl,0,4,H);
+ ctx.fillRect(rl+rw-4,0,4,H);
+
+ // rails
+ ctx.strokeStyle="#9ca8a2";
+ ctx.lineWidth=5;
+
+ for(let i=0;i<4;i++){
+  let x=rl+i*laneWidth();
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x,H);
+  ctx.stroke();
+ }
+
+ // sleepers
+ ctx.strokeStyle="#555d59";
+ ctx.lineWidth=5;
+ ctx.setLineDash([20,25]);
+ ctx.lineDashOffset=-roadOffset;
+
+ for(let i=1;i<3;i++){
+  let x=rl+i*laneWidth();
+  ctx.beginPath();
+  ctx.moveTo(x,0);
+  ctx.lineTo(x,H);
+  ctx.stroke();
+ }
+
+ ctx.setLineDash([]);
+
+ // center markings
+ ctx.fillStyle="#d4ded9";
+ for(let y=-50;y<H;y+=80){
+  let yy=y+roadOffset%80;
+  ctx.fillRect(rl+rw*.49,yy,4,30);
+ }
+}
+
+function drawPlayer(){
+ let x=player.x;
+ let y=player.y-(player.jumping?45:0);
+
+ // shadow
+ ctx.fillStyle="rgba(0,0,0,.4)";
+ ctx.beginPath();
+ ctx.ellipse(x,player.y+38,28,8,0,0,Math.PI*2);
+ ctx.fill();
+
+ // body
+ ctx.fillStyle="#00ff88";
+ ctx.beginPath();
+ ctx.roundRect(x-20,y-35,40,70,10);
+ ctx.fill();
+
+ // shirt
+ ctx.fillStyle="#06130e";
+ ctx.fillRect(x-16,y-5,32,30);
+
+ // head
+ ctx.fillStyle="#ffd2a3";
+ ctx.beginPath();
+ ctx.arc(x,y-48,12,0,Math.PI*2);
+ ctx.fill();
+
+ // hair
+ ctx.fillStyle="#151515";
+ ctx.beginPath();
+ ctx.arc(x,y-52,12,Math.PI,Math.PI*2);
+ ctx.fill();
+
+ // legs
+ ctx.fillStyle="#17231f";
+ ctx.fillRect(x-17,y+35,13,24);
+ ctx.fillRect(x+4,y+35,13,24);
+
+ // shoes
+ ctx.fillStyle="#00ff88";
+ ctx.fillRect(x-20,y+55,17,7);
+ ctx.fillRect(x+3,y+55,17,7);
+}
+
+function drawTrain(o){
+ let x=o.x;
+ let y=o.y;
+ let w=58;
+ let h=115;
+
+ ctx.save();
+ ctx.translate(x,y);
+
+ ctx.fillStyle="#e8e8e8";
+ ctx.fillRect(-w/2,-h/2,w,h);
+
+ ctx.fillStyle="#00b866";
+ ctx.fillRect(-w/2,-h/2,w,15);
+
+ ctx.fillStyle="#101b18";
+ ctx.fillRect(-w*.35,-h*.27,w*.7,30);
+
+ ctx.fillStyle="#111";
+ ctx.fillRect(-w*.35,h*.2,w*.7,20);
+
+ ctx.fillStyle="#ff3040";
+ ctx.fillRect(-w*.36,h*.37,12,9);
+ ctx.fillRect(w*.15,h*.37,12,9);
+
+ ctx.restore();
+}
+
+function drawBarrier(o){
+ ctx.save();
+ ctx.translate(o.x,o.y);
+
+ ctx.fillStyle="#ffcf30";
+ ctx.fillRect(-30,-25,60,18);
+
+ ctx.fillStyle="#161616";
+ ctx.fillRect(-25,-20,15,8);
+ ctx.fillRect(10,-20,15,8);
+
+ ctx.fillStyle="#555";
+ ctx.fillRect(-24,-7,8,32);
+ ctx.fillRect(16,-7,8,32);
+
+ ctx.restore();
+}
+
+function drawCoin(o){
+ ctx.save();
+ ctx.translate(o.x,o.y);
+
+ ctx.fillStyle="#ffd42a";
+ ctx.beginPath();
+ ctx.arc(0,0,12,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.strokeStyle="#fff0a0";
+ ctx.lineWidth=3;
+ ctx.beginPath();
+ ctx.arc(0,0,7,0,Math.PI*2);
+ ctx.stroke();
+
+ ctx.restore();
+}
+
+function spawnObstacle(){
+ let l=Math.floor(Math.random()*3);
+
+ objects.push({
+  type:Math.random()<.55?"train":"barrier",
+  lane:l,
+  x:laneX(l),
+  y:-130,
+  hit:false
+ });
+}
+
+function spawnCoin(){
+ let l=Math.floor(Math.random()*3);
+
+ objects.push({
+  type:"coin",
+  lane:l,
+  x:laneX(l),
+  y:-50,
+  hit:false
+ });
+}
+
+function movePlayer(){
+ let desired=laneX(targetLane);
+
+ player.x+=(desired-player.x)*.2;
+}
+
+function jump(){
+ if(!running)return;
+
+ if(!player.jumping){
+  player.jumping=true;
+  player.vy=-15;
+ }
+}
+
+function updatePlayer(){
+ movePlayer();
+
+ if(player.jumping){
+  player.y+=player.vy;
+  player.vy+=.7;
+
+  if(player.y>=H*.76){
+   player.y=H*.76;
+   player.vy=0;
+   player.jumping=false;
+  }
+ }
+}
+
+function updateObjects(){
+ for(let i=objects.length-1;i>=0;i--){
+  let o=objects[i];
+
+  o.y+=speed;
+
+  if(o.type==="coin"){
+   if(Math.abs(o.x-player.x)<30 &&
+      Math.abs(o.y-player.y)<45 &&
+      !o.hit){
+
+    o.hit=true;
+    coins++;
+    score+=50;
+    objects.splice(i,1);
+    continue;
+   }
+  }
+
+  if(o.type!=="coin" &&
+     Math.abs(o.x-player.x)<38 &&
+     Math.abs(o.y-player.y)<65){
+
+    if(player.jumping && o.type==="barrier"){
+      // jump over barrier
+    }else{
+      crash();
+      return;
+    }
+  }
+
+  if(o.y>H+150){
+   objects.splice(i,1);
+   score+=5;
+  }
+ }
+}
+
+function particlesBurst(){
+ for(let i=0;i<40;i++){
+  particles.push({
+   x:player.x,
+   y:player.y,
+   vx:(Math.random()-.5)*8,
+   vy:(Math.random()-.5)*8,
+   life:1
+  });
+ }
+}
+
+function updateParticles(){
+ for(let i=particles.length-1;i>=0;i--){
+  let p=particles[i];
+
+  p.x+=p.vx;
+  p.y+=p.vy;
+  p.vy+=.15;
+  p.life-=.025;
+
+  if(p.life<=0)particles.splice(i,1);
+ }
+}
+
+function drawParticles(){
+ for(let p of particles){
+  ctx.globalAlpha=p.life;
+  ctx.fillStyle="#00ff88";
+  ctx.fillRect(p.x,p.y,4,4);
+ }
+ ctx.globalAlpha=1;
+}
+
+function update(){
+ if(!running)return;
+
+ updatePlayer();
+ updateObjects();
+ updateParticles();
+
+ speed=Math.min(14,speed+.002);
+ score+=.06;
+
+ roadOffset+=speed;
+
+ spawnTimer--;
+
+ if(spawnTimer<=0){
+  spawnObstacle();
+  spawnTimer=Math.max(45,85-speed*3);
+ }
+
+ coinTimer--;
+
+ if(coinTimer<=0){
+  spawnCoin();
+  coinTimer=55;
+ }
+
+ document.getElementById("score").textContent=Math.floor(score);
+ document.getElementById("coins").textContent=coins;
+}
+
+function draw(){
+ drawSky();
+ drawTrack();
+
+ for(let o of objects){
+  if(o.type==="train")drawTrain(o);
+  else if(o.type==="barrier")drawBarrier(o);
+  else drawCoin(o);
+ }
+
+ drawPlayer();
+ drawParticles();
+}
+
+function loop(){
+ update();
+ draw();
+ requestAnimationFrame(loop);
+}
+
+function startGame(){
+ document.getElementById("start").style.display="none";
+
+ running=true;
+ score=0;
+ coins=0;
+ speed=7;
+ objects=[];
+ particles=[];
+ lane=1;
+ targetLane=1;
+ player.x=laneX(1);
+ player.y=H*.76;
+ player.vy=0;
+ player.jumping=false;
+ spawnTimer=50;
+ coinTimer=25;
+}
+
+function crash(){
+ if(!running)return;
+
+ running=false;
+ particlesBurst();
+
+ let final=Math.floor(score);
+
+ document.getElementById("finalScore").textContent=final;
+
+ if(final>best){
+  best=final;
+  localStorage.setItem("nipam_metro_best",best);
+  document.getElementById("best").textContent=best;
+  document.getElementById("bestText").textContent="🏆 NEW BEST!";
+ }else{
+  document.getElementById("bestText").textContent="Best: "+best;
+ }
+
+ setTimeout(()=>{
+  document.getElementById("over").style.display="flex";
+ },300);
+}
+
+function restart(){
+ document.getElementById("over").style.display="none";
+ startGame();
+}
+
+// Keyboard
+window.addEventListener("keydown",e=>{
+ if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a"){
+  targetLane=Math.max(0,targetLane-1);
+ }
+
+ if(e.key==="ArrowRight"||e.key.toLowerCase()==="d"){
+  targetLane=Math.min(2,targetLane+1);
+ }
+
+ if(e.key==="ArrowUp"||e.key===" "){
+  jump();
+ }
+});
+
+// Buttons
+function hold(btn,down,up){
+ btn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  down();
+ });
+ btn.addEventListener("pointerup",e=>{
+  e.preventDefault();
+  up();
+ });
+ btn.addEventListener("pointercancel",up);
+}
+
+hold(
+ document.getElementById("left"),
+ ()=>targetLane=Math.max(0,targetLane-1),
+ ()=>{}
+);
+
+hold(
+ document.getElementById("right"),
+ ()=>targetLane=Math.min(2,targetLane+1),
+ ()=>{}
+);
+
+document.getElementById("jump").addEventListener("pointerdown",e=>{
+ e.preventDefault();
+ jump();
+});
+
+// Swipe
+let sx=null;
+let sy=null;
+
+canvas.addEventListener("touchstart",e=>{
+ sx=e.touches[0].clientX;
+ sy=e.touches[0].clientY;
+},{passive:true});
+
+canvas.addEventListener("touchend",e=>{
+ if(sx===null)return;
+
+ let ex=e.changedTouches[0].clientX;
+ let ey=e.changedTouches[0].clientY;
+
+ let dx=ex-sx;
+ let dy=ey-sy;
+
+ if(Math.abs(dx)>35 && Math.abs(dx)>Math.abs(dy)){
+  if(dx<0)
+   targetLane=Math.max(0,targetLane-1);
+  else
+   targetLane=Math.min(2,targetLane+1);
+ }
+ else if(dy<-35){
+  jump();
+ }
+
+ sx=null;
+ sy=null;
+});
+
+loop();
+</script>
+
+</body>
+  </html>
