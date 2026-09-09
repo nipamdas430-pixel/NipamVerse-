@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>NipamVerse — Dino Dash</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050807;
+  font-family:Arial,sans-serif;
+  touch-action:none;
+}
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+#hud{
+  position:fixed;
+  top:12px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  z-index:5;
+  pointer-events:none;
+}
+.box{
+  min-width:85px;
+  padding:8px 12px;
+  text-align:center;
+  color:#fff;
+  background:rgba(0,15,10,.75);
+  border:1px solid #00ff88;
+  border-radius:12px;
+  box-shadow:0 0 12px rgba(0,255,136,.3);
+}
+.box span{
+  display:block;
+  font-size:11px;
+  color:#00ff88;
+}
+.box b{font-size:18px}
+
+#jump{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+  width:110px;
+  height:58px;
+  border-radius:17px;
+  border:2px solid #00ff88;
+  background:rgba(0,20,12,.85);
+  color:#00ff88;
+  font-weight:bold;
+  font-size:15px;
+  z-index:6;
+}
+
+#start,#over{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,5,3,.9);
+  z-index:10;
+}
+#over{display:none}
+
+.panel{
+  width:min(90%,390px);
+  padding:28px;
+  text-align:center;
+  color:white;
+  background:#07110d;
+  border:1px solid #00ff88;
+  border-radius:22px;
+  box-shadow:0 0 35px rgba(0,255,136,.25);
+}
+.panel h1{
+  color:#00ff88;
+  text-shadow:0 0 12px #00ff88;
+}
+.panel button{
+  padding:13px 25px;
+  margin-top:12px;
+  border:0;
+  border-radius:12px;
+  background:#00ff88;
+  color:#00150b;
+  font-weight:bold;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="box">
+    <span>SCORE</span>
+    <b id="score">0</b>
+  </div>
+  <div class="box">
+    <span>SPEED</span>
+    <b id="speed">0</b>
+  </div>
+  <div class="box">
+    <span>BEST</span>
+    <b id="best">0</b>
+  </div>
+</div>
+
+<button id="jump">JUMP ⬆</button>
+
+<div id="start">
+  <div class="panel">
+    <h1>🦖 DINO DASH</h1>
+    <p>Run as far as you can!</p>
+    <p>Jump over cacti and avoid flying obstacles.</p>
+    <button onclick="startGame()">START RUN</button>
+  </div>
+</div>
+
+<div id="over">
+  <div class="panel">
+    <h1>💥 GAME OVER</h1>
+    <p>Your Score</p>
+    <h2 id="finalScore">0</h2>
+    <p id="bestText"></p>
+    <button onclick="restart()">RUN AGAIN</button>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+let running=false;
+
+let score=0;
+let speed=7;
+let best=Number(localStorage.getItem("nipam_dino_best")||0);
+
+let ground;
+let spawnTimer=0;
+
+let obstacles=[];
+let clouds=[];
+let particles=[];
+
+let dino={
+  x:0,
+  y:0,
+  w:55,
+  h:58,
+  vy:0,
+  jumping:false
+};
+
+document.getElementById("best").textContent=best;
+
+function resize(){
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
+
+  ground=H*.78;
+
+  dino.x=W*.18;
+
+  if(!dino.jumping){
+    dino.y=ground-dino.h;
+  }
+}
+
+window.addEventListener("resize",resize);
+resize();
+
+function drawBackground(){
+
+  let g=ctx.createLinearGradient(0,0,0,H);
+
+  g.addColorStop(0,"#061914");
+  g.addColorStop(.6,"#0b2a1e");
+  g.addColorStop(1,"#07110d");
+
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // moon
+  ctx.fillStyle="#dffff0";
+  ctx.beginPath();
+  ctx.arc(W*.82,H*.16,27,0,Math.PI*2);
+  ctx.fill();
+
+  // stars
+  ctx.fillStyle="#baffdf";
+
+  for(let i=0;i<35;i++){
+    let x=(i*97)%W;
+    let y=(i*43)%(H*.45);
+    ctx.fillRect(x,y,2,2);
+  }
+
+  // distant hills
+  ctx.fillStyle="#071b13";
+  ctx.beginPath();
+  ctx.moveTo(0,H*.65);
+
+  for(let x=0;x<=W;x+=80){
+    ctx.lineTo(x,H*.55-((x*17)%70));
+  }
+
+  ctx.lineTo(W,H);
+  ctx.lineTo(0,H);
+  ctx.fill();
+}
+
+function drawGround(){
+
+  ctx.fillStyle="#06150e";
+  ctx.fillRect(0,ground,W,H-ground);
+
+  ctx.strokeStyle="#00d977";
+  ctx.lineWidth=4;
+
+  ctx.beginPath();
+  ctx.moveTo(0,ground);
+  ctx.lineTo(W,ground);
+  ctx.stroke();
+
+  // ground marks
+  ctx.strokeStyle="#668f7b";
+  ctx.lineWidth=3;
+
+  let offset=score*3%80;
+
+  for(let x=-80;x<W+80;x+=80){
+    ctx.beginPath();
+    ctx.moveTo(x-offset,ground+18);
+    ctx.lineTo(x+35-offset,ground+18);
+    ctx.stroke();
+  }
+}
+
+function drawDino(){
+
+  let x=dino.x;
+  let y=dino.y;
+
+  // shadow
+  ctx.fillStyle="rgba(0,0,0,.35)";
+  ctx.beginPath();
+  ctx.ellipse(
+    x+dino.w*.5,
+    ground+4,
+    32,
+    7,
+    0,0,Math.PI*2
+  );
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(x,y);
+
+  // tail
+  ctx.fillStyle="#00ff88";
+  ctx.beginPath();
+  ctx.moveTo(7,35);
+  ctx.lineTo(-22,48);
+  ctx.lineTo(8,50);
+  ctx.closePath();
+  ctx.fill();
+
+  // body
+  ctx.fillStyle="#00ff88";
+  ctx.beginPath();
+  ctx.roundRect(5,15,38,35,10);
+  ctx.fill();
+
+  // neck
+  ctx.fillRect(28,0,17,27);
+
+  // head
+  ctx.beginPath();
+  ctx.roundRect(25,-8,31,27,8);
+  ctx.fill();
+
+  // eye
+  ctx.fillStyle="#06110c";
+  ctx.fillRect(46,-1,5,5);
+
+  // mouth
+  ctx.fillRect(45,11,12,3);
+
+  // legs
+  ctx.fillStyle="#00d875";
+  ctx.fillRect(10,45,10,18);
+  ctx.fillRect(32,45,10,18);
+
+  // feet
+  ctx.fillStyle="#00ff88";
+  ctx.fillRect(5,60,17,5);
+  ctx.fillRect(30,60,17,5);
+
+  ctx.restore();
+}
+
+function drawCactus(o){
+
+  ctx.save();
+  ctx.translate(o.x,o.y);
+
+  ctx.fillStyle="#00b866";
+
+  // main
+  ctx.fillRect(-8,-45,16,45);
+
+  // arms
+  ctx.fillRect(-23,-32,15,8);
+  ctx.fillRect(-23,-38,8,16);
+
+  ctx.fillRect(8,-24,15,8);
+  ctx.fillRect(15,-31,8,15);
+
+  ctx.restore();
+}
+
+function drawBird(o){
+
+  ctx.save();
+  ctx.translate(o.x,o.y);
+
+  ctx.strokeStyle="#00ff88";
+  ctx.lineWidth=5;
+  ctx.lineCap="round";
+
+  ctx.beginPath();
+  ctx.moveTo(-20,0);
+  ctx.quadraticCurveTo(-8,-12,0,0);
+  ctx.quadraticCurveTo(10,-12,22,0);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function spawnObstacle(){
+
+  let flying=Math.random()<.28;
+
+  obstacles.push({
+    type:flying?"bird":"cactus",
+    x:W+60,
+    y:flying?ground-75:ground,
+    w:flying?45:38,
+    h:flying?25:55
+  });
+}
+
+function updateDino(){
+
+  if(dino.jumping){
+
+    dino.y+=dino.vy;
+    dino.vy+=.75;
+
+    if(dino.y>=ground-dino.h){
+
+      dino.y=ground-dino.h;
+      dino.vy=0;
+      dino.jumping=false;
+    }
+  }
+}
+
+function jump(){
+
+  if(!running)return;
+
+  if(!dino.jumping){
+
+    dino.jumping=true;
+    dino.vy=-15;
+  }
+}
+
+function updateObstacles(){
+
+  for(let i=obstacles.length-1;i>=0;i--){
+
+    let o=obstacles[i];
+
+    o.x-=speed;
+
+    if(collision(dino,o)){
+      crash();
+      return;
+    }
+
+    if(o.x<-100){
+
+      obstacles.splice(i,1);
+      score+=10;
+    }
+  }
+}
+
+function collision(a,o){
+
+  let ax=a.x+10;
+  let ay=a.y+8;
+  let aw=a.w-15;
+  let ah=a.h-10;
+
+  let ox=o.x-o.w/2;
+  let oy=o.y-o.h;
+  let ow=o.w;
+  let oh=o.h;
+
+  return ax<ox+ow &&
+         ax+aw>ox &&
+         ay<oy+oh &&
+         ay+ah>oy;
+}
+
+function updateClouds(){
+
+  for(let c of clouds){
+
+    c.x-=c.speed;
+
+    if(c.x<-150){
+
+      c.x=W+100;
+      c.y=40+Math.random()*150;
+    }
+  }
+}
+
+function drawClouds(){
+
+  ctx.fillStyle="rgba(150,255,215,.12)";
+
+  for(let c of clouds){
+
+    ctx.beginPath();
+    ctx.arc(c.x,c.y,20,0,Math.PI*2);
+    ctx.arc(c.x+25,c.y-8,27,0,Math.PI*2);
+    ctx.arc(c.x+55,c.y,20,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function createParticles(){
+
+  for(let i=0;i<35;i++){
+
+    particles.push({
+      x:dino.x+25,
+      y:dino.y+30,
+      vx:(Math.random()-.5)*7,
+      vy:(Math.random()-.5)*7,
+      life:1
+    });
+  }
+}
+
+function updateParticles(){
+
+  for(let i=particles.length-1;i>=0;i--){
+
+    let p=particles[i];
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=.15;
+    p.life-=.025;
+
+    if(p.life<=0){
+      particles.splice(i,1);
+    }
+  }
+}
+
+function drawParticles(){
+
+  for(let p of particles){
+
+    ctx.globalAlpha=p.life;
+    ctx.fillStyle="#00ff88";
+    ctx.fillRect(p.x,p.y,4,4);
+  }
+
+  ctx.globalAlpha=1;
+}
+
+function update(){
+
+  if(!running)return;
+
+  updateDino();
+  updateObstacles();
+  updateClouds();
+  updateParticles();
+
+  speed=Math.min(17,speed+.003);
+
+  score+=.08;
+
+  spawnTimer--;
+
+  let rate=Math.max(38,90-speed*3);
+
+  if(spawnTimer<=0){
+
+    spawnObstacle();
+    spawnTimer=rate;
+  }
+
+  document.getElementById("score").textContent=Math.floor(score);
+  document.getElementById("speed").textContent=Math.floor(speed*10)+" km/h";
+}
+
+function draw(){
+
+  drawBackground();
+  drawClouds();
+  drawGround();
+
+  for(let o of obstacles){
+
+    if(o.type==="cactus"){
+      drawCactus(o);
+    }else{
+      drawBird(o);
+    }
+  }
+
+  drawDino();
+  drawParticles();
+}
+
+function loop(){
+
+  update();
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+function startGame(){
+
+  document.getElementById("start").style.display="none";
+
+  running=true;
+
+  score=0;
+  speed=7;
+
+  obstacles=[];
+  particles=[];
+
+  dino.y=ground-dino.h;
+  dino.vy=0;
+  dino.jumping=false;
+
+  spawnTimer=60;
+
+  clouds=[];
+
+  for(let i=0;i<5;i++){
+
+    clouds.push({
+      x:i*W/4+100,
+      y:60+Math.random()*140,
+      speed:.3+Math.random()*.4
+    });
+  }
+}
+
+function crash(){
+
+  if(!running)return;
+
+  running=false;
+
+  createParticles();
+
+  let final=Math.floor(score);
+
+  document.getElementById("finalScore").textContent=final;
+
+  if(final>best){
+
+    best=final;
+
+    localStorage.setItem(
+      "nipam_dino_best",
+      best
+    );
+
+    document.getElementById("best").textContent=best;
+
+    document.getElementById("bestText").textContent="🏆 NEW BEST!";
+  }
+  else{
+
+    document.getElementById("bestText").textContent=
+      "Best: "+best;
+  }
+
+  setTimeout(()=>{
+
+    document.getElementById("over").style.display="flex";
+
+  },300);
+}
+
+function restart(){
+
+  document.getElementById("over").style.display="none";
+
+  startGame();
+}
+
+document.getElementById("jump").addEventListener(
+  "pointerdown",
+  e=>{
+    e.preventDefault();
+    jump();
+  }
+);
+
+window.addEventListener("keydown",e=>{
+
+  if(
+    e.key===" " ||
+    e.key==="ArrowUp" ||
+    e.key==="w"
+  ){
+    e.preventDefault();
+    jump();
+  }
+});
+
+// Tap anywhere on canvas to jump
+canvas.addEventListener("pointerdown",e=>{
+
+  if(running){
+    jump();
+  }
+});
+
+loop();
+</script>
+
+</body>
+  </html>
