@@ -304,33 +304,32 @@ function drawTarget(){
 
 function drawBow(){
 
-  let x=bow.x;
-  let y=bow.y;
+  let x = bow.x;
+  let y = bow.y;
 
   ctx.save();
 
-  ctx.strokeStyle="#8b5a2b";
-  ctx.lineWidth=9;
-  ctx.lineCap="round";
+  // Bow
+  ctx.strokeStyle = "#8b5a2b";
+  ctx.lineWidth = 9;
+  ctx.lineCap = "round";
 
   ctx.beginPath();
-  ctx.arc(x+15,y,90,-Math.PI*.72,Math.PI*.72);
+  ctx.arc(x + 15, y, 90, -Math.PI * 0.72, Math.PI * 0.72);
   ctx.stroke();
 
-  ctx.strokeStyle="#ddd";
-  ctx.lineWidth=2;
-
-  let stringX=arrow.x;
-  let stringY=arrow.y;
+  // Fixed bowstring
+  ctx.strokeStyle = "#eeeeee";
+  ctx.lineWidth = 2;
 
   ctx.beginPath();
-  ctx.moveTo(x-40,y-72);
-  ctx.lineTo(stringX,stringY);
-  ctx.lineTo(x-40,y+72);
+  ctx.moveTo(x - 40, y - 72);
+  ctx.lineTo(x - 40, y + 72);
   ctx.stroke();
 
   ctx.restore();
-}
+                 }
+
 
 function drawArrow(){
 
