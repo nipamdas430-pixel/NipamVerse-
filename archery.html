@@ -11,12 +11,13 @@
   -webkit-tap-highlight-color:transparent;
 }
 
-body{
+html,body{
   margin:0;
-  background:#050807;
-  color:white;
-  font-family:Arial,sans-serif;
+  width:100%;
+  height:100%;
   overflow:hidden;
+  background:#030604;
+  font-family:Arial,sans-serif;
   user-select:none;
 }
 
@@ -26,7 +27,15 @@ body{
   height:100vh;
   overflow:hidden;
   background:
-    radial-gradient(circle at 50% 20%,#15351f 0,#07120b 45%,#020403 100%);
+    radial-gradient(circle at 50% 20%,#173b22 0,#08140c 45%,#020403 100%);
+}
+
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
 }
 
 .top{
@@ -36,42 +45,40 @@ body{
   width:100%;
   display:flex;
   justify-content:space-around;
+  gap:8px;
   z-index:5;
-  font-size:16px;
-  font-weight:bold;
-  text-shadow:0 0 10px #20ff70;
+  pointer-events:none;
 }
 
 .panel{
-  padding:8px 14px;
+  color:white;
+  padding:8px 12px;
   border:1px solid #20ff70;
   border-radius:12px;
-  background:#07130cdd;
+  background:#06130bdd;
   box-shadow:0 0 12px #20ff7040;
-}
-
-canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
+  font-size:14px;
+  font-weight:bold;
+  text-shadow:0 0 8px #20ff70;
 }
 
 #powerBox{
   position:absolute;
-  left:18px;
+  left:15px;
   bottom:25px;
-  width:42px;
-  height:180px;
-  border:2px solid #fff;
+  width:35px;
+  height:170px;
+  border:2px solid white;
   border-radius:20px;
-  background:#111c15;
+  background:#101a13;
   overflow:hidden;
-  box-shadow:0 0 15px #20ff7050;
+  z-index:5;
+  pointer-events:none;
 }
 
 #power{
   position:absolute;
+  left:0;
   bottom:0;
   width:100%;
   height:0%;
@@ -81,14 +88,16 @@ canvas{
 
 #hint{
   position:absolute;
-  bottom:18px;
   left:50%;
+  bottom:20px;
   transform:translateX(-50%);
-  width:75%;
+  width:65%;
+  color:white;
   text-align:center;
-  font-size:14px;
+  font-size:13px;
   opacity:.8;
   pointer-events:none;
+  z-index:5;
 }
 
 button{
@@ -96,18 +105,17 @@ button{
   border-radius:12px;
   padding:12px 20px;
   background:#20ff70;
-  color:#021006;
+  color:#031007;
   font-weight:bold;
-  font-size:15px;
-  box-shadow:0 0 15px #20ff7060;
+  box-shadow:0 0 18px #20ff7060;
 }
 
 #newGame{
   position:absolute;
   right:15px;
   bottom:20px;
-  z-index:6;
   display:none;
+  z-index:10;
 }
 
 #message{
@@ -115,11 +123,12 @@ button{
   left:50%;
   top:48%;
   transform:translate(-50%,-50%);
+  color:white;
   text-align:center;
-  z-index:8;
-  font-size:25px;
+  font-size:28px;
   font-weight:bold;
   text-shadow:0 0 15px #20ff70;
+  z-index:10;
   pointer-events:none;
 }
 </style>
@@ -142,7 +151,7 @@ button{
   </div>
 
   <div id="hint">
-    Drag from the bow backwards, then release to shoot!
+    Drag the arrow backward and release!
   </div>
 
   <button id="newGame">NEW GAME</button>
@@ -152,43 +161,67 @@ button{
 </div>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
 
-let W,H,dpr;
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let W=innerWidth;
+let H=innerHeight;
+let dpr=1;
 
 function resize(){
-  dpr=window.devicePixelRatio||1;
+
   W=innerWidth;
   H=innerHeight;
+  dpr=devicePixelRatio||1;
 
   canvas.width=W*dpr;
   canvas.height=H*dpr;
+
   canvas.style.width=W+"px";
   canvas.style.height=H+"px";
 
   ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  setPositions();
 }
 
-resize();
 addEventListener("resize",resize);
 
 let score=0;
 let arrows=10;
-let best=Number(localStorage.getItem("nipam_archery_best")||0);
+
+let best=Number(
+  localStorage.getItem("nipam_archery_best")||0
+);
 
 document.getElementById("best").textContent=best;
 
-let target={
-  x:0,
-  y:0,
-  r:105
-};
+
+/* =========================
+   BOW
+========================= */
 
 let bow={
   x:0,
   y:0
 };
+
+
+/* =========================
+   TARGET
+========================= */
+
+let target={
+  x:0,
+  y:0,
+  r:100
+};
+
+
+/* =========================
+   ARROW
+========================= */
 
 let arrow={
   x:0,
@@ -199,438 +232,971 @@ let arrow={
 };
 
 let aiming=false;
-let startX=0;
-let startY=0;
 let power=0;
 
-let particles=[];
 
-function resetPositions(){
-  target.x=W*0.72;
-  target.y=H*0.42;
-  target.r=Math.min(105,W*.15);
+/* =========================
+   POSITION
+========================= */
+
+function setPositions(){
 
   bow.x=W*.20;
-  bow.y=H*.70;
+  bow.y=H*.68;
 
-  arrow.x=bow.x;
-  arrow.y=bow.y;
+  target.x=W*.74;
+  target.y=H*.40;
+
+  target.r=Math.min(
+    105,
+    W*.14
+  );
+
+  if(!aiming && !arrow.active){
+
+    arrow.x=bow.x+5;
+    arrow.y=bow.y;
+
+  }
+
 }
 
-resetPositions();
+resize();
+
+
+/* =========================
+   BACKGROUND
+========================= */
 
 function drawBackground(){
 
-  let g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,"#061b10");
-  g.addColorStop(.55,"#0b2113");
+  let g=ctx.createLinearGradient(
+    0,0,0,H
+  );
+
+  g.addColorStop(0,"#061b0e");
+  g.addColorStop(.55,"#0a2112");
   g.addColorStop(1,"#020603");
 
   ctx.fillStyle=g;
   ctx.fillRect(0,0,W,H);
 
-  // moon
+
+  // Moon
+
   ctx.beginPath();
-  ctx.arc(W*.83,H*.15,35,0,Math.PI*2);
-  ctx.fillStyle="#dffff0";
+
+  ctx.arc(
+    W*.84,
+    H*.15,
+    32,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#e7fff0";
+
   ctx.shadowColor="#20ff70";
   ctx.shadowBlur=25;
+
   ctx.fill();
+
   ctx.shadowBlur=0;
 
-  // trees
+
+  // Trees
+
   for(let i=0;i<9;i++){
+
     let x=i*(W/8);
 
-    ctx.fillStyle="#031008";
-    ctx.fillRect(x-8,H*.45,16,H*.35);
+    ctx.fillStyle="#020b06";
+
+    ctx.fillRect(
+      x-7,
+      H*.45,
+      14,
+      H*.35
+    );
 
     ctx.beginPath();
-    ctx.moveTo(x,H*.25);
-    ctx.lineTo(x-70,H*.55);
-    ctx.lineTo(x+70,H*.55);
+
+    ctx.moveTo(x,H*.23);
+    ctx.lineTo(x-65,H*.56);
+    ctx.lineTo(x+65,H*.56);
+
     ctx.closePath();
+
     ctx.fill();
+
   }
 
-  // ground
-  ctx.fillStyle="#020502";
-  ctx.fillRect(0,H*.78,W,H*.22);
+
+  // Ground
+
+  ctx.fillStyle="#010301";
+
+  ctx.fillRect(
+    0,
+    H*.78,
+    W,
+    H*.22
+  );
+
 }
+
+
+/* =========================
+   TARGET
+========================= */
 
 function drawTarget(){
 
-  let x=target.x;
-  let y=target.y;
-  let r=target.r;
+  const x=target.x;
+  const y=target.y;
+  const r=target.r;
 
   ctx.save();
 
-  ctx.beginPath();
-  ctx.arc(x,y,r+9,0,Math.PI*2);
-  ctx.fillStyle="#f5f5f5";
-  ctx.fill();
+  // outer white
 
   ctx.beginPath();
-  ctx.arc(x,y,r,0,Math.PI*2);
-  ctx.fillStyle="#d92525";
+  ctx.arc(
+    x,y,r+8,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#eeeeee";
   ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(x,y,r*.72,0,Math.PI*2);
-  ctx.fillStyle="#f5f5f5";
-  ctx.fill();
+
+  // red
 
   ctx.beginPath();
-  ctx.arc(x,y,r*.48,0,Math.PI*2);
-  ctx.fillStyle="#d92525";
+  ctx.arc(
+    x,y,r,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#d82b2b";
   ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(x,y,r*.25,0,Math.PI*2);
-  ctx.fillStyle="#f7e34b";
-  ctx.fill();
+
+  // white
 
   ctx.beginPath();
-  ctx.arc(x,y,r*.11,0,Math.PI*2);
+  ctx.arc(
+    x,y,r*.72,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#eeeeee";
+  ctx.fill();
+
+
+  // red
+
+  ctx.beginPath();
+  ctx.arc(
+    x,y,r*.48,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#d82b2b";
+  ctx.fill();
+
+
+  // yellow
+
+  ctx.beginPath();
+  ctx.arc(
+    x,y,r*.25,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#f4df45";
+  ctx.fill();
+
+
+  // bull
+
+  ctx.beginPath();
+  ctx.arc(
+    x,y,r*.10,
+    0,
+    Math.PI*2
+  );
+
   ctx.fillStyle="#20ff70";
+
   ctx.shadowColor="#20ff70";
-  ctx.shadowBlur=12;
+  ctx.shadowBlur=15;
+
   ctx.fill();
 
   ctx.shadowBlur=0;
+
   ctx.restore();
+
 }
+
+
+/* =========================
+   BOW + STRING
+========================= */
 
 function drawBow(){
 
-  let x = bow.x;
-  let y = bow.y;
+  const x=bow.x;
+  const y=bow.y;
 
   ctx.save();
 
-  // Bow
-  ctx.strokeStyle = "#8b5a2b";
-  ctx.lineWidth = 9;
-  ctx.lineCap = "round";
+
+  // Bow body
+
+  ctx.strokeStyle="#8a5829";
+  ctx.lineWidth=10;
+  ctx.lineCap="round";
 
   ctx.beginPath();
-  ctx.arc(x + 15, y, 90, -Math.PI * 0.72, Math.PI * 0.72);
+
+  ctx.arc(
+    x+15,
+    y,
+    88,
+    -Math.PI*.72,
+    Math.PI*.72
+  );
+
   ctx.stroke();
 
-  // Fixed bowstring
-  ctx.strokeStyle = "#eeeeee";
-  ctx.lineWidth = 2;
+
+  /*
+    STRING:
+    Both ends stay fixed to the bow.
+    Middle point follows the arrow only
+    while aiming.
+  */
+
+  const topX=x-40;
+  const topY=y-72;
+
+  const bottomX=x-40;
+  const bottomY=y+72;
+
+  let middleX=x-40;
+  let middleY=y;
+
+  if(aiming){
+
+    middleX=arrow.x;
+    middleY=arrow.y;
+
+  }
+
+
+  ctx.strokeStyle="#eeeeee";
+  ctx.lineWidth=2;
 
   ctx.beginPath();
-  ctx.moveTo(x - 40, y - 72);
-  ctx.lineTo(x - 40, y + 72);
+
+  ctx.moveTo(topX,topY);
+  ctx.lineTo(middleX,middleY);
+  ctx.lineTo(bottomX,bottomY);
+
   ctx.stroke();
+
 
   ctx.restore();
-                 }
 
+}
+
+
+/* =========================
+   ARROW
+========================= */
 
 function drawArrow(){
 
-  if(!aiming && !arrow.active){
-    arrow.x=bow.x;
-    arrow.y=bow.y;
+  let angle=0;
+
+  if(aiming){
+
+    angle=Math.atan2(
+      bow.y-arrow.y,
+      bow.x-arrow.x
+    );
+
+  }
+  else if(arrow.active){
+
+    angle=Math.atan2(
+      arrow.vy,
+      arrow.vx
+    );
+
   }
 
-  let angle=Math.atan2(arrow.vy,arrow.vx);
-
-  if(!arrow.active && aiming){
-    angle=Math.atan2(bow.y-arrow.y,bow.x-arrow.x);
-  }
 
   ctx.save();
-  ctx.translate(arrow.x,arrow.y);
+
+  ctx.translate(
+    arrow.x,
+    arrow.y
+  );
+
   ctx.rotate(angle);
 
-  ctx.strokeStyle="#eee";
+
+  // Shaft
+
+  ctx.strokeStyle="#eeeeee";
   ctx.lineWidth=4;
 
   ctx.beginPath();
-  ctx.moveTo(-45,0);
-  ctx.lineTo(15,0);
+
+  ctx.moveTo(-42,0);
+  ctx.lineTo(18,0);
+
   ctx.stroke();
 
-  ctx.fillStyle="#bbb";
+
+  // Arrow head
+
+  ctx.fillStyle="#cccccc";
+
   ctx.beginPath();
-  ctx.moveTo(18,0);
-  ctx.lineTo(5,-7);
-  ctx.lineTo(5,7);
+
+  ctx.moveTo(23,0);
+  ctx.lineTo(7,-8);
+  ctx.lineTo(7,8);
+
   ctx.closePath();
+
   ctx.fill();
+
+
+  // Feathers
 
   ctx.strokeStyle="#20ff70";
   ctx.lineWidth=2;
 
   ctx.beginPath();
-  ctx.moveTo(-42,0);
-  ctx.lineTo(-55,-8);
-  ctx.moveTo(-42,0);
-  ctx.lineTo(-55,8);
+
+  ctx.moveTo(-38,0);
+  ctx.lineTo(-52,-9);
+
+  ctx.moveTo(-38,0);
+  ctx.lineTo(-52,9);
+
   ctx.stroke();
 
+
   ctx.restore();
+
 }
 
-function drawParticles(){
 
-  for(let p of particles){
-    ctx.globalAlpha=p.life;
-    ctx.fillStyle=p.color;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-    ctx.fill();
-  }
+/* =========================
+   PARTICLES
+========================= */
 
-  ctx.globalAlpha=1;
-}
+let particles=[];
 
-function burst(x,y,color="#20ff70"){
+function burst(x,y){
 
-  for(let i=0;i<25;i++){
+  for(let i=0;i<28;i++){
+
     particles.push({
+
       x:x,
       y:y,
+
       vx:(Math.random()-.5)*8,
       vy:(Math.random()-.5)*8,
+
       life:1,
-      size:2+Math.random()*4,
-      color
+
+      size:2+Math.random()*4
+
     });
+
   }
+
 }
 
 function updateParticles(){
 
   for(let p of particles){
+
     p.x+=p.vx;
     p.y+=p.vy;
+
     p.vy+=.12;
+
     p.life-=.025;
+
   }
 
-  particles=particles.filter(p=>p.life>0);
+  particles=
+    particles.filter(
+      p=>p.life>0
+    );
+
 }
 
-function updateArrow(){
+function drawParticles(){
 
-  if(!arrow.active) return;
+  for(let p of particles){
 
-  arrow.x+=arrow.vx;
-  arrow.y+=arrow.vy;
+    ctx.globalAlpha=p.life;
 
-  arrow.vy+=.18;
+    ctx.fillStyle="#20ff70";
 
-  let dx=arrow.x-target.x;
-  let dy=arrow.y-target.y;
-  let dist=Math.sqrt(dx*dx+dy*dy);
+    ctx.beginPath();
 
-  if(dist<target.r+8){
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      Math.PI*2
+    );
 
-    arrow.active=false;
+    ctx.fill();
 
-    let points=0;
-
-    if(dist<target.r*.11) points=100;
-    else if(dist<target.r*.25) points=60;
-    else if(dist<target.r*.48) points=40;
-    else if(dist<target.r*.72) points=25;
-    else if(dist<target.r) points=15;
-    else points=5;
-
-    score+=points;
-
-    if(score>best){
-      best=score;
-      localStorage.setItem("nipam_archery_best",best);
-    }
-
-    burst(arrow.x,arrow.y);
-
-    showMessage("+"+points+" 🎯");
-
-    arrows--;
-
-    updateUI();
-
-    setTimeout(nextArrow,700);
   }
 
-  if(
-    arrow.x>W+100 ||
-    arrow.x<-100 ||
-    arrow.y>H+100 ||
-    arrow.y<-100
-  ){
-    arrow.active=false;
-    arrows--;
-    updateUI();
-    setTimeout(nextArrow,400);
-  }
+  ctx.globalAlpha=1;
+
 }
 
-function nextArrow(){
 
-  if(arrows<=0){
-    showMessage("GAME OVER 🏹<br>Score: "+score);
-    document.getElementById("newGame").style.display="block";
-    return;
-  }
-
-  arrow.x=bow.x;
-  arrow.y=bow.y;
-  arrow.vx=0;
-  arrow.vy=0;
-  arrow.active=false;
-}
-
-function updateUI(){
-
-  document.getElementById("score").textContent=score;
-  document.getElementById("arrows").textContent=arrows;
-  document.getElementById("best").textContent=best;
-}
-
-function showMessage(text){
-
-  const m=document.getElementById("message");
-  m.innerHTML=text;
-
-  setTimeout(()=>{
-    if(m.innerHTML===text) m.innerHTML="";
-  },900);
-}
+/* =========================
+   SHOOT
+========================= */
 
 function shoot(){
 
-  if(arrow.active || arrows<=0) return;
+  if(
+    arrow.active ||
+    arrows<=0
+  ) return;
+
 
   let dx=bow.x-arrow.x;
   let dy=bow.y-arrow.y;
 
-  let dist=Math.sqrt(dx*dx+dy*dy);
+  let dist=Math.sqrt(
+    dx*dx+dy*dy
+  );
 
-  if(dist<15) return;
+  if(dist<18) return;
 
-  let strength=Math.min(dist,180);
 
-  arrow.vx=(dx/dist)*strength*.085;
-  arrow.vy=(dy/dist)*strength*.085;
+  let strength=Math.min(
+    dist,
+    220
+  );
+
+
+  /*
+    Reverse direction:
+    Pull arrow left/down/up,
+    then arrow flies right.
+  */
+
+  arrow.vx=
+    (dx/dist)*
+    strength*
+    .095;
+
+  arrow.vy=
+    (dy/dist)*
+    strength*
+    .095;
+
 
   arrow.active=true;
 
-  document.getElementById("power").style.height="0%";
+  document.getElementById(
+    "power"
+  ).style.height="0%";
+
 }
+
+
+/* =========================
+   UPDATE ARROW
+========================= */
+
+function updateArrow(){
+
+  if(!arrow.active)
+    return;
+
+
+  arrow.x+=arrow.vx;
+  arrow.y+=arrow.vy;
+
+
+  // Gravity
+
+  arrow.vy+=.16;
+
+
+  // Target collision
+
+  let dx=
+    arrow.x-target.x;
+
+  let dy=
+    arrow.y-target.y;
+
+  let dist=Math.sqrt(
+    dx*dx+dy*dy
+  );
+
+
+  if(
+    dist<
+    target.r+8
+  ){
+
+    arrow.active=false;
+
+
+    let points=5;
+
+
+    if(dist<target.r*.10)
+      points=100;
+
+    else if(dist<target.r*.25)
+      points=60;
+
+    else if(dist<target.r*.48)
+      points=40;
+
+    else if(dist<target.r*.72)
+      points=25;
+
+    else if(dist<target.r)
+      points=15;
+
+
+    score+=points;
+
+
+    if(score>best){
+
+      best=score;
+
+      localStorage.setItem(
+        "nipam_archery_best",
+        best
+      );
+
+    }
+
+
+    burst(
+      arrow.x,
+      arrow.y
+    );
+
+
+    showMessage(
+      "+"+points+" 🎯"
+    );
+
+
+    arrows--;
+
+    updateUI();
+
+
+    setTimeout(
+      nextArrow,
+      700
+    );
+
+    return;
+
+  }
+
+
+  // Miss
+
+  if(
+    arrow.x>W+150 ||
+    arrow.x<-150 ||
+    arrow.y>H+150 ||
+    arrow.y<-150
+  ){
+
+    arrow.active=false;
+
+    arrows--;
+
+    updateUI();
+
+    setTimeout(
+      nextArrow,
+      400
+    );
+
+  }
+
+}
+
+
+/* =========================
+   NEXT ARROW
+========================= */
+
+function nextArrow(){
+
+  if(arrows<=0){
+
+    showMessage(
+      "GAME OVER 🏹<br>Score: "+score
+    );
+
+    document.getElementById(
+      "newGame"
+    ).style.display="block";
+
+    return;
+
+  }
+
+
+  arrow.x=bow.x+5;
+  arrow.y=bow.y;
+
+  arrow.vx=0;
+  arrow.vy=0;
+
+  arrow.active=false;
+
+}
+
+
+/* =========================
+   UI
+========================= */
+
+function updateUI(){
+
+  document.getElementById(
+    "score"
+  ).textContent=score;
+
+  document.getElementById(
+    "arrows"
+  ).textContent=arrows;
+
+  document.getElementById(
+    "best"
+  ).textContent=best;
+
+}
+
+
+function showMessage(text){
+
+  const m=
+    document.getElementById(
+      "message"
+    );
+
+  m.innerHTML=text;
+
+  setTimeout(()=>{
+
+    if(m.innerHTML===text)
+      m.innerHTML="";
+
+  },900);
+
+}
+
+
+/* =========================
+   AIMING
+========================= */
 
 function pointerDown(x,y){
 
-  if(arrow.active || arrows<=0) return;
+  if(
+    arrow.active ||
+    arrows<=0
+  ) return;
+
 
   let dx=x-arrow.x;
   let dy=y-arrow.y;
 
-  if(Math.sqrt(dx*dx+dy*dy)<70){
+  let dist=Math.sqrt(
+    dx*dx+dy*dy
+  );
+
+
+  if(dist<80){
+
     aiming=true;
-    startX=x;
-    startY=y;
+
   }
+
 }
+
 
 function pointerMove(x,y){
 
-  if(!aiming || arrow.active) return;
+  if(
+    !aiming ||
+    arrow.active
+  ) return;
+
+
+  /*
+    Only allow pulling
+    mostly around the bow.
+  */
 
   let dx=x-bow.x;
   let dy=y-bow.y;
 
-  let dist=Math.sqrt(dx*dx+dy*dy);
+  let dist=Math.sqrt(
+    dx*dx+dy*dy
+  );
 
-  if(dist>180){
-    let a=Math.atan2(dy,dx);
-    dx=Math.cos(a)*180;
-    dy=Math.sin(a)*180;
+
+  if(dist>210){
+
+    let a=Math.atan2(
+      dy,
+      dx
+    );
+
+    dx=Math.cos(a)*210;
+    dy=Math.sin(a)*210;
+
   }
 
-  arrow.x=bow.x+dx;
-  arrow.y=bow.y+dy;
 
-  power=Math.min(100,Math.sqrt(dx*dx+dy*dy)/180*100);
+  /*
+    Keep arrow behind the bow.
+  */
 
-  document.getElementById("power").style.height=power+"%";
+  if(dx>10)
+    dx=10;
+
+
+  arrow.x=
+    bow.x+dx;
+
+  arrow.y=
+    bow.y+dy;
+
+
+  power=
+    Math.min(
+      100,
+      Math.sqrt(
+        dx*dx+
+        dy*dy
+      )/210*100
+    );
+
+
+  document.getElementById(
+    "power"
+  ).style.height=
+    power+"%";
+
 }
+
 
 function pointerUp(){
 
-  if(!aiming) return;
+  if(!aiming)
+    return;
+
 
   aiming=false;
+
   shoot();
+
 }
 
-// Mouse
-canvas.addEventListener("mousedown",e=>{
-  pointerDown(e.clientX,e.clientY);
-});
 
-canvas.addEventListener("mousemove",e=>{
-  pointerMove(e.clientX,e.clientY);
-});
+/* =========================
+   TOUCH
+========================= */
 
-canvas.addEventListener("mouseup",pointerUp);
+canvas.addEventListener(
+  "touchstart",
+  e=>{
 
-// Touch
-canvas.addEventListener("touchstart",e=>{
-  e.preventDefault();
-  let t=e.touches[0];
-  pointerDown(t.clientX,t.clientY);
-},{passive:false});
+    e.preventDefault();
 
-canvas.addEventListener("touchmove",e=>{
-  e.preventDefault();
-  let t=e.touches[0];
-  pointerMove(t.clientX,t.clientY);
-},{passive:false});
+    const t=e.touches[0];
 
-canvas.addEventListener("touchend",e=>{
-  e.preventDefault();
-  pointerUp();
-},{passive:false});
+    pointerDown(
+      t.clientX,
+      t.clientY
+    );
 
-document.getElementById("newGame").onclick=()=>{
+  },
+  {passive:false}
+);
+
+
+canvas.addEventListener(
+  "touchmove",
+  e=>{
+
+    e.preventDefault();
+
+    const t=e.touches[0];
+
+    pointerMove(
+      t.clientX,
+      t.clientY
+    );
+
+  },
+  {passive:false}
+);
+
+
+canvas.addEventListener(
+  "touchend",
+  e=>{
+
+    e.preventDefault();
+
+    pointerUp();
+
+  },
+  {passive:false}
+);
+
+
+/* =========================
+   MOUSE
+========================= */
+
+canvas.addEventListener(
+  "mousedown",
+  e=>{
+    pointerDown(
+      e.clientX,
+      e.clientY
+    );
+  }
+);
+
+
+canvas.addEventListener(
+  "mousemove",
+  e=>{
+    pointerMove(
+      e.clientX,
+      e.clientY
+    );
+  }
+);
+
+
+canvas.addEventListener(
+  "mouseup",
+  pointerUp
+);
+
+
+/* =========================
+   NEW GAME
+========================= */
+
+document.getElementById(
+  "newGame"
+).onclick=()=>{
 
   score=0;
   arrows=10;
 
-  document.getElementById("newGame").style.display="none";
-  document.getElementById("message").innerHTML="";
+  document.getElementById(
+    "newGame"
+  ).style.display="none";
 
-  resetPositions();
+  document.getElementById(
+    "message"
+  ).innerHTML="";
+
+  aiming=false;
+
+  arrow.active=false;
+
+  arrow.vx=0;
+  arrow.vy=0;
+
+  setPositions();
+
   updateUI();
+
 };
+
+
+/* =========================
+   GAME LOOP
+========================= */
 
 function loop(){
 
-  ctx.clearRect(0,0,W,H);
+  ctx.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
+
 
   drawBackground();
+
   drawTarget();
+
   drawBow();
+
   drawArrow();
+
   drawParticles();
 
+
   updateArrow();
+
   updateParticles();
 
-  requestAnimationFrame(loop);
+
+  requestAnimationFrame(
+    loop
+  );
+
 }
 
+
 updateUI();
+
 loop();
+
 </script>
 
 </body>
