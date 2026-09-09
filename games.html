@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NipamVerse — Games</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#050807;
+  color:white;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:300px;
+  height:300px;
+  background:#00ff66;
+  filter:blur(130px);
+  opacity:.12;
+  top:-100px;
+  left:-100px;
+  z-index:-1;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  width:300px;
+  height:300px;
+  background:#00ff66;
+  filter:blur(130px);
+  opacity:.10;
+  bottom:-100px;
+  right:-100px;
+  z-index:-1;
+}
+
+nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(5,8,7,.9);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #163b27;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+  color:#00ff66;
+  text-shadow:0 0 12px #00ff66;
+}
+
+.home{
+  text-decoration:none;
+  color:white;
+  border:1px solid #00ff66;
+  padding:9px 16px;
+  border-radius:20px;
+  transition:.3s;
+}
+
+.home:hover{
+  background:#00ff66;
+  color:#001b0b;
+  box-shadow:0 0 18px #00ff66;
+}
+
+header{
+  text-align:center;
+  padding:60px 20px 35px;
+}
+
+header h1{
+  font-size:48px;
+  color:#00ff66;
+  text-shadow:0 0 20px #00ff66;
+  margin-bottom:10px;
+}
+
+header p{
+  color:#aaa;
+  font-size:17px;
+}
+
+.games{
+  width:92%;
+  max-width:1000px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:20px;
+  padding-bottom:50px;
+}
+
+.game{
+  background:rgba(10,18,13,.9);
+  border:1px solid #174a2b;
+  border-radius:20px;
+  padding:25px;
+  text-align:center;
+  transition:.3s;
+  box-shadow:0 0 15px rgba(0,255,102,.04);
+}
+
+.game:hover{
+  transform:translateY(-7px);
+  border-color:#00ff66;
+  box-shadow:0 0 25px rgba(0,255,102,.22);
+}
+
+.icon{
+  font-size:55px;
+  margin-bottom:15px;
+}
+
+.game h2{
+  color:#00ff66;
+  margin-bottom:10px;
+}
+
+.game p{
+  color:#aaa;
+  min-height:45px;
+  margin-bottom:20px;
+}
+
+.play{
+  display:inline-block;
+  text-decoration:none;
+  background:#00ff66;
+  color:#001b0b;
+  font-weight:bold;
+  padding:11px 25px;
+  border-radius:25px;
+  transition:.3s;
+}
+
+.play:hover{
+  box-shadow:0 0 20px #00ff66;
+  transform:scale(1.05);
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#777;
+  border-top:1px solid #12301f;
+}
+
+@media(max-width:500px){
+  header h1{
+    font-size:38px;
+  }
+
+  .games{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">NipamVerse</div>
+  <a class="home" href="index.html">🏠 Home</a>
+</nav>
+
+<header>
+  <h1>🎮 Games</h1>
+  <p>Play the games created for NipamVerse 🚀</p>
+</header>
+
+<section class="games">
+
+  <div class="game">
+    <div class="icon">🎯</div>
+    <h2>Dart Game</h2>
+    <p>Test your aim and hit the target!</p>
+    <a class="play" href="dart.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🏹</div>
+    <h2>Archery Game</h2>
+    <p>Aim carefully and shoot the target!</p>
+    <a class="play" href="archery.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🏎️</div>
+    <h2>Car Racing</h2>
+    <p>Race your car and avoid obstacles!</p>
+    <a class="play" href="car-racing.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🏎️</div>
+    <h2>Metro Dash 3D</h2>
+    <p>Run through the city, collect coins and dodge trains!</p>
+    <a class="play" href="metro-dash.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🦖</div>
+    <h2>Dino Dash</h2>
+    <p>Jump over obstacles and beat your high score!</p>
+    <a class="play" href="dino-dash.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🐦</div>
+    <h2>Sky Hopper</h2>
+    <p>Fly through the pipes and survive as long as possible!</p>
+    <a class="play" href="sky-hopper.html">PLAY</a>
+  </div>
+
+  <div class="game">
+    <div class="icon">🎱</div>
+    <h2>Carrom Pool</h2>
+    <p>Strike the coins and become the carrom champion!</p>
+    <a class="play" href="carrom.html">PLAY</a>
+  </div>
+
+</section>
+
+<footer>
+  © 2026 NipamVerse • Learn • Play • Create 🚀
+</footer>
+
+</body>
+  </html>
