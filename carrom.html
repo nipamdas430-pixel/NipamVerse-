@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Carrom Pool — NipamVerse</title>
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+ margin:0;
+ background:#030603;
+ color:white;
+ font-family:Arial,sans-serif;
+ text-align:center;
+ overflow:hidden;
+}
+
+h1{
+ margin:12px 0 4px;
+ color:#39ff88;
+ text-shadow:0 0 15px #39ff88;
+}
+
+#info{
+ display:flex;
+ justify-content:center;
+ gap:12px;
+ margin-bottom:8px;
+}
+
+.box{
+ background:#09130d;
+ border:1px solid #39ff88;
+ border-radius:10px;
+ padding:6px 14px;
+ min-width:90px;
+}
+
+.small{font-size:11px;color:#8cffb8}
+.big{font-size:19px;font-weight:bold}
+
+#wrap{
+ position:relative;
+ width:min(94vw,600px);
+ aspect-ratio:1;
+ margin:auto;
+}
+
+canvas{
+ width:100%;
+ height:100%;
+ border-radius:18px;
+ box-shadow:0 0 30px rgba(57,255,136,.25);
+ touch-action:none;
+}
+
+#controls{
+ margin-top:8px;
+ display:flex;
+ justify-content:center;
+ gap:10px;
+}
+
+button{
+ background:#39ff88;
+ color:#001508;
+ border:0;
+ border-radius:12px;
+ padding:11px 18px;
+ font-weight:bold;
+ font-size:15px;
+}
+
+button:active{transform:scale(.95)}
+
+#hint{
+ color:#8cae96;
+ font-size:12px;
+ margin-top:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>CARROM POOL</h1>
+
+<div id="info">
+ <div class="box">
+  <div class="small">PLAYER</div>
+  <div class="big" id="score">0</div>
+ </div>
+
+ <div class="box">
+  <div class="small">BEST</div>
+  <div class="big" id="best">0</div>
+ </div>
+</div>
+
+<div id="wrap">
+<canvas id="canvas"></canvas>
+</div>
+
+<div id="controls">
+<button onclick="moveStriker(-1)">◀ LEFT</button>
+<button onclick="newGame()">NEW GAME</button>
+<button onclick="moveStriker(1)">RIGHT ▶</button>
+</div>
+
+<div id="hint">
+Drag the striker backward and release to shoot 🎯
+</div>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let S=600;
+canvas.width=S;
+canvas.height=S;
+
+const board={
+ x:25,
+ y:25,
+ size:550
+};
+
+const pocketR=23;
+const coinR=10;
+const strikerR=14;
+
+let score=0;
+let best=Number(localStorage.getItem("nipam_carrom_best")||0);
+
+document.getElementById("best").textContent=best;
+
+let striker;
+let coins=[];
+let queen;
+let dragging=false;
+let moving=false;
+let aimX=0;
+let aimY=0;
+
+const pockets=[
+ {x:board.x+18,y:board.y+18},
+ {x:board.x+board.size-18,y:board.y+18},
+ {x:board.x+18,y:board.y+board.size-18},
+ {x:board.x+board.size-18,y:board.y+board.size-18}
+];
+
+function newGame(){
+
+ score=0;
+
+ document.getElementById("score").textContent=score;
+
+ striker={
+  x:S/2,
+  y:board.y+board.size-65,
+  vx:0,
+  vy:0
+ };
+
+ coins=[];
+ queen={
+  x:S/2,
+  y:S/2,
+  vx:0,
+  vy:0,
+  active:true
+ };
+
+ // central formation
+ for(let row=-2;row<=2;row++){
+
+  for(let col=-2;col<=2;col++){
+
+   if(Math.abs(row)+Math.abs(col)<=2){
+
+    if(row===0 && col===0) continue;
+
+    coins.push({
+     x:S/2+col*23,
+     y:S/2+row*23,
+     vx:0,
+     vy:0,
+     type:(coins.length%2===0)?"white":"black",
+     active:true
+    });
+
+   }
+  }
+ }
+
+ moving=false;
+ dragging=false;
+}
+
+function moveStriker(dir){
+
+ if(moving || dragging) return;
+
+ striker.x+=dir*25;
+
+ const min=board.x+80;
+ const max=board.x+board.size-80;
+
+ striker.x=Math.max(min,Math.min(max,striker.x));
+}
+
+function drawBoard(){
+
+ // outer
+ ctx.fillStyle="#08200f";
+ ctx.fillRect(0,0,S,S);
+
+ // board
+ ctx.fillStyle="#c9914e";
+ ctx.fillRect(
+  board.x,
+  board.y,
+  board.size,
+  board.size
+ );
+
+ // inner wood
+ ctx.strokeStyle="#4c2a12";
+ ctx.lineWidth=8;
+ ctx.strokeRect(
+  board.x+12,
+  board.y+12,
+  board.size-24,
+  board.size-24
+ );
+
+ // playing surface
+ ctx.fillStyle="#f1c887";
+ ctx.fillRect(
+  board.x+28,
+  board.y+28,
+  board.size-56,
+  board.size-56
+ );
+
+ // center circle
+ ctx.strokeStyle="#8b4e20";
+ ctx.lineWidth=3;
+
+ ctx.beginPath();
+ ctx.arc(S/2,S/2,45,0,Math.PI*2);
+ ctx.stroke();
+
+ ctx.beginPath();
+ ctx.arc(S/2,S/2,8,0,Math.PI*2);
+ ctx.stroke();
+
+ // diagonal lines
+ ctx.beginPath();
+ ctx.moveTo(board.x+65,board.y+65);
+ ctx.lineTo(board.x+board.size-65,board.y+board.size-65);
+
+ ctx.moveTo(board.x+board.size-65,board.y+65);
+ ctx.lineTo(board.x+65,board.y+board.size-65);
+ ctx.stroke();
+
+ // pockets
+ for(const p of pockets){
+
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,pocketR,0,Math.PI*2);
+  ctx.fillStyle="#090909";
+  ctx.fill();
+
+  ctx.strokeStyle="#5b3215";
+  ctx.lineWidth=5;
+  ctx.stroke();
+ }
+}
+
+function drawCoin(c){
+
+ if(!c.active)return;
+
+ ctx.beginPath();
+ ctx.arc(c.x,c.y,coinR,0,Math.PI*2);
+
+ ctx.fillStyle=c.type==="white"
+  ?"#f7ead0"
+  :"#181818";
+
+ ctx.fill();
+
+ ctx.strokeStyle=c.type==="white"
+  ?"#9d7545"
+  :"#555";
+
+ ctx.lineWidth=2;
+ ctx.stroke();
+
+ // shine
+ ctx.beginPath();
+ ctx.arc(
+  c.x-3,
+  c.y-3,
+  2,
+  0,
+  Math.PI*2
+ );
+
+ ctx.fillStyle="rgba(255,255,255,.5)";
+ ctx.fill();
+}
+
+function drawQueen(){
+
+ if(!queen.active)return;
+
+ ctx.beginPath();
+ ctx.arc(queen.x,queen.y,coinR+1,0,Math.PI*2);
+ ctx.fillStyle="#e51f42";
+ ctx.fill();
+
+ ctx.strokeStyle="#7b1023";
+ ctx.lineWidth=2;
+ ctx.stroke();
+}
+
+function drawStriker(){
+
+ ctx.beginPath();
+ ctx.arc(
+  striker.x,
+  striker.y,
+  strikerR,
+  0,
+  Math.PI*2
+ );
+
+ ctx.fillStyle="#dfffea";
+ ctx.fill();
+
+ ctx.strokeStyle="#147a40";
+ ctx.lineWidth=3;
+ ctx.stroke();
+
+ ctx.beginPath();
+ ctx.arc(
+  striker.x,
+  striker.y,
+  6,
+  0,
+  Math.PI*2
+ );
+
+ ctx.strokeStyle="#39ff88";
+ ctx.stroke();
+
+ if(dragging){
+
+  ctx.beginPath();
+  ctx.moveTo(striker.x,striker.y);
+  ctx.lineTo(aimX,aimY);
+
+  ctx.strokeStyle="#39ff88";
+  ctx.lineWidth=3;
+  ctx.setLineDash([8,6]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+ }
+}
+
+function draw(){
+
+ ctx.clearRect(0,0,S,S);
+
+ drawBoard();
+
+ for(const c of coins)drawCoin(c);
+
+ drawQueen();
+
+ drawStriker();
+}
+
+function distance(a,b){
+
+ return Math.hypot(
+  a.x-b.x,
+  a.y-b.y
+ );
+}
+
+function pocketCheck(obj){
+
+ for(const p of pockets){
+
+  if(distance(obj,p)<pocketR){
+
+   return true;
+  }
+ }
+
+ return false;
+}
+
+function removeCoin(c){
+
+ if(!c.active)return;
+
+ c.active=false;
+
+ score+=c.type==="black"?10:10;
+
+ document.getElementById("score").textContent=score;
+
+ if(score>best){
+
+  best=score;
+
+  localStorage.setItem(
+   "nipam_carrom_best",
+   best
+  );
+
+  document.getElementById("best").textContent=best;
+ }
+}
+
+function physics(obj){
+
+ obj.x+=obj.vx;
+ obj.y+=obj.vy;
+
+ obj.vx*=.985;
+ obj.vy*=.985;
+
+ if(Math.abs(obj.vx)<.03)obj.vx=0;
+ if(Math.abs(obj.vy)<.03)obj.vy=0;
+
+ const left=board.x+43;
+ const right=board.x+board.size-43;
+ const top=board.y+43;
+ const bottom=board.y+board.size-43;
+
+ if(obj.x<left){
+
+  obj.x=left;
+  obj.vx=Math.abs(obj.vx)*.8;
+ }
+
+ if(obj.x>right){
+
+  obj.x=right;
+  obj.vx=-Math.abs(obj.vx)*.8;
+ }
+
+ if(obj.y<top){
+
+  obj.y=top;
+  obj.vy=Math.abs(obj.vy)*.8;
+ }
+
+ if(obj.y>bottom){
+
+  obj.y=bottom;
+  obj.vy=-Math.abs(obj.vy)*.8;
+ }
+}
+
+function collide(a,b,r1,r2){
+
+ if(!a.active || !b.active)return;
+
+ const dx=b.x-a.x;
+ const dy=b.y-a.y;
+
+ const d=Math.hypot(dx,dy);
+
+ const min=r1+r2;
+
+ if(d>0 && d<min){
+
+  const nx=dx/d;
+  const ny=dy/d;
+
+  const overlap=min-d;
+
+  a.x-=nx*overlap/2;
+  a.y-=ny*overlap/2;
+
+  b.x+=nx*overlap/2;
+  b.y+=ny*overlap/2;
+
+  const rel=
+   (a.vx-b.vx)*nx+
+   (a.vy-b.vy)*ny;
+
+  if(rel>0)return;
+
+  const impulse=-rel*.9;
+
+  a.vx+=impulse*nx;
+  a.vy+=impulse*ny;
+
+  b.vx-=impulse*nx;
+  b.vy-=impulse*ny;
+ }
+}
+
+function update(){
+
+ if(!moving)return;
+
+ physics(striker);
+
+ for(const c of coins){
+
+  if(!c.active)continue;
+
+  physics(c);
+
+  collide(
+   striker,
+   c,
+   strikerR,
+   coinR
+  );
+
+  for(const d of coins){
+
+   if(c===d || !d.active)continue;
+
+   collide(
+    c,
+    d,
+    coinR,
+    coinR
+   );
+  }
+ }
+
+ if(queen.active){
+
+  physics(queen);
+
+  collide(
+   striker,
+   queen,
+   strikerR,
+   coinR
+  );
+
+  for(const c of coins){
+
+   if(c.active){
+
+    collide(
+     queen,
+     c,
+     coinR,
+     coinR
+    );
+   }
+  }
+ }
+
+ // pockets
+ for(const c of coins){
+
+  if(c.active && pocketCheck(c)){
+
+   removeCoin(c);
+   c.vx=0;
+   c.vy=0;
+  }
+ }
+
+ if(
+  queen.active &&
+  pocketCheck(queen)
+ ){
+
+  queen.active=false;
+  score+=25;
+
+  document.getElementById("score").textContent=score;
+ }
+
+ if(pocketCheck(striker)){
+
+  striker.x=S/2;
+  striker.y=board.y+board.size-65;
+  striker.vx=0;
+  striker.vy=0;
+ }
+
+ if(
+  Math.abs(striker.vx)<.04 &&
+  Math.abs(striker.vy)<.04
+ ){
+
+  striker.vx=0;
+  striker.vy=0;
+
+  moving=false;
+ }
+}
+
+function loop(){
+
+ update();
+ draw();
+
+ requestAnimationFrame(loop);
+}
+
+function pointerPosition(e){
+
+ const rect=canvas.getBoundingClientRect();
+
+ return {
+  x:(e.clientX-rect.left)*
+    (S/rect.width),
+
+  y:(e.clientY-rect.top)*
+    (S/rect.height)
+ };
+}
+
+canvas.addEventListener(
+ "pointerdown",
+ e=>{
+
+  if(moving)return;
+
+  const p=pointerPosition(e);
+
+  if(
+   Math.hypot(
+    p.x-striker.x,
+    p.y-striker.y
+   )<35
+  ){
+
+   dragging=true;
+
+   aimX=p.x;
+   aimY=p.y;
+
+   canvas.setPointerCapture(e.pointerId);
+  }
+ }
+);
+
+canvas.addEventListener(
+ "pointermove",
+ e=>{
+
+  if(!dragging)return;
+
+  const p=pointerPosition(e);
+
+  aimX=p.x;
+  aimY=p.y;
+
+  const dx=striker.x-p.x;
+  const dy=striker.y-p.y;
+
+  const maxPull=110;
+
+  const len=Math.hypot(dx,dy);
+
+  if(len>maxPull){
+
+   aimX=
+    striker.x-
+    dx/len*maxPull;
+
+   aimY=
+    striker.y-
+    dy/len*maxPull;
+  }
+ }
+);
+
+canvas.addEventListener(
+ "pointerup",
+ e=>{
+
+  if(!dragging)return;
+
+  dragging=false;
+
+  const dx=striker.x-aimX;
+  const dy=striker.y-aimY;
+
+  const power=Math.min(
+   18,
+   Math.hypot(dx,dy)/7
+  );
+
+  if(power>1){
+
+   const len=Math.hypot(dx,dy);
+
+   striker.vx=
+    dx/len*power;
+
+   striker.vy=
+    dy/len*power;
+
+   moving=true;
+  }
+ });
+
+newGame();
+loop();
+</script>
+
+</body>
+  </html>
