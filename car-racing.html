@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>NipamVerse — Car Racing</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050807;
+  font-family:Arial,sans-serif;
+  touch-action:none;
+}
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+}
+#ui{
+  position:fixed;
+  top:12px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  z-index:5;
+  pointer-events:none;
+}
+.box{
+  min-width:90px;
+  padding:8px 12px;
+  border:1px solid #00ff88;
+  border-radius:12px;
+  background:rgba(0,15,10,.75);
+  color:#fff;
+  text-align:center;
+  box-shadow:0 0 12px rgba(0,255,136,.35);
+}
+.box span{
+  display:block;
+  color:#00ff88;
+  font-size:12px;
+}
+.box b{
+  font-size:19px;
+}
+#controls{
+  position:fixed;
+  bottom:18px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
+  z-index:6;
+}
+.control{
+  width:78px;
+  height:64px;
+  border-radius:18px;
+  border:2px solid #00ff88;
+  background:rgba(0,20,12,.78);
+  color:#00ff88;
+  font-size:32px;
+  box-shadow:0 0 15px rgba(0,255,136,.35);
+}
+.control:active{
+  transform:scale(.94);
+  background:#003d27;
+}
+#nitro{
+  position:fixed;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  width:95px;
+  height:52px;
+  border-radius:15px;
+  border:2px solid #00ff88;
+  background:rgba(0,20,12,.85);
+  color:#00ff88;
+  font-weight:bold;
+  box-shadow:0 0 15px rgba(0,255,136,.4);
+}
+#startScreen,#gameOver{
+  position:fixed;
+  inset:0;
+  background:rgba(0,5,3,.88);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+.panel{
+  width:min(90%,380px);
+  padding:28px;
+  text-align:center;
+  border:1px solid #00ff88;
+  border-radius:22px;
+  background:#07110d;
+  box-shadow:0 0 35px rgba(0,255,136,.25);
+  color:white;
+}
+.panel h1{
+  margin:0 0 10px;
+  color:#00ff88;
+  text-shadow:0 0 12px #00ff88;
+}
+.panel p{
+  color:#c7ddd3;
+}
+.btn{
+  margin-top:15px;
+  padding:13px 25px;
+  border:0;
+  border-radius:12px;
+  background:#00ff88;
+  color:#00150b;
+  font-weight:bold;
+  font-size:16px;
+}
+#gameOver{display:none}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="ui">
+  <div class="box">
+    <span>SCORE</span>
+    <b id="score">0</b>
+  </div>
+  <div class="box">
+    <span>SPEED</span>
+    <b id="speed">0</b>
+  </div>
+  <div class="box">
+    <span>BEST</span>
+    <b id="best">0</b>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="control" id="left">◀</button>
+  <button id="nitro">NITRO 🚀</button>
+  <button class="control" id="right">▶</button>
+</div>
+
+<div id="startScreen">
+  <div class="panel">
+    <h1>🏎️ CAR RACING</h1>
+    <p>Race through the highway!</p>
+    <p>Use ◀ ▶ to steer your car.</p>
+    <button class="btn" onclick="startGame()">START RACE</button>
+  </div>
+</div>
+
+<div id="gameOver">
+  <div class="panel">
+    <h1>💥 CRASH!</h1>
+    <p>Your Score</p>
+    <h2 id="finalScore">0</h2>
+    <p id="newBest"></p>
+    <button class="btn" onclick="restartGame()">RACE AGAIN</button>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+let running=false;
+let gameOver=false;
+
+let score=0;
+let speed=7;
+let distance=0;
+
+let best=Number(localStorage.getItem("nipam_racing_best")||0);
+
+let player={
+  x:0,
+  y:0,
+  w:45,
+  h:82,
+  lane:1
+};
+
+let enemies=[];
+let particles=[];
+
+let roadOffset=0;
+let spawnTimer=0;
+
+let leftPressed=false;
+let rightPressed=false;
+let nitroPressed=false;
+
+document.getElementById("best").textContent=best;
+
+function resize(){
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
+
+  player.w=Math.max(38,Math.min(52,W*.115));
+  player.h=player.w*1.8;
+
+  player.y=H*.76;
+
+  if(!running){
+    player.x=roadCenter()+laneWidth()*1;
+  }
+}
+
+window.addEventListener("resize",resize);
+resize();
+
+function roadWidth(){
+  return Math.min(W*.78,520);
+}
+
+function roadLeft(){
+  return (W-roadWidth())/2;
+}
+
+function roadCenter(){
+  return W/2;
+}
+
+function laneWidth(){
+  return roadWidth()/3;
+}
+
+function laneX(lane){
+  return roadLeft()+laneWidth()*lane+laneWidth()/2;
+}
+
+function drawBackground(){
+  // sky
+  let sky=ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,"#071b16");
+  sky.addColorStop(.5,"#0a2a1e");
+  sky.addColorStop(1,"#07110d");
+
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,H);
+
+  // moon
+  ctx.fillStyle="#d8fff0";
+  ctx.beginPath();
+  ctx.arc(W*.82,H*.14,28,0,Math.PI*2);
+  ctx.fill();
+
+  // distant trees
+  for(let x=0;x<W;x+=55){
+    let th=35+(x*13%45);
+    ctx.fillStyle="#06130e";
+    ctx.beginPath();
+    ctx.moveTo(x,H*.48);
+    ctx.lineTo(x+25,H*.48-th);
+    ctx.lineTo(x+50,H*.48);
+    ctx.fill();
+  }
+}
+
+function drawRoad(){
+  let rw=roadWidth();
+  let rl=roadLeft();
+
+  // grass
+  ctx.fillStyle="#082017";
+  ctx.fillRect(0,0,W,H);
+
+  // road
+  ctx.fillStyle="#202522";
+  ctx.fillRect(rl,0,rw,H);
+
+  // road edges
+  ctx.fillStyle="#00b866";
+  ctx.fillRect(rl,0,5,H);
+  ctx.fillRect(rl+rw-5,0,5,H);
+
+  // shoulder lines
+  ctx.strokeStyle="#b9c7bf";
+  ctx.lineWidth=3;
+
+  ctx.beginPath();
+  ctx.moveTo(rl+18,0);
+  ctx.lineTo(rl+18,H);
+  ctx.moveTo(rl+rw-18,0);
+  ctx.lineTo(rl+rw-18,H);
+  ctx.stroke();
+
+  // lane markings
+  ctx.strokeStyle="#d8dedb";
+  ctx.lineWidth=4;
+  ctx.setLineDash([32,28]);
+  ctx.lineDashOffset=-roadOffset;
+
+  for(let i=1;i<3;i++){
+    let x=rl+laneWidth()*i;
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,H);
+    ctx.stroke();
+  }
+
+  ctx.setLineDash([]);
+}
+
+function drawCar(x,y,w,h,type="player"){
+  ctx.save();
+  ctx.translate(x,y);
+
+  // shadow
+  ctx.fillStyle="rgba(0,0,0,.45)";
+  ctx.beginPath();
+  ctx.ellipse(0,h*.43,w*.65,10,0,0,Math.PI*2);
+  ctx.fill();
+
+  // body
+  let bodyColor=type==="player" ? "#00ff88" : "#ff394d";
+
+  ctx.fillStyle=bodyColor;
+  ctx.beginPath();
+  ctx.roundRect(-w/2,-h/2,w,h,9);
+  ctx.fill();
+
+  // black lower bumper
+  ctx.fillStyle="#111";
+  ctx.fillRect(-w*.43,h*.30,w*.86,h*.12);
+
+  // windows
+  ctx.fillStyle="#07161b";
+
+  ctx.beginPath();
+  ctx.moveTo(-w*.36,-h*.32);
+  ctx.lineTo(w*.36,-h*.32);
+  ctx.lineTo(w*.27,-h*.04);
+  ctx.lineTo(-w*.27,-h*.04);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-w*.27,h*.02);
+  ctx.lineTo(w*.27,h*.02);
+  ctx.lineTo(w*.36,h*.27);
+  ctx.lineTo(-w*.36,h*.27);
+  ctx.closePath();
+  ctx.fill();
+
+  // lights
+  ctx.fillStyle="#fff";
+  ctx.fillRect(-w*.34,-h*.44,w*.18,h*.07);
+  ctx.fillRect(w*.16,-h*.44,w*.18,h*.07);
+
+  ctx.fillStyle="#ff3030";
+  ctx.fillRect(-w*.34,h*.36,w*.18,h*.07);
+  ctx.fillRect(w*.16,h*.36,w*.18,h*.07);
+
+  // center stripe
+  if(type==="player"){
+    ctx.fillStyle="rgba(255,255,255,.8)";
+    ctx.fillRect(-2,-h*.47,4,h*.94);
+  }
+
+  ctx.restore();
+}
+
+function spawnEnemy(){
+  let lane=Math.floor(Math.random()*3);
+
+  enemies.push({
+    lane:lane,
+    x:laneX(lane),
+    y:-120,
+    w:player.w,
+    h:player.h,
+    speed:2.5+Math.random()*3
+  });
+}
+
+function updatePlayer(){
+  let move=7;
+
+  if(leftPressed) player.x-=move;
+  if(rightPressed) player.x+=move;
+
+  let minX=roadLeft()+laneWidth()*.18;
+  let maxX=roadLeft()+roadWidth()-laneWidth()*.18;
+
+  player.x=Math.max(minX,Math.min(maxX,player.x));
+}
+
+function updateEnemies(){
+  for(let i=enemies.length-1;i>=0;i--){
+    let e=enemies[i];
+
+    e.y+=speed*.55+e.speed;
+
+    if(e.y>H+150){
+      enemies.splice(i,1);
+      score+=10;
+      continue;
+    }
+
+    if(collision(player,e)){
+      crash();
+      return;
+    }
+  }
+}
+
+function collision(a,b){
+  return Math.abs(a.x-b.x)<(a.w+b.w)*.42 &&
+         Math.abs(a.y-b.y)<(a.h+b.h)*.42;
+}
+
+function createParticles(){
+  for(let i=0;i<35;i++){
+    particles.push({
+      x:player.x+(Math.random()-.5)*40,
+      y:player.y+(Math.random()-.5)*70,
+      vx:(Math.random()-.5)*7,
+      vy:(Math.random()-.5)*7,
+      life:1,
+      size:2+Math.random()*5
+    });
+  }
+}
+
+function updateParticles(){
+  for(let i=particles.length-1;i>=0;i--){
+    let p=particles[i];
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=.15;
+    p.life-=.025;
+
+    if(p.life<=0) particles.splice(i,1);
+  }
+}
+
+function drawParticles(){
+  for(let p of particles){
+    ctx.globalAlpha=p.life;
+    ctx.fillStyle="#00ff88";
+    ctx.fillRect(p.x,p.y,p.size,p.size);
+  }
+  ctx.globalAlpha=1;
+}
+
+function update(){
+  if(!running)return;
+
+  updatePlayer();
+  updateEnemies();
+  updateParticles();
+
+  if(nitroPressed){
+    speed=Math.min(16,speed+.08);
+    score+=.15;
+  }else{
+    speed=Math.min(12,speed+.002);
+  }
+
+  distance+=speed;
+  score+=.035;
+
+  roadOffset+=speed*2;
+
+  spawnTimer--;
+
+  let spawnRate=Math.max(32,85-speed*4);
+
+  if(spawnTimer<=0){
+    spawnEnemy();
+    spawnTimer=spawnRate;
+  }
+
+  document.getElementById("score").textContent=Math.floor(score);
+  document.getElementById("speed").textContent=Math.floor(speed*18)+" km/h";
+}
+
+function draw(){
+  drawBackground();
+  drawRoad();
+
+  for(let e of enemies){
+    drawCar(e.x,e.y,e.w,e.h,"enemy");
+  }
+
+  drawCar(player.x,player.y,player.w,player.h,"player");
+
+  drawParticles();
+}
+
+function loop(){
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function startGame(){
+  document.getElementById("startScreen").style.display="none";
+
+  running=true;
+  gameOver=false;
+  score=0;
+  speed=7;
+  enemies=[];
+  particles=[];
+  spawnTimer=40;
+
+  player.x=laneX(1);
+  player.y=H*.76;
+}
+
+function crash(){
+  if(!running)return;
+
+  running=false;
+  gameOver=true;
+
+  createParticles();
+
+  let final=Math.floor(score);
+
+  document.getElementById("finalScore").textContent=final;
+
+  if(final>best){
+    best=final;
+    localStorage.setItem("nipam_racing_best",best);
+    document.getElementById("best").textContent=best;
+    document.getElementById("newBest").textContent="🏆 NEW BEST!";
+  }else{
+    document.getElementById("newBest").textContent="Best: "+best;
+  }
+
+  setTimeout(()=>{
+    document.getElementById("gameOver").style.display="flex";
+  },350);
+}
+
+function restartGame(){
+  document.getElementById("gameOver").style.display="none";
+  startGame();
+}
+
+// Keyboard
+window.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")
+    leftPressed=true;
+
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")
+    rightPressed=true;
+
+  if(e.key===" ")
+    nitroPressed=true;
+});
+
+window.addEventListener("keyup",e=>{
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")
+    leftPressed=false;
+
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")
+    rightPressed=false;
+
+  if(e.key===" ")
+    nitroPressed=false;
+});
+
+// Mobile buttons
+function holdButton(btn,down,up){
+  btn.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    down();
+  });
+
+  btn.addEventListener("pointerup",e=>{
+    e.preventDefault();
+    up();
+  });
+
+  btn.addEventListener("pointercancel",up);
+  btn.addEventListener("pointerleave",up);
+}
+
+holdButton(
+  document.getElementById("left"),
+  ()=>leftPressed=true,
+  ()=>leftPressed=false
+);
+
+holdButton(
+  document.getElementById("right"),
+  ()=>rightPressed=true,
+  ()=>rightPressed=false
+);
+
+holdButton(
+  document.getElementById("nitro"),
+  ()=>nitroPressed=true,
+  ()=>nitroPressed=false
+);
+
+// Swipe steering
+let touchStartX=null;
+
+canvas.addEventListener("touchstart",e=>{
+  if(e.touches.length){
+    touchStartX=e.touches[0].clientX;
+  }
+},{passive:true});
+
+canvas.addEventListener("touchmove",e=>{
+  if(touchStartX===null)return;
+
+  let x=e.touches[0].clientX;
+  let dx=x-touchStartX;
+
+  if(Math.abs(dx)>15){
+    if(dx<0){
+      player.x-=Math.min(10,Math.abs(dx)/5);
+    }else{
+      player.x+=Math.min(10,Math.abs(dx)/5);
+    }
+
+    touchStartX=x;
+  }
+},{passive:true});
+
+canvas.addEventListener("touchend",()=>{
+  touchStartX=null;
+});
+
+loop();
+</script>
+
+</body>
+  </html>
