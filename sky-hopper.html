@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sky Hopper — NipamVerse</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050805;
+  font-family:Arial,sans-serif;
+  color:white;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#game{
+  position:relative;
+  width:100%;
+  max-width:520px;
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(#06130b,#0b2415 65%,#071009);
+}
+
+canvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+#hud{
+  position:absolute;
+  top:15px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  pointer-events:none;
+  z-index:5;
+}
+
+.box{
+  background:rgba(0,0,0,.45);
+  border:1px solid #20ff78;
+  box-shadow:0 0 12px rgba(32,255,120,.3);
+  border-radius:12px;
+  padding:7px 14px;
+  text-align:center;
+  min-width:90px;
+}
+
+.label{
+  font-size:11px;
+  color:#8cffb8;
+}
+
+.value{
+  font-size:21px;
+  font-weight:bold;
+}
+
+#message{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  z-index:10;
+  background:rgba(0,0,0,.25);
+}
+
+.panel{
+  width:82%;
+  padding:28px 20px;
+  border-radius:22px;
+  background:rgba(3,12,7,.88);
+  border:1px solid #20ff78;
+  box-shadow:0 0 30px rgba(32,255,120,.25);
+}
+
+h1{
+  margin:0 0 8px;
+  font-size:34px;
+  color:#39ff88;
+  text-shadow:0 0 15px rgba(57,255,136,.7);
+}
+
+p{
+  color:#b8d8c2;
+  line-height:1.5;
+}
+
+button{
+  border:0;
+  border-radius:14px;
+  padding:13px 25px;
+  font-size:16px;
+  font-weight:bold;
+  color:#001508;
+  background:#39ff88;
+  box-shadow:0 0 18px rgba(57,255,136,.4);
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+#hint{
+  font-size:13px;
+  color:#86aa91;
+  margin-top:13px;
+}
+
+.hidden{
+  display:none!important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <canvas id="canvas"></canvas>
+
+  <div id="hud">
+    <div class="box">
+      <div class="label">SCORE</div>
+      <div class="value" id="score">0</div>
+    </div>
+
+    <div class="box">
+      <div class="label">BEST</div>
+      <div class="value" id="best">0</div>
+    </div>
+  </div>
+
+  <div id="message">
+    <div class="panel">
+      <h1 id="title">SKY HOPPER</h1>
+      <p id="text">
+        Tap the screen to fly through the gaps!
+      </p>
+
+      <button id="startBtn">START GAME</button>
+
+      <div id="hint">
+        Tap / Click / Space = Flap
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
+
+const message = document.getElementById("message");
+const title = document.getElementById("title");
+const text = document.getElementById("text");
+const startBtn = document.getElementById("startBtn");
+
+let W,H;
+let running=false;
+let gameOver=false;
+
+let score=0;
+let best=Number(localStorage.getItem("nipam_sky_best") || 0);
+
+bestEl.textContent=best;
+
+const bird={
+  x:0,
+  y:0,
+  r:17,
+  vy:0,
+  rotation:0
+};
+
+let pipes=[];
+let particles=[];
+let stars=[];
+
+let speed=3;
+let gravity=.42;
+let flapPower=-7.3;
+let pipeGap=165;
+let pipeTimer=0;
+
+function resize(){
+
+  const rect=canvas.getBoundingClientRect();
+
+  W=canvas.width=rect.width*devicePixelRatio;
+  H=canvas.height=rect.height*devicePixelRatio;
+
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+
+  W=rect.width;
+  H=rect.height;
+
+  bird.x=W*.28;
+  bird.y=H*.45;
+
+  createStars();
+}
+
+function createStars(){
+
+  stars=[];
+
+  for(let i=0;i<80;i++){
+
+    stars.push({
+      x:Math.random()*W,
+      y:Math.random()*H*.72,
+      r:Math.random()*1.5+.3,
+      a:Math.random()*.7+.2
+    });
+
+  }
+}
+
+window.addEventListener("resize",resize);
+resize();
+
+function resetGame(){
+
+  score=0;
+  speed=3;
+  pipeTimer=0;
+
+  pipes=[];
+  particles=[];
+
+  bird.x=W*.28;
+  bird.y=H*.45;
+  bird.vy=0;
+  bird.rotation=0;
+
+  scoreEl.textContent="0";
+
+  gameOver=false;
+}
+
+function startGame(){
+
+  resetGame();
+
+  running=true;
+
+  message.classList.add("hidden");
+
+  flap();
+}
+
+function flap(){
+
+  if(!running){
+
+    startGame();
+    return;
+  }
+
+  if(gameOver) return;
+
+  bird.vy=flapPower;
+
+  createParticles(
+    bird.x-10,
+    bird.y+8,
+    5
+  );
+}
+
+function createPipe(){
+
+  const minTop=70;
+  const maxTop=H-220;
+
+  const topHeight=
+    minTop+
+    Math.random()*
+    Math.max(50,maxTop-minTop);
+
+  pipes.push({
+    x:W+30,
+    width:62,
+    top:topHeight,
+    gap:pipeGap,
+    passed:false
+  });
+}
+
+function createParticles(x,y,n){
+
+  for(let i=0;i<n;i++){
+
+    particles.push({
+      x:x,
+      y:y,
+      vx:-Math.random()*2-0.5,
+      vy:(Math.random()-.5)*2,
+      life:1,
+      size:Math.random()*4+2
+    });
+
+  }
+}
+
+function updateParticles(){
+
+  for(let i=particles.length-1;i>=0;i--){
+
+    const p=particles[i];
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life-=.035;
+
+    if(p.life<=0)
+      particles.splice(i,1);
+  }
+}
+
+function drawBackground(){
+
+  const g=ctx.createLinearGradient(0,0,0,H);
+
+  g.addColorStop(0,"#020a05");
+  g.addColorStop(.55,"#0a2415");
+  g.addColorStop(1,"#061009");
+
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // Moon
+  ctx.beginPath();
+  ctx.arc(W*.78,H*.18,38,0,Math.PI*2);
+  ctx.fillStyle="#dffff0";
+  ctx.shadowBlur=25;
+  ctx.shadowColor="#39ff88";
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Stars
+  for(const s of stars){
+
+    ctx.globalAlpha=s.a;
+
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle="#baffd1";
+    ctx.fill();
+  }
+
+  ctx.globalAlpha=1;
+
+  // Far hills
+  ctx.fillStyle="#07170d";
+  ctx.beginPath();
+  ctx.moveTo(0,H*.72);
+
+  for(let x=0;x<=W;x+=80){
+
+    ctx.lineTo(
+      x,
+      H*.66+
+      Math.sin(x*.018)*35
+    );
+  }
+
+  ctx.lineTo(W,H);
+  ctx.lineTo(0,H);
+  ctx.closePath();
+  ctx.fill();
+
+  // Ground
+  ctx.fillStyle="#031008";
+  ctx.fillRect(0,H-65,W,65);
+
+  ctx.fillStyle="#123b20";
+  ctx.fillRect(0,H-65,W,5);
+}
+
+function drawPipe(p){
+
+  const bottomY=p.top+p.gap;
+
+  // Top pipe
+  ctx.fillStyle="#16a85b";
+  ctx.fillRect(
+    p.x,
+    0,
+    p.width,
+    p.top
+  );
+
+  // Top pipe cap
+  ctx.fillStyle="#39ff88";
+  ctx.fillRect(
+    p.x-6,
+    p.top-18,
+    p.width+12,
+    18
+  );
+
+  // Bottom pipe
+  ctx.fillStyle="#16a85b";
+  ctx.fillRect(
+    p.x,
+    bottomY,
+    p.width,
+    H-bottomY
+  );
+
+  // Bottom cap
+  ctx.fillStyle="#39ff88";
+  ctx.fillRect(
+    p.x-6,
+    bottomY,
+    p.width+12,
+    18
+  );
+
+  // Glow line
+  ctx.strokeStyle="rgba(120,255,170,.5)";
+  ctx.lineWidth=2;
+
+  ctx.strokeRect(
+    p.x,
+    0,
+    p.width,
+    p.top
+  );
+
+  ctx.strokeRect(
+    p.x,
+    bottomY,
+    p.width,
+    H-bottomY
+  );
+}
+
+function drawBird(){
+
+  ctx.save();
+
+  ctx.translate(bird.x,bird.y);
+  ctx.rotate(bird.rotation);
+
+  // glow
+  ctx.shadowBlur=15;
+  ctx.shadowColor="#39ff88";
+
+  // body
+  ctx.beginPath();
+  ctx.arc(0,0,bird.r,0,Math.PI*2);
+  ctx.fillStyle="#39ff88";
+  ctx.fill();
+
+  // wing
+  ctx.beginPath();
+  ctx.ellipse(
+    -5,
+    5,
+    12,
+    7,
+    -.5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#baffd1";
+  ctx.fill();
+
+  // eye
+  ctx.shadowBlur=0;
+
+  ctx.beginPath();
+  ctx.arc(7,-6,4,0,Math.PI*2);
+  ctx.fillStyle="white";
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(8,-6,2,0,Math.PI*2);
+  ctx.fillStyle="#001208";
+  ctx.fill();
+
+  // beak
+  ctx.beginPath();
+  ctx.moveTo(14,0);
+  ctx.lineTo(28,5);
+  ctx.lineTo(14,9);
+  ctx.closePath();
+
+  ctx.fillStyle="#baffd1";
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawParticles(){
+
+  for(const p of particles){
+
+    ctx.globalAlpha=p.life;
+
+    ctx.beginPath();
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fillStyle="#39ff88";
+    ctx.fill();
+  }
+
+  ctx.globalAlpha=1;
+}
+
+function collision(p){
+
+  const left=bird.x-bird.r;
+  const right=bird.x+bird.r;
+  const top=bird.y-bird.r;
+  const bottom=bird.y+bird.r;
+
+  const pipeLeft=p.x;
+  const pipeRight=p.x+p.width;
+
+  if(
+    right>pipeLeft &&
+    left<pipeRight
+  ){
+
+    if(
+      top<p.top ||
+      bottom>p.top+p.gap
+    ){
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function endGame(){
+
+  running=false;
+  gameOver=true;
+
+  if(score>best){
+
+    best=score;
+
+    localStorage.setItem(
+      "nipam_sky_best",
+      best
+    );
+
+    bestEl.textContent=best;
+  }
+
+  title.textContent="GAME OVER";
+  text.innerHTML=
+    "Your score: <b>"+score+
+    "</b><br>Best score: <b>"+best+"</b>";
+
+  startBtn.textContent="PLAY AGAIN";
+
+  message.classList.remove("hidden");
+}
+
+function update(){
+
+  if(!running) return;
+
+  bird.vy+=gravity;
+  bird.y+=bird.vy;
+
+  bird.rotation=Math.max(
+    -.5,
+    Math.min(.9,bird.vy*.07)
+  );
+
+  pipeTimer++;
+
+  if(pipeTimer>115){
+
+    pipeTimer=0;
+    createPipe();
+
+    if(pipeGap>125)
+      pipeGap-=1;
+
+    speed+=.015;
+  }
+
+  for(let i=pipes.length-1;i>=0;i--){
+
+    const p=pipes[i];
+
+    p.x-=speed;
+
+    if(!p.passed && p.x+p.width<bird.x){
+
+      p.passed=true;
+
+      score++;
+
+      scoreEl.textContent=score;
+
+      createParticles(
+        bird.x,
+        bird.y,
+        8
+      );
+    }
+
+    if(collision(p)){
+      endGame();
+      return;
+    }
+
+    if(p.x+p.width<-20){
+
+      pipes.splice(i,1);
+    }
+  }
+
+  if(
+    bird.y-bird.r<0 ||
+    bird.y+bird.r>H-65
+  ){
+
+    endGame();
+    return;
+  }
+
+  updateParticles();
+}
+
+function draw(){
+
+  drawBackground();
+
+  for(const p of pipes)
+    drawPipe(p);
+
+  drawParticles();
+
+  drawBird();
+}
+
+function loop(){
+
+  update();
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+startBtn.addEventListener("click",startGame);
+
+canvas.addEventListener(
+  "pointerdown",
+  e=>{
+    e.preventDefault();
+    flap();
+  }
+);
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(
+      e.code==="Space" ||
+      e.code==="ArrowUp"
+    ){
+
+      e.preventDefault();
+      flap();
+    }
+
+  }
+);
+
+loop();
+</script>
+
+</body>
+  </html>
