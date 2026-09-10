@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NipamVerse — Useful Tools</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#050505;
+    color:white;
+}
+
+header{
+    text-align:center;
+    padding:30px 15px 20px;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    margin:auto;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:bold;
+    color:#39ff88;
+    border:2px solid #39ff88;
+    box-shadow:0 0 25px #39ff88;
+}
+
+h1{
+    color:#39ff88;
+    margin:15px 0 5px;
+}
+
+.subtitle{
+    color:#aaa;
+}
+
+.container{
+    width:92%;
+    max-width:900px;
+    margin:auto;
+}
+
+.tools{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    margin-top:20px;
+}
+
+.tool{
+    background:#0d0d0d;
+    border:1px solid #1f6;
+    border-radius:15px;
+    padding:22px;
+    text-align:center;
+    box-shadow:0 0 12px rgba(57,255,136,.15);
+}
+
+.tool h2{
+    color:#39ff88;
+    font-size:21px;
+}
+
+.tool p{
+    color:#aaa;
+    min-height:42px;
+}
+
+button{
+    border:none;
+    background:#39ff88;
+    color:#001b0c;
+    padding:11px 18px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    box-shadow:0 0 15px #39ff88;
+}
+
+.result{
+    margin-top:12px;
+    color:#39ff88;
+    font-weight:bold;
+    word-break:break-word;
+}
+
+.home{
+    display:block;
+    width:max-content;
+    margin:30px auto;
+    text-decoration:none;
+    color:#39ff88;
+    border:1px solid #39ff88;
+    padding:10px 20px;
+    border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">N</div>
+
+<h1>Useful Tools 🛠️</h1>
+
+<div class="subtitle">
+Helpful tools by NipamVerse
+</div>
+
+</header>
+
+
+<div class="container">
+
+<div class="tools">
+
+
+<!-- Calculator -->
+
+<div class="tool">
+
+<h2>🧮 Calculator</h2>
+
+<p>Quickly calculate numbers.</p>
+
+<input
+id="calc"
+type="text"
+placeholder="Example: 25+15*2"
+style="padding:10px;width:100%;border-radius:7px;border:1px solid #39ff88;background:#111;color:white;"
+>
+
+<br><br>
+
+<button onclick="calculate()">
+Calculate
+</button>
+
+<div id="calcResult" class="result"></div>
+
+</div>
+
+
+<!-- Percentage -->
+
+<div class="tool">
+
+<h2>📊 Percentage</h2>
+
+<p>Find percentage easily.</p>
+
+<input
+id="obtained"
+type="number"
+placeholder="Obtained marks"
+style="padding:10px;width:100%;margin-bottom:8px;border-radius:7px;border:1px solid #39ff88;background:#111;color:white;"
+>
+
+<input
+id="total"
+type="number"
+placeholder="Total marks"
+style="padding:10px;width:100%;border-radius:7px;border:1px solid #39ff88;background:#111;color:white;"
+>
+
+<br><br>
+
+<button onclick="percentage()">
+Calculate
+</button>
+
+<div id="percentResult" class="result"></div>
+
+</div>
+
+
+<!-- Age -->
+
+<div class="tool">
+
+<h2>🎂 Age Calculator</h2>
+
+<p>Calculate your age.</p>
+
+<input
+id="dob"
+type="date"
+style="padding:10px;width:100%;border-radius:7px;border:1px solid #39ff88;background:#111;color:white;"
+>
+
+<br><br>
+
+<button onclick="ageCalculator()">
+Calculate Age
+</button>
+
+<div id="ageResult" class="result"></div>
+
+</div>
+
+
+<!-- Unit Converter -->
+
+<div class="tool">
+
+<h2>📏 Unit Converter</h2>
+
+<p>Convert kilometres to metres.</p>
+
+<input
+id="km"
+type="number"
+placeholder="Kilometres"
+style="padding:10px;width:100%;border-radius:7px;border:1px solid #39ff88;background:#111;color:white;"
+>
+
+<br><br>
+
+<button onclick="convertKM()">
+Convert
+</button>
+
+<div id="kmResult" class="result"></div>
+
+</div>
+
+
+<!-- Random Number -->
+
+<div class="tool">
+
+<h2>🎲 Random Number</h2>
+
+<p>Generate a random number from 1–100.</p>
+
+<button onclick="randomNumber()">
+Generate
+</button>
+
+<div id="randomResult" class="result"></div>
+
+</div>
+
+
+<!-- Countdown -->
+
+<div class="tool">
+
+<h2>⏱️ Quick Timer</h2>
+
+<p>Start a 10-second countdown.</p>
+
+<button onclick="startTimer()">
+Start Timer
+</button>
+
+<div id="timerResult" class="result">
+10
+</div>
+
+</div>
+
+</div>
+
+
+<a class="home" href="index.html">
+← Back to NipamVerse
+</a>
+
+</div>
+
+
+<script>
+
+function calculate(){
+
+    const value=document.getElementById("calc").value;
+
+    try{
+
+        const result=Function(
+            '"use strict";return ('+value+')'
+        )();
+
+        document.getElementById("calcResult").textContent=
+        "Result: "+result;
+
+    }catch{
+
+        document.getElementById("calcResult").textContent=
+        "Invalid calculation ❌";
+    }
+}
+
+
+function percentage(){
+
+    const obtained=
+    Number(document.getElementById("obtained").value);
+
+    const total=
+    Number(document.getElementById("total").value);
+
+    if(total<=0){
+
+        document.getElementById("percentResult").textContent=
+        "Enter valid marks ❌";
+
+        return;
+    }
+
+    const result=(obtained/total)*100;
+
+    document.getElementById("percentResult").textContent=
+    "Percentage: "+result.toFixed(2)+"%";
+}
+
+
+function ageCalculator(){
+
+    const dobValue=
+    document.getElementById("dob").value;
+
+    if(!dobValue){
+
+        document.getElementById("ageResult").textContent=
+        "Select your date of birth ❌";
+
+        return;
+    }
+
+    const dob=new Date(dobValue);
+    const today=new Date();
+
+    let age=today.getFullYear()-dob.getFullYear();
+
+    const month=
+    today.getMonth()-dob.getMonth();
+
+    if(
+        month<0 ||
+        (month===0 && today.getDate()<dob.getDate())
+    ){
+
+        age--;
+    }
+
+    document.getElementById("ageResult").textContent=
+    "Your age: "+age+" years 🎉";
+}
+
+
+function convertKM(){
+
+    const km=
+    Number(document.getElementById("km").value);
+
+    if(isNaN(km)){
+
+        document.getElementById("kmResult").textContent=
+        "Enter a number ❌";
+
+        return;
+    }
+
+    document.getElementById("kmResult").textContent=
+    km+" km = "+(km*1000)+" metres";
+}
+
+
+function randomNumber(){
+
+    const number=
+    Math.floor(Math.random()*100)+1;
+
+    document.getElementById("randomResult").textContent=
+    "Your number: "+number+" 🎲";
+}
+
+
+let timerInterval;
+
+function startTimer(){
+
+    clearInterval(timerInterval);
+
+    let time=10;
+
+    document.getElementById("timerResult").textContent=
+    time;
+
+    timerInterval=setInterval(()=>{
+
+        time--;
+
+        document.getElementById("timerResult").textContent=
+        time;
+
+        if(time<=0){
+
+            clearInterval(timerInterval);
+
+            document.getElementById("timerResult").textContent=
+            "Time's up! ⏰";
+        }
+
+    },1000);
+}
+
+</script>
+
+</body>
+  </html>
