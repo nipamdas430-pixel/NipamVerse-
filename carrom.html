@@ -3,72 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NipamVerse Carrom 2 Player</title>
+<title>NipamVerse Carrom - 2 Player</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   background:#050505;
-  color:white;
+  color:#fff;
   font-family:Arial,sans-serif;
   text-align:center;
   user-select:none;
+  overflow-x:hidden;
 }
+
 h1{
   margin:12px 0 5px;
   color:#39ff88;
   text-shadow:0 0 15px #39ff88;
 }
+
 #info{
   display:flex;
   justify-content:center;
-  gap:25px;
+  align-items:center;
+  gap:18px;
   flex-wrap:wrap;
   margin:8px;
-  font-size:18px;
+  font-size:17px;
 }
-#turn{
+
+.p1{
+  color:#4c91ff;
+}
+
+.p2{
   color:#39ff88;
-  font-weight:bold;
 }
+
+#turn{
+  font-weight:bold;
+  color:#fff;
+  padding:5px 12px;
+  border:1px solid #39ff88;
+  border-radius:20px;
+}
+
 canvas{
+  display:block;
   width:min(94vw,700px);
   height:min(94vw,700px);
-  max-width:700px;
-  max-height:700px;
+  margin:auto;
   background:#9b5a28;
   border:8px solid #39200e;
   border-radius:8px;
   box-shadow:0 0 25px #16ff70;
   touch-action:none;
 }
+
 .controls{
   margin:12px auto;
   display:flex;
   justify-content:center;
-  gap:10px;
+  gap:9px;
   flex-wrap:wrap;
 }
+
 button{
-  padding:12px 22px;
+  padding:12px 18px;
   border:1px solid #39ff88;
   border-radius:10px;
   background:#07130b;
   color:#39ff88;
-  font-size:16px;
+  font-size:15px;
   font-weight:bold;
   box-shadow:0 0 10px #123;
 }
+
 button:active{
   transform:scale(.95);
   background:#12351e;
 }
+
 #message{
-  min-height:25px;
+  min-height:28px;
   color:#ddd;
   font-size:14px;
-  padding:5px;
+  padding:4px 10px;
 }
 </style>
 </head>
@@ -78,8 +102,8 @@ button:active{
 <h1>🎯 CARROM MASTER</h1>
 
 <div id="info">
-  <span>🔵 Player 1: <b id="score1">0</b></span>
-  <span>🟢 Player 2: <b id="score2">0</b></span>
+  <span class="p1">🔵 Player 1: <b id="score1">0</b></span>
+  <span class="p2">🟢 Player 2: <b id="score2">0</b></span>
   <span id="turn">Player 1 Turn</span>
 </div>
 
@@ -91,21 +115,39 @@ button:active{
   <button id="right">RIGHT ➡</button>
 </div>
 
-<div id="message">Drag the striker backward and release to shoot.</div>
+<div id="message">
+  Player 1 — Drag striker backward and release.
+</div>
 
 <script>
+
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
-const W=700,H=700;
-const center={x:350,y:350};
+const W=700;
+const H=700;
 
 let player=1;
+
 let score1=0;
 let score2=0;
-let moving=false;
+
 let aiming=false;
+let moving=false;
 let gameOver=false;
+
+let shotHadPocket=false;
+let strikerPocketed=false;
+
+let mouse={
+  x:350,
+  y:625
+};
+
+const BASE_Y={
+  1:625,
+  2:75
+};
 
 let striker={
   x:350,
@@ -116,6 +158,7 @@ let striker={
 };
 
 const coins=[];
+
 const particles=[];
 
 const pockets=[
@@ -125,17 +168,10 @@ const pockets=[
   {x:645,y:645}
 ];
 
-const BASE_Y={
-  1:625,
-  2:75
-};
 
-function resetStriker(){
-  striker.x=350;
-  striker.y=BASE_Y[player];
-  striker.vx=0;
-  striker.vy=0;
-}
+/* =========================
+   CREATE COINS
+========================= */
 
 function makeCoins(){
 
@@ -143,37 +179,26 @@ function makeCoins(){
 
   // Queen
   coins.push({
-    x:350,y:350,r:11,
+    x:350,
+    y:350,
+    r:11,
     type:"queen",
     color:"#e53935",
-    vx:0,vy:0,
+    vx:0,
+    vy:0,
     pocketed:false
   });
 
-  const colors=["#111","#eee"];
+  const colors=["#111","#eeeeee"];
 
-  let positions=[];
+  // Inner ring
+  for(let i=0;i<6;i++){
 
-  for(let ring=1;ring<=2;ring++){
+    let a=(Math.PI*2/6)*i;
 
-    let count=ring===1?6:12;
-    let radius=ring===1?25:50;
-
-    for(let i=0;i<count;i++){
-
-      let a=(Math.PI*2/count)*i;
-
-      positions.push({
-        x:350+Math.cos(a)*radius,
-        y:350+Math.sin(a)*radius
-      });
-    }
-  }
-
-  positions.forEach((p,i)=>{
     coins.push({
-      x:p.x,
-      y:p.y,
+      x:350+Math.cos(a)*25,
+      y:350+Math.sin(a)*25,
       r:11,
       type:"coin",
       color:colors[i%2],
@@ -181,34 +206,77 @@ function makeCoins(){
       vy:0,
       pocketed:false
     });
-  });
+  }
+
+  // Outer ring
+  for(let i=0;i<12;i++){
+
+    let a=(Math.PI*2/12)*i;
+
+    coins.push({
+      x:350+Math.cos(a)*50,
+      y:350+Math.sin(a)*50,
+      r:11,
+      type:"coin",
+      color:colors[(i+1)%2],
+      vx:0,
+      vy:0,
+      pocketed:false
+    });
+  }
 }
 
-makeCoins();
-resetStriker();
+
+/* =========================
+   STRIKER RESET
+========================= */
+
+function resetStriker(){
+
+  striker.x=350;
+  striker.y=BASE_Y[player];
+
+  striker.vx=0;
+  striker.vy=0;
+}
+
+
+/* =========================
+   BOARD
+========================= */
 
 function drawBoard(){
 
   ctx.clearRect(0,0,W,H);
 
-  // wood
+  // Wooden board
   ctx.fillStyle="#b86b32";
   ctx.fillRect(0,0,W,H);
 
-  // inner board
+  // Playing area
   ctx.fillStyle="#e6b56f";
   ctx.fillRect(35,35,630,630);
 
-  // border
+  // Border
   ctx.strokeStyle="#542b12";
   ctx.lineWidth=8;
   ctx.strokeRect(35,35,630,630);
 
-  // pockets
+  // Pockets
   pockets.forEach(p=>{
+
     ctx.beginPath();
+
     ctx.fillStyle="#080808";
-    ctx.arc(p.x,p.y,27,0,Math.PI*2);
+
+    ctx.arc(
+      p.x,
+      p.y,
+      27,
+      0,
+      Math.PI*2
+    );
+
     ctx.fill();
 
     ctx.strokeStyle="#30190b";
@@ -216,37 +284,83 @@ function drawBoard(){
     ctx.stroke();
   });
 
-  // center circles
+  // Center circle
   ctx.beginPath();
+
   ctx.strokeStyle="#8c351d";
   ctx.lineWidth=3;
-  ctx.arc(350,350,65,0,Math.PI*2);
+
+  ctx.arc(
+    350,
+    350,
+    65,
+    0,
+    Math.PI*2
+  );
+
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.arc(350,350,10,0,Math.PI*2);
+
+  ctx.arc(
+    350,
+    350,
+    10,
+    0,
+    Math.PI*2
+  );
+
   ctx.stroke();
 
-  // baseline
-  ctx.strokeStyle=player===1?"#176dff":"#22cc66";
+
+  // Current player's baseline
+  ctx.strokeStyle=
+    player===1 ? "#2477ff" : "#27d86d";
+
   ctx.lineWidth=5;
 
   ctx.beginPath();
+
   ctx.moveTo(120,BASE_Y[player]);
   ctx.lineTo(580,BASE_Y[player]);
+
   ctx.stroke();
 
   ctx.lineWidth=2;
+
   ctx.beginPath();
-  ctx.moveTo(120,BASE_Y[player]-18);
-  ctx.lineTo(580,BASE_Y[player]-18);
+
+  ctx.moveTo(
+    120,
+    BASE_Y[player]-18
+  );
+
+  ctx.lineTo(
+    580,
+    BASE_Y[player]-18
+  );
+
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(120,BASE_Y[player]+18);
-  ctx.lineTo(580,BASE_Y[player]+18);
+
+  ctx.moveTo(
+    120,
+    BASE_Y[player]+18
+  );
+
+  ctx.lineTo(
+    580,
+    BASE_Y[player]+18
+  );
+
   ctx.stroke();
 }
+
+
+/* =========================
+   DRAW COINS
+========================= */
 
 function drawCoins(){
 
@@ -255,7 +369,14 @@ function drawCoins(){
     if(c.pocketed)return;
 
     ctx.beginPath();
-    ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+
+    ctx.arc(
+      c.x,
+      c.y,
+      c.r,
+      0,
+      Math.PI*2
+    );
 
     ctx.fillStyle=c.color;
     ctx.fill();
@@ -265,97 +386,107 @@ function drawCoins(){
     ctx.stroke();
 
     if(c.type==="queen"){
+
       ctx.fillStyle="#fff";
-      ctx.font="bold 12px Arial";
+
+      ctx.font="bold 11px Arial";
+
       ctx.textAlign="center";
       ctx.textBaseline="middle";
-      ctx.fillText("Q",c.x,c.y);
+
+      ctx.fillText(
+        "Q",
+        c.x,
+        c.y
+      );
     }
   });
 }
 
+
+/* =========================
+   DRAW STRIKER
+========================= */
+
 function drawStriker(){
 
-  ctx.save();
-
   ctx.beginPath();
-  ctx.arc(striker.x,striker.y,striker.r,0,Math.PI*2);
 
-  ctx.fillStyle=player===1?"#2477ff":"#27d86d";
+  ctx.arc(
+    striker.x,
+    striker.y,
+    striker.r,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle=
+    player===1 ? "#2477ff" : "#27d86d";
+
   ctx.fill();
 
   ctx.strokeStyle="#fff";
   ctx.lineWidth=3;
   ctx.stroke();
 
-  // aiming line
+
+  // Aim guide
   if(aiming && !moving){
 
-    ctx.beginPath();
-    ctx.moveTo(striker.x,striker.y);
+    let dx=
+      striker.x-mouse.x;
 
-    let dx=striker.x-mouse.x;
-    let dy=striker.y-mouse.y;
+    let dy=
+      striker.y-mouse.y;
 
-    let length=Math.sqrt(dx*dx+dy*dy);
+    let d=Math.hypot(dx,dy);
 
-    if(length>0){
-      dx/=length;
-      dy/=length;
+    if(d>0){
+
+      dx/=d;
+      dy/=d;
     }
 
+    ctx.beginPath();
+
+    ctx.moveTo(
+      striker.x,
+      striker.y
+    );
+
     ctx.lineTo(
-      striker.x+dx*120,
-      striker.y+dy*120
+      striker.x+dx*140,
+      striker.y+dy*140
     );
 
     ctx.strokeStyle="#39ff88";
     ctx.lineWidth=2;
+
     ctx.stroke();
   }
-
-  ctx.restore();
 }
 
-function drawParticles(){
 
-  particles.forEach(p=>{
-    ctx.globalAlpha=p.life;
-    ctx.fillStyle=p.color;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha=1;
-  });
-}
-
-function draw(){
-
-  drawBoard();
-  drawCoins();
-  drawStriker();
-  drawParticles();
-
-  requestAnimationFrame(draw);
-}
-
-draw();
-
-function distance(a,b){
-  return Math.hypot(a.x-b.x,a.y-b.y);
-}
+/* =========================
+   PARTICLES
+========================= */
 
 function createParticles(x,y,color){
 
   for(let i=0;i<8;i++){
 
     particles.push({
+
       x:x,
       y:y,
-      r:Math.random()*3+1,
+
       vx:(Math.random()-.5)*5,
       vy:(Math.random()-.5)*5,
+
+      r:Math.random()*3+1,
+
       life:1,
+
       color:color
     });
   }
@@ -364,49 +495,261 @@ function createParticles(x,y,color){
 function updateParticles(){
 
   particles.forEach(p=>{
+
     p.x+=p.vx;
     p.y+=p.vy;
+
     p.life-=.035;
   });
 
-  for(let i=particles.length-1;i>=0;i--){
-    if(particles[i].life<=0)
+  for(
+    let i=particles.length-1;
+    i>=0;
+    i--
+  ){
+
+    if(particles[i].life<=0){
+
       particles.splice(i,1);
+    }
   }
 }
+
+function drawParticles(){
+
+  particles.forEach(p=>{
+
+    ctx.globalAlpha=p.life;
+
+    ctx.fillStyle=p.color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.r,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.globalAlpha=1;
+  });
+}
+
+
+/* =========================
+   DISTANCE
+========================= */
+
+function dist(a,b){
+
+  return Math.hypot(
+    a.x-b.x,
+    a.y-b.y
+  );
+}
+
+
+/* =========================
+   POCKET CHECK
+========================= */
+
+function checkPocket(obj){
+
+  for(const pocket of pockets){
+
+    if(
+      dist(obj,pocket)<30
+    ){
+
+      // STRIKER
+      if(obj===striker){
+
+        strikerPocketed=true;
+
+        createParticles(
+          obj.x,
+          obj.y,
+          "#39ff88"
+        );
+
+        // Penalty
+        if(player===1){
+
+          score1=Math.max(
+            0,
+            score1-5
+          );
+
+        }else{
+
+          score2=Math.max(
+            0,
+            score2-5
+          );
+        }
+
+        updateScore();
+
+        // Stop striker
+        striker.vx=0;
+        striker.vy=0;
+
+        return;
+      }
+
+
+      // Already pocketed
+      if(obj.pocketed)return;
+
+      obj.pocketed=true;
+
+      obj.vx=0;
+      obj.vy=0;
+
+      shotHadPocket=true;
+
+      createParticles(
+        obj.x,
+        obj.y,
+        obj.color
+      );
+
+
+      // QUEEN
+      if(obj.type==="queen"){
+
+        if(player===1){
+
+          score1+=50;
+
+        }else{
+
+          score2+=50;
+        }
+
+      }
+
+      // NORMAL COIN
+      else{
+
+        if(player===1){
+
+          score1+=10;
+
+        }else{
+
+          score2+=10;
+        }
+      }
+
+      updateScore();
+
+      return;
+    }
+  }
+}
+
+
+/* =========================
+   COIN COLLISION
+========================= */
+
+function coinCollision(a,b){
+
+  if(a.pocketed || b.pocketed)
+    return;
+
+  let dx=b.x-a.x;
+  let dy=b.y-a.y;
+
+  let d=Math.hypot(dx,dy);
+
+  let minDist=a.r+b.r;
+
+  if(d>0 && d<minDist){
+
+    let nx=dx/d;
+    let ny=dy/d;
+
+    let overlap=minDist-d;
+
+    a.x-=nx*overlap/2;
+    a.y-=ny*overlap/2;
+
+    b.x+=nx*overlap/2;
+    b.y+=ny*overlap/2;
+
+    let avx=a.vx;
+    let avy=a.vy;
+
+    a.vx=b.vx*.85;
+    a.vy=b.vy*.85;
+
+    b.vx=avx*.85;
+    b.vy=avy*.85;
+  }
+}
+
+
+/* =========================
+   UPDATE GAME
+========================= */
 
 function update(){
 
   if(moving){
 
+    // Striker movement
     striker.x+=striker.vx;
     striker.y+=striker.vy;
 
     striker.vx*=.985;
     striker.vy*=.985;
 
-    // wall bounce
-    if(striker.x-striker.r<40){
+
+    // Wall bounce
+    if(
+      striker.x-striker.r<40
+    ){
+
       striker.x=40+striker.r;
-      striker.vx*=-.8;
+
+      striker.vx*=-.82;
     }
 
-    if(striker.x+striker.r>660){
+    if(
+      striker.x+striker.r>660
+    ){
+
       striker.x=660-striker.r;
-      striker.vx*=-.8;
+
+      striker.vx*=-.82;
     }
 
-    if(striker.y-striker.r<40){
+    if(
+      striker.y-striker.r<40
+    ){
+
       striker.y=40+striker.r;
-      striker.vy*=-.8;
+
+      striker.vy*=-.82;
     }
 
-    if(striker.y+striker.r>660){
+    if(
+      striker.y+striker.r>660
+    ){
+
       striker.y=660-striker.r;
-      striker.vy*=-.8;
+
+      striker.vy*=-.82;
     }
 
-    // coin collision
+
+    // Striker → coins
     coins.forEach(c=>{
 
       if(c.pocketed)return;
@@ -415,29 +758,54 @@ function update(){
       let dy=c.y-striker.y;
 
       let d=Math.hypot(dx,dy);
-      let minDist=c.r+striker.r;
 
-      if(d<minDist && d>0){
+      let minDist=
+        c.r+striker.r;
+
+      if(
+        d<minDist &&
+        d>0
+      ){
 
         let nx=dx/d;
         let ny=dy/d;
 
-        let speed=Math.hypot(striker.vx,striker.vy);
+        let speed=
+          Math.hypot(
+            striker.vx,
+            striker.vy
+          );
 
-        c.vx=nx*speed*.75;
-        c.vy=ny*speed*.75;
+        c.vx=
+          nx*speed*.78;
 
-        striker.vx-=nx*speed*.35;
-        striker.vy-=ny*speed*.35;
+        c.vy=
+          ny*speed*.78;
 
-        c.x=striker.x+nx*minDist;
-        c.y=striker.y+ny*minDist;
+        striker.vx-=
+          nx*speed*.30;
 
-        createParticles(c.x,c.y,c.color);
+        striker.vy-=
+          ny*speed*.30;
+
+        c.x=
+          striker.x+
+          nx*minDist;
+
+        c.y=
+          striker.y+
+          ny*minDist;
+
+        createParticles(
+          c.x,
+          c.y,
+          c.color
+        );
       }
     });
 
-    // coin movement
+
+    // Coin movement
     coins.forEach(c=>{
 
       if(c.pocketed)return;
@@ -448,48 +816,97 @@ function update(){
       c.vx*=.985;
       c.vy*=.985;
 
-      if(c.x-c.r<40){
+
+      // Walls
+      if(
+        c.x-c.r<40
+      ){
+
         c.x=40+c.r;
-        c.vx*=-.8;
+        c.vx*=-.82;
       }
 
-      if(c.x+c.r>660){
+      if(
+        c.x+c.r>660
+      ){
+
         c.x=660-c.r;
-        c.vx*=-.8;
+        c.vx*=-.82;
       }
 
-      if(c.y-c.r<40){
+      if(
+        c.y-c.r<40
+      ){
+
         c.y=40+c.r;
-        c.vy*=-.8;
+        c.vy*=-.82;
       }
 
-      if(c.y+c.r>660){
+      if(
+        c.y+c.r>660
+      ){
+
         c.y=660-c.r;
-        c.vy*=-.8;
+        c.vy*=-.82;
       }
 
       checkPocket(c);
     });
 
+
+    // Coin ↔ coin collisions
+    for(
+      let i=0;
+      i<coins.length;
+      i++
+    ){
+
+      for(
+        let j=i+1;
+        j<coins.length;
+        j++
+      ){
+
+        coinCollision(
+          coins[i],
+          coins[j]
+        );
+      }
+    }
+
+
+    // Striker pocket
     checkPocket(striker);
 
-    // stop
-    let strikerSpeed=Math.hypot(striker.vx,striker.vy);
 
-    let coinMoving=coins.some(c=>
-      !c.pocketed && Math.hypot(c.vx,c.vy)>.08
-    );
+    // Has everything stopped?
+    let strikerSpeed=
+      Math.hypot(
+        striker.vx,
+        striker.vy
+      );
 
-    if(strikerSpeed<.08 && !coinMoving){
+    let coinMoving=
+      coins.some(c=>
+        !c.pocketed &&
+        Math.hypot(
+          c.vx,
+          c.vy
+        )>.08
+      );
+
+
+    if(
+      strikerSpeed<.08 &&
+      !coinMoving
+    ){
 
       striker.vx=0;
       striker.vy=0;
 
       moving=false;
 
-      // IMPORTANT:
-      // striker always returns to correct baseline
-      switchPlayer();
+      finishShot();
     }
   }
 
@@ -498,92 +915,109 @@ function update(){
   requestAnimationFrame(update);
 }
 
-update();
 
-function checkPocket(obj){
+/* =========================
+   FINISH SHOT
+========================= */
 
-  for(const p of pockets){
+function finishShot(){
 
-    if(distance(obj,p)<30){
+  // Win check
+  if(checkWin()){
 
-      if(obj===striker){
-
-        createParticles(obj.x,obj.y,"#39ff88");
-
-        // striker penalty
-        if(player===1)
-          score1=Math.max(0,score1-5);
-        else
-          score2=Math.max(0,score2-5);
-
-        updateScore();
-
-        // reset striker immediately
-        resetStriker();
-
-        return;
-      }
-
-      if(obj.pocketed)return;
-
-      obj.pocketed=true;
-      obj.vx=0;
-      obj.vy=0;
-
-      createParticles(obj.x,obj.y,obj.color);
-
-      if(obj.type==="queen"){
-
-        if(player===1)score1+=50;
-        else score2+=50;
-
-      }else{
-
-        if(player===1)score1+=10;
-        else score2+=10;
-      }
-
-      updateScore();
-      return;
-    }
+    return;
   }
-}
 
-function switchPlayer(){
 
-  if(gameOver)return;
+  /*
+    IMPORTANT CARROM RULE:
 
-  player=player===1?2:1;
+    If player pocketed ANY coin:
+    SAME PLAYER CONTINUES.
+
+    If nothing was pocketed:
+    SWITCH PLAYER.
+
+    If striker was pocketed:
+    SWITCH PLAYER.
+  */
+
+  if(
+    shotHadPocket &&
+    !strikerPocketed
+  ){
+
+    // SAME PLAYER
+    resetStriker();
+
+    document.getElementById("message").textContent=
+      "🔥 Great shot! Player "+player+
+      " continues!";
+
+    shotHadPocket=false;
+    strikerPocketed=false;
+
+    updateTurn();
+
+    return;
+  }
+
+
+  // MISS or STRIKER FOUL
+  player=
+    player===1 ? 2 : 1;
 
   resetStriker();
 
+  shotHadPocket=false;
+  strikerPocketed=false;
+
   updateTurn();
 
-  if(checkWin())return;
-
   document.getElementById("message").textContent=
-    "Player "+player+" — Aim, drag backward and release!";
+    "Player "+player+
+    " — Your turn! 🎯";
 }
+
+
+/* =========================
+   WIN CHECK
+========================= */
 
 function checkWin(){
 
-  let remaining=coins.filter(c=>!c.pocketed).length;
+  let remaining=
+    coins.filter(
+      c=>!c.pocketed
+    ).length;
 
   if(remaining===0){
 
     gameOver=true;
 
-    let winner=score1>score2?1:score2>score1?2:0;
+    if(score1>score2){
 
-    if(winner===0){
-      document.getElementById("turn").textContent="🤝 DRAW!";
-      document.getElementById("message").textContent=
-        "Game Over — It's a draw!";
-    }else{
       document.getElementById("turn").textContent=
-        "🏆 Player "+winner+" WINS!";
+        "🏆 PLAYER 1 WINS!";
+
       document.getElementById("message").textContent=
-        "Congratulations Player "+winner+"!";
+        "Congratulations Player 1! 🔥";
+
+    }else if(score2>score1){
+
+      document.getElementById("turn").textContent=
+        "🏆 PLAYER 2 WINS!";
+
+      document.getElementById("message").textContent=
+        "Congratulations Player 2! 🔥";
+
+    }else{
+
+      document.getElementById("turn").textContent=
+        "🤝 DRAW!";
+
+      document.getElementById("message").textContent=
+        "Amazing game! It's a draw.";
     }
 
     return true;
@@ -592,11 +1026,24 @@ function checkWin(){
   return false;
 }
 
+
+/* =========================
+   SCORE
+========================= */
+
 function updateScore(){
 
-  document.getElementById("score1").textContent=score1;
-  document.getElementById("score2").textContent=score2;
+  document.getElementById("score1")
+    .textContent=score1;
+
+  document.getElementById("score2")
+    .textContent=score2;
 }
+
+
+/* =========================
+   TURN DISPLAY
+========================= */
 
 function updateTurn(){
 
@@ -604,106 +1051,163 @@ function updateTurn(){
     "Player "+player+" Turn";
 }
 
-// -------------------------
-// POINTER CONTROLS
-// -------------------------
 
-let mouse={x:350,y:625};
+/* =========================
+   POINTER POSITION
+========================= */
 
-function getPos(e){
+function getPosition(e){
 
-  const rect=canvas.getBoundingClientRect();
+  const rect=
+    canvas.getBoundingClientRect();
 
   return {
-    x:(e.clientX-rect.left)*(W/rect.width),
-    y:(e.clientY-rect.top)*(H/rect.height)
+
+    x:
+      (e.clientX-rect.left)*
+      (W/rect.width),
+
+    y:
+      (e.clientY-rect.top)*
+      (H/rect.height)
   };
 }
 
-canvas.addEventListener("pointerdown",e=>{
 
-  if(moving || gameOver)return;
+/* =========================
+   POINTER DOWN
+========================= */
 
-  const p=getPos(e);
+canvas.addEventListener(
+  "pointerdown",
+  e=>{
 
-  let d=Math.hypot(
-    p.x-striker.x,
-    p.y-striker.y
-  );
+    if(moving || gameOver)
+      return;
 
-  // Must start near striker
-  if(d<45){
+    const p=getPosition(e);
 
-    aiming=true;
+    let d=
+      Math.hypot(
+        p.x-striker.x,
+        p.y-striker.y
+      );
+
+    if(d<50){
+
+      aiming=true;
+
+      mouse=p;
+
+      canvas.setPointerCapture(
+        e.pointerId
+      );
+    }
+  }
+);
+
+
+/* =========================
+   POINTER MOVE
+========================= */
+
+canvas.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(!aiming)
+      return;
+
+    const p=getPosition(e);
+
+    let dx=
+      p.x-striker.x;
+
+    let dy=
+      p.y-striker.y;
+
+    let d=Math.hypot(dx,dy);
+
+    // Maximum pull
+    if(d>120){
+
+      dx=dx/d*120;
+      dy=dy/d*120;
+
+      p.x=
+        striker.x+dx;
+
+      p.y=
+        striker.y+dy;
+    }
+
     mouse=p;
-
-    canvas.setPointerCapture(e.pointerId);
   }
-});
+);
 
-canvas.addEventListener("pointermove",e=>{
 
-  const p=getPos(e);
+/* =========================
+   POINTER UP / SHOOT
+========================= */
 
-  mouse=p;
+canvas.addEventListener(
+  "pointerup",
+  e=>{
 
-  if(!aiming)return;
+    if(!aiming)
+      return;
 
-  // maximum pull distance
-  let dx=p.x-striker.x;
-  let dy=p.y-striker.y;
+    aiming=false;
 
-  let d=Math.hypot(dx,dy);
+    let dx=
+      striker.x-mouse.x;
 
-  if(d>110){
+    let dy=
+      striker.y-mouse.y;
 
-    dx=dx/d*110;
-    dy=dy/d*110;
+    let power=
+      Math.hypot(dx,dy);
 
-    mouse.x=striker.x+dx;
-    mouse.y=striker.y+dy;
+    if(power<12){
+
+      return;
+    }
+
+    let d=
+      Math.hypot(dx,dy);
+
+    let speed=
+      Math.min(
+        power*.17,
+        23
+      );
+
+    striker.vx=
+      dx/d*speed;
+
+    striker.vy=
+      dy/d*speed;
+
+    // New shot starts
+    shotHadPocket=false;
+    strikerPocketed=false;
+
+    moving=true;
+
+    document.getElementById("message").textContent=
+      "🎯 Shot taken!";
   }
-});
+);
 
-canvas.addEventListener("pointerup",e=>{
 
-  if(!aiming)return;
-
-  aiming=false;
-
-  const p=mouse;
-
-  let dx=striker.x-p.x;
-  let dy=striker.y-p.y;
-
-  let power=Math.hypot(dx,dy);
-
-  if(power<12){
-    return;
-  }
-
-  let maxPower=22;
-
-  let speed=Math.min(power*.16,maxPower);
-
-  let d=Math.hypot(dx,dy);
-
-  striker.vx=dx/d*speed;
-  striker.vy=dy/d*speed;
-
-  moving=true;
-
-  document.getElementById("message").textContent=
-    "Shot taken! 🎯";
-});
-
-// -------------------------
-// LEFT / RIGHT BASELINE
-// -------------------------
+/* =========================
+   STRIKER LEFT / RIGHT
+========================= */
 
 function moveStriker(amount){
 
-  if(moving || gameOver)return;
+  if(moving || gameOver)
+    return;
 
   striker.x+=amount;
 
@@ -714,60 +1218,108 @@ function moveStriker(amount){
     striker.x=575;
 }
 
+
 document.getElementById("left")
-.addEventListener("click",()=>{
-  moveStriker(-35);
-});
+.addEventListener(
+  "click",
+  ()=>{
+    moveStriker(-35);
+  }
+);
+
 
 document.getElementById("right")
-.addEventListener("click",()=>{
-  moveStriker(35);
-});
+.addEventListener(
+  "click",
+  ()=>{
+    moveStriker(35);
+  }
+);
 
-// -------------------------
-// NEW GAME
-// -------------------------
 
-document.getElementById("new")
-.addEventListener("click",newGame);
+/* =========================
+   NEW GAME
+========================= */
 
 function newGame(){
 
   player=1;
+
   score1=0;
   score2=0;
-  moving=false;
+
   aiming=false;
+  moving=false;
   gameOver=false;
 
+  shotHadPocket=false;
+  strikerPocketed=false;
+
+  particles.length=0;
+
   makeCoins();
+
   resetStriker();
 
   updateScore();
   updateTurn();
 
   document.getElementById("message").textContent=
-    "Player 1 — Aim, drag backward and release!";
+    "Player 1 — Drag striker backward and release.";
 }
 
-// Keyboard controls for PC
 
-document.addEventListener("keydown",e=>{
+document.getElementById("new")
+.addEventListener(
+  "click",
+  newGame
+);
 
-  if(e.key==="ArrowLeft"){
-    moveStriker(-20);
+
+/* =========================
+   PC KEYBOARD
+========================= */
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="ArrowLeft"){
+
+      moveStriker(-20);
+    }
+
+    if(e.key==="ArrowRight"){
+
+      moveStriker(20);
+    }
+
+    if(
+      e.key==="r" ||
+      e.key==="R"
+    ){
+
+      newGame();
+    }
   }
+);
 
-  if(e.key==="ArrowRight"){
-    moveStriker(20);
-  }
 
-  if(e.key==="r" || e.key==="R"){
-    newGame();
-  }
-});
+/* =========================
+   START
+========================= */
+
+makeCoins();
+
+resetStriker();
+
+updateScore();
+
+updateTurn();
+
+update();
 
 </script>
 
 </body>
-  </html>
+</html>
