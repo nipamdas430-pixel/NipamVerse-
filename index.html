@@ -10,93 +10,9 @@
 
 <title>NipamVerse — Learn • Play • Create</title>
 <meta name="robots" content="index, follow">
+
 <style>
-/* ✨ NIPAMVERSE LIVE AESTHETIC ANIMATION */
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  z-index: -1;
-  pointer-events: none;
-
-  background:
-    radial-gradient(circle at 20% 30%, rgba(0,255,120,.12), transparent 25%),
-    radial-gradient(circle at 80% 70%, rgba(0,255,120,.10), transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(0,255,120,.06), transparent 30%);
-
-  animation: liveGlow 12s ease-in-out infinite alternate;
-}
-
-@keyframes liveGlow {
-  0% {
-    transform: translate(-3%, -2%) scale(1);
-  }
-
-  50% {
-    transform: translate(3%, 2%) scale(1.08);
-  }
-
-  100% {
-    transform: translate(-2%, 3%) scale(1.03);
-  }
-}
-
-
-/* 🌟 NIPAMVERSE TITLE LIVE GLOW */
-
-.hero h1 {
-  animation: nipamPulse 3s ease-in-out infinite;
-}
-
-@keyframes nipamPulse {
-  0%, 100% {
-    text-shadow:
-      0 0 5px rgba(0,255,120,.25),
-      0 0 15px rgba(0,255,120,.15);
-  }
-
-  50% {
-    text-shadow:
-      0 0 10px rgba(0,255,120,.7),
-      0 0 30px rgba(0,255,120,.35),
-      0 0 55px rgba(0,255,120,.18);
-  }
-}
-
-
-/* 💚 CARD SMOOTH ANIMATION */
-
-.card {
-  transition:
-    transform .4s ease,
-    box-shadow .4s ease;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-
-  box-shadow:
-    0 0 15px rgba(0,255,120,.25),
-    0 0 35px rgba(0,255,120,.12);
-}
-
-
-/* ✨ BUTTON SMOOTH GLOW */
-
-.btn {
-  transition:
-    transform .3s ease,
-    box-shadow .3s ease;
-}
-
-.btn:hover {
-  transform: translateY(-3px);
-
-  box-shadow:
-    0 0 12px rgba(0,255,120,.5),
-    0 0 25px rgba(0,255,120,.2);
-    }
 *{
     margin:0;
     padding:0;
@@ -114,24 +30,175 @@ body{
     overflow-x:hidden;
 }
 
-/* BACKGROUND GLOW */
+/* =========================
+   LIVE AESTHETIC BACKGROUND
+========================= */
 
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-5;
 
+    background:
+        radial-gradient(circle at 15% 20%,rgba(0,255,136,.12),transparent 28%),
+        radial-gradient(circle at 85% 75%,rgba(0,255,136,.10),transparent 30%),
+        radial-gradient(circle at 50% 50%,rgba(0,255,136,.05),transparent 38%);
+
+    animation:
+        atmosphere 12s ease-in-out infinite alternate;
+}
 
 body::after{
     content:"";
     position:fixed;
-    width:350px;
-    height:350px;
+    width:420px;
+    height:420px;
+    border-radius:50%;
     background:#00ff88;
-    filter:blur(150px);
-    opacity:.06;
-    bottom:-120px;
-    right:-120px;
-    z-index:-1;
+    filter:blur(160px);
+    opacity:.055;
+    bottom:-180px;
+    right:-150px;
+    pointer-events:none;
+    z-index:-4;
+
+    animation:orbMove 9s ease-in-out infinite alternate;
 }
 
-/* HEADER */
+@keyframes atmosphere{
+
+    0%{
+        transform:scale(1) translate(0,0);
+    }
+
+    50%{
+        transform:scale(1.08) translate(2%,-1%);
+    }
+
+    100%{
+        transform:scale(1.03) translate(-2%,2%);
+    }
+}
+
+@keyframes orbMove{
+
+    from{
+        transform:translate(0,0) scale(1);
+    }
+
+    to{
+        transform:translate(-100px,-80px) scale(1.25);
+    }
+}
+
+
+/* =========================
+   FLOATING PARTICLES
+========================= */
+
+.particles{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:-2;
+}
+
+.particles span{
+    position:absolute;
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:#00ff88;
+    box-shadow:0 0 12px #00ff88;
+    opacity:.35;
+
+    animation:floatParticle linear infinite;
+}
+
+.particles span:nth-child(1){
+    left:8%;
+    top:85%;
+    animation-duration:12s;
+}
+
+.particles span:nth-child(2){
+    left:18%;
+    top:65%;
+    animation-duration:16s;
+    animation-delay:2s;
+}
+
+.particles span:nth-child(3){
+    left:30%;
+    top:90%;
+    animation-duration:13s;
+    animation-delay:4s;
+}
+
+.particles span:nth-child(4){
+    left:43%;
+    top:70%;
+    animation-duration:18s;
+    animation-delay:1s;
+}
+
+.particles span:nth-child(5){
+    left:55%;
+    top:88%;
+    animation-duration:15s;
+    animation-delay:5s;
+}
+
+.particles span:nth-child(6){
+    left:68%;
+    top:72%;
+    animation-duration:17s;
+    animation-delay:3s;
+}
+
+.particles span:nth-child(7){
+    left:78%;
+    top:92%;
+    animation-duration:14s;
+    animation-delay:6s;
+}
+
+.particles span:nth-child(8){
+    left:90%;
+    top:80%;
+    animation-duration:19s;
+    animation-delay:2s;
+}
+
+@keyframes floatParticle{
+
+    0%{
+        transform:translateY(80px) scale(.6);
+        opacity:0;
+    }
+
+    15%{
+        opacity:.45;
+    }
+
+    50%{
+        transform:translateY(-45vh) translateX(30px) scale(1);
+        opacity:.7;
+    }
+
+    100%{
+        transform:translateY(-110vh) translateX(-30px) scale(.5);
+        opacity:0;
+    }
+}
+
+
+/* =========================
+   HERO
+========================= */
 
 header{
     min-height:75vh;
@@ -141,69 +208,219 @@ header{
     align-items:center;
     text-align:center;
     padding:30px 20px;
+    position:relative;
 }
+
+
+/* LOGO */
 
 .logo{
     width:95px;
     height:95px;
     border-radius:50%;
     border:2px solid #00ff88;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     font-size:42px;
     font-weight:bold;
     color:#00ff88;
-    box-shadow:0 0 35px #00ff8840;
+
+    box-shadow:
+        0 0 20px #00ff8850,
+        0 0 50px #00ff8820;
+
     margin-bottom:25px;
+
+    animation:
+        logoFloat 4s ease-in-out infinite,
+        logoGlow 3s ease-in-out infinite;
 }
+
+@keyframes logoFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-8px);
+    }
+}
+
+@keyframes logoGlow{
+
+    0%,100%{
+        box-shadow:
+            0 0 20px #00ff8850,
+            0 0 50px #00ff8820;
+    }
+
+    50%{
+        box-shadow:
+            0 0 30px #00ff8880,
+            0 0 75px #00ff8835;
+    }
+}
+
+
+/* =========================
+   NIPAMVERSE LIVE TITLE
+========================= */
 
 header h1{
     font-size:clamp(45px,11vw,80px);
     letter-spacing:2px;
     color:white;
-    text-shadow:0 0 30px #00ff8830;
+
+    min-height:1.2em;
+
+    text-shadow:
+        0 0 15px #00ff8830,
+        0 0 35px #00ff8815;
 }
 
 header h1 span{
     color:#00ff88;
 }
 
+
+/* LETTER ANIMATION */
+
+.letter{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(18px);
+    filter:blur(8px);
+
+    animation:
+        letterReveal .7s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes letterReveal{
+
+    0%{
+        opacity:0;
+        transform:translateY(18px);
+        filter:blur(8px);
+    }
+
+    70%{
+        opacity:1;
+        transform:translateY(-3px);
+        filter:blur(0);
+    }
+
+    100%{
+        opacity:1;
+        transform:translateY(0);
+        filter:blur(0);
+    }
+}
+
+
+/* CONTINUOUS TITLE GLOW */
+
+.live-title{
+    animation:titleBreath 3.5s ease-in-out infinite 2.8s;
+}
+
+@keyframes titleBreath{
+
+    0%,100%{
+        text-shadow:
+            0 0 10px #00ff8830,
+            0 0 25px #00ff8815;
+    }
+
+    50%{
+        text-shadow:
+            0 0 18px #00ff8880,
+            0 0 45px #00ff8840,
+            0 0 80px #00ff8820;
+    }
+}
+
+
 header p{
     margin-top:15px;
     color:#91a197;
     font-size:18px;
+
+    animation:
+        fadeUp 1s ease forwards 2.6s;
+
+    opacity:0;
 }
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* HERO BUTTON */
 
 .hero-btn{
     display:inline-block;
     margin-top:32px;
     padding:14px 30px;
+
     border:1px solid #00ff88;
     border-radius:30px;
+
     background:#00ff8812;
     color:#00ff88;
+
     text-decoration:none;
     font-weight:bold;
-    transition:.3s;
+
+    transition:.4s;
+
+    animation:
+        fadeUp 1s ease forwards 3s;
+
+    opacity:0;
 }
 
 .hero-btn:hover{
     background:#00ff88;
     color:#001b0d;
-    box-shadow:0 0 30px #00ff8860;
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 0 20px #00ff8870,
+        0 0 45px #00ff8830;
 }
 
-/* NAVIGATION */
+
+/* =========================
+   NAVIGATION
+========================= */
 
 nav{
     position:sticky;
     top:0;
     z-index:100;
+
     padding:16px;
     text-align:center;
+
     background:#050807e8;
+
     backdrop-filter:blur(15px);
+
     border-bottom:1px solid #00ff8820;
 }
 
@@ -212,14 +429,19 @@ nav a{
     text-decoration:none;
     margin:0 13px;
     font-size:14px;
+
     transition:.3s;
 }
 
 nav a:hover{
     color:#00ff88;
+    text-shadow:0 0 12px #00ff8860;
 }
 
-/* SECTION */
+
+/* =========================
+   SECTIONS
+========================= */
 
 section{
     max-width:1100px;
@@ -245,7 +467,10 @@ section{
     margin-top:10px;
 }
 
-/* SEARCH */
+
+/* =========================
+   SEARCH
+========================= */
 
 .search{
     display:flex;
@@ -256,49 +481,121 @@ section{
 .search input{
     width:100%;
     max-width:600px;
+
     padding:16px 22px;
+
     border-radius:30px;
     border:1px solid #00ff8830;
+
     outline:none;
+
     background:#0a100d;
     color:white;
+
     font-size:16px;
+
+    transition:.4s;
 }
 
 .search input:focus{
     border-color:#00ff88;
-    box-shadow:0 0 25px #00ff8820;
+
+    box-shadow:
+        0 0 20px #00ff8830,
+        0 0 45px #00ff8810;
 }
 
-/* CARDS */
+
+/* =========================
+   CARDS
+========================= */
 
 .cards{
     display:grid;
     grid-template-columns:
     repeat(auto-fit,minmax(230px,1fr));
+
     gap:22px;
 }
 
 .card{
     padding:30px;
+
     border:1px solid #00ff8818;
     border-radius:20px;
+
     background:
     linear-gradient(145deg,#0b110e,#070a08);
-    transition:.3s;
+
+    transition:.45s;
+
     position:relative;
     overflow:hidden;
 }
 
+
+/* moving shine */
+
+.card::before{
+    content:"";
+    position:absolute;
+
+    width:150%;
+    height:1px;
+
+    left:-150%;
+    top:0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #00ff88,
+            transparent
+        );
+
+    animation:cardShine 6s linear infinite;
+}
+
+@keyframes cardShine{
+
+    0%{
+        left:-150%;
+    }
+
+    100%{
+        left:150%;
+    }
+}
+
 .card:hover{
     transform:translateY(-8px);
+
     border-color:#00ff8870;
-    box-shadow:0 15px 40px #00ff8812;
+
+    box-shadow:
+        0 15px 40px #00ff8812,
+        0 0 25px #00ff8810;
 }
 
 .icon{
     font-size:43px;
     margin-bottom:18px;
+
+    display:inline-block;
+
+    animation:iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-5px);
+    }
 }
 
 .card h3{
@@ -314,28 +611,54 @@ section{
 
 .card button{
     border:1px solid #00ff88;
+
     background:#00ff8812;
     color:#00ff88;
+
     padding:11px 20px;
+
     border-radius:10px;
+
     cursor:pointer;
+
     font-weight:bold;
-    transition:.3s;
+
+    transition:.35s;
 }
 
 .card button:hover{
     background:#00ff88;
     color:#001b0d;
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 0 18px #00ff8860;
 }
 
-/* ABOUT */
+
+/* =========================
+   ABOUT
+========================= */
 
 .about-box{
     text-align:center;
+
     background:#0b110e;
+
     border:1px solid #00ff8818;
     border-radius:20px;
+
     padding:40px 25px;
+
+    transition:.4s;
+}
+
+.about-box:hover{
+    border-color:#00ff8840;
+
+    box-shadow:
+        0 0 30px #00ff8810;
 }
 
 .about-box p{
@@ -343,12 +666,18 @@ section{
     line-height:1.8;
 }
 
-/* FOOTER */
+
+/* =========================
+   FOOTER
+========================= */
 
 footer{
     border-top:1px solid #00ff8815;
+
     text-align:center;
+
     padding:35px 20px;
+
     color:#68766e;
 }
 
@@ -356,7 +685,10 @@ footer strong{
     color:#00ff88;
 }
 
-/* MOBILE */
+
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:600px){
 
@@ -391,15 +723,27 @@ footer strong{
 
 <body>
 
+<!-- LIVE PARTICLES -->
+
+<div class="particles">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+
 <!-- HERO -->
 
 <header id="home">
 
     <div class="logo">N</div>
 
-    <h1>
-        Nipam<span>Verse</span>
-    </h1>
+    <h1 id="mainTitle"></h1>
 
     <p>
         Learn • Play • Create
@@ -417,9 +761,7 @@ footer strong{
 <nav>
 
     <a href="#home">Home</a>
-
     <a href="#resources">Resources</a>
-
     <a href="#about">About</a>
 
 </nav>
@@ -476,8 +818,7 @@ footer strong{
                 study resources.
             </p>
 
-            <button
-                onclick="showMessage('Study Materials')">
+            <button onclick="showMessage('Study Materials')">
                 Explore
             </button>
 
@@ -500,8 +841,9 @@ footer strong{
             </p>
 
             <button class="btn" onclick="window.location.href='games.html'">
-    Explore Games
+                Explore Games
             </button>
+
         </div>
 
 
@@ -519,9 +861,10 @@ footer strong{
                 Simple and helpful online
                 tools.
             </p>
-<button class="btn" onclick="window.location.href='tools.html'">
-    Explore Tools
-</button>
+
+            <button class="btn" onclick="window.location.href='tools.html'">
+                Explore Tools
+            </button>
 
         </div>
 
@@ -541,8 +884,7 @@ footer strong{
                 helpful information.
             </p>
 
-            <button
-                onclick="showMessage('Tips & Ideas')">
+            <button onclick="showMessage('Tips & Ideas')">
                 Discover
             </button>
 
@@ -608,7 +950,44 @@ footer strong{
 
 <script>
 
-/* BUTTON MESSAGE */
+/* =========================
+   NIPAMVERSE LETTER ANIMATION
+========================= */
+
+const title = "NipamVerse";
+const titleElement = document.getElementById("mainTitle");
+
+title.split("").forEach((letter,index)=>{
+
+    const span = document.createElement("span");
+
+    span.className = "letter";
+
+    span.style.animationDelay = (index * 0.16) + "s";
+
+    span.textContent = letter;
+
+    if(index >= 5){
+        span.style.color = "#00ff88";
+    }
+
+    titleElement.appendChild(span);
+
+});
+
+
+/* Start continuous title glow after reveal */
+
+setTimeout(()=>{
+
+    titleElement.classList.add("live-title");
+
+},3000);
+
+
+/* =========================
+   BUTTON MESSAGE
+========================= */
 
 function showMessage(name){
 
@@ -620,7 +999,9 @@ function showMessage(name){
 }
 
 
-/* SEARCH FUNCTION */
+/* =========================
+   SEARCH FUNCTION
+========================= */
 
 function searchCards(){
 
@@ -656,4 +1037,4 @@ function searchCards(){
 </script>
 
 </body>
-</html>
+  </html>
