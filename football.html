@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NipamVerse — Football Recent</title>
+
+<meta name="description" content="NipamVerse Football Recent — latest football news, matches, Argentina and Messi updates.">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#020604;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+
+body::before{
+  content:"";
+  position:fixed;
+  width:480px;
+  height:480px;
+  border-radius:50%;
+  background:#00ff8830;
+  filter:blur(120px);
+  top:-180px;
+  left:-180px;
+  z-index:-5;
+  animation:orbMove 9s infinite alternate ease-in-out;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:#00ff8820;
+  filter:blur(120px);
+  bottom:-160px;
+  right:-160px;
+  z-index:-5;
+  animation:orbMove2 11s infinite alternate ease-in-out;
+}
+
+@keyframes orbMove{
+  from{transform:translate(0,0)}
+  to{transform:translate(170px,130px)}
+}
+
+@keyframes orbMove2{
+  from{transform:translate(0,0)}
+  to{transform:translate(-150px,-110px)}
+}
+
+/* ===== NAV ===== */
+
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 7%;
+  background:#020604dd;
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid #00ff8830;
+  animation:navDown .8s ease;
+}
+
+@keyframes navDown{
+  from{
+    opacity:0;
+    transform:translateY(-30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  color:#00ff88;
+  text-shadow:0 0 15px #00ff88;
+  animation:logoGlow 2.5s infinite alternate;
+}
+
+@keyframes logoGlow{
+  from{
+    text-shadow:0 0 8px #00ff88;
+  }
+  to{
+    text-shadow:0 0 25px #00ff88;
+  }
+}
+
+.home{
+  color:#fff;
+  text-decoration:none;
+  padding:9px 18px;
+  border:1px solid #00ff8860;
+  border-radius:25px;
+  transition:.3s;
+}
+
+.home:hover{
+  color:#00ff88;
+  background:#00ff8815;
+  box-shadow:0 0 20px #00ff8860;
+  transform:translateY(-2px);
+}
+
+/* ===== HERO ===== */
+
+.hero{
+  text-align:center;
+  padding:65px 20px 40px;
+}
+
+.ball{
+  display:inline-block;
+  font-size:65px;
+  filter:drop-shadow(0 0 18px #00ff88);
+  animation:ballFloat 2.5s infinite ease-in-out;
+}
+
+@keyframes ballFloat{
+  0%,100%{
+    transform:translateY(0) rotate(0);
+  }
+  50%{
+    transform:translateY(-14px) rotate(12deg);
+  }
+}
+
+.hero h1{
+  margin-top:15px;
+  font-size:clamp(40px,8vw,72px);
+  animation:titlePulse 3s infinite alternate;
+}
+
+.hero h1 span{
+  color:#00ff88;
+  text-shadow:0 0 25px #00ff88;
+}
+
+@keyframes titlePulse{
+  from{
+    text-shadow:0 0 8px #00ff88;
+  }
+  to{
+    text-shadow:0 0 30px #00ff88;
+  }
+}
+
+.hero p{
+  margin-top:12px;
+  color:#9bb8a8;
+  font-size:16px;
+}
+
+/* ===== STATUS ===== */
+
+.status{
+  width:min(1100px,90%);
+  margin:0 auto 40px;
+  padding:14px 18px;
+  border:1px solid #00ff8840;
+  border-radius:16px;
+  background:#00ff8808;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.status strong{
+  color:#00ff88;
+}
+
+.refresh{
+  border:1px solid #00ff8870;
+  background:#00ff8812;
+  color:#00ff88;
+  padding:9px 18px;
+  border-radius:22px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.refresh:hover{
+  background:#00ff8825;
+  box-shadow:0 0 20px #00ff8855;
+  transform:translateY(-2px);
+}
+
+/* ===== SECTIONS ===== */
+
+section{
+  width:min(1100px,90%);
+  margin:0 auto 60px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.section-title h2{
+  font-size:25px;
+}
+
+.line{
+  flex:1;
+  height:2px;
+  background:linear-gradient(90deg,#00ff88,transparent);
+}
+
+/* ===== NEWS GRID ===== */
+
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+/* ===== NEWS CARD ===== */
+
+.news-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:20px;
+  border:1px solid #00ff8830;
+  background:linear-gradient(145deg,#08130d,#020604);
+  transition:.4s;
+  opacity:0;
+  transform:translateY(30px);
+  animation:cardShow .7s forwards;
+}
+
+.news-card:nth-child(2){animation-delay:.1s}
+.news-card:nth-child(3){animation-delay:.2s}
+.news-card:nth-child(4){animation-delay:.3s}
+.news-card:nth-child(5){animation-delay:.4s}
+.news-card:nth-child(6){animation-delay:.5s}
+
+@keyframes cardShow{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.news-card:hover{
+  transform:translateY(-8px) scale(1.015);
+  border-color:#00ff8890;
+  box-shadow:0 15px 45px #00ff8825;
+}
+
+/* ===== IMAGE ===== */
+
+.news-image{
+  height:195px;
+  position:relative;
+  overflow:hidden;
+  background:#07110b;
+}
+
+.news-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.6s;
+}
+
+.news-card:hover .news-image img{
+  transform:scale(1.08);
+}
+
+.news-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    transparent 35%,
+    #020604ee
+  );
+}
+
+/* ===== TAG ===== */
+
+.tag{
+  position:absolute;
+  z-index:3;
+  top:12px;
+  left:12px;
+  padding:6px 11px;
+  border-radius:18px;
+  color:#00ff88;
+  background:#001f104d;
+  border:1px solid #00ff8860;
+  backdrop-filter:blur(8px);
+  font-size:11px;
+  font-weight:bold;
+}
+
+/* ===== CONTENT ===== */
+
+.news-content{
+  padding:17px;
+}
+
+.news-content h3{
+  font-size:17px;
+  line-height:1.4;
+  margin-bottom:9px;
+}
+
+.news-content p{
+  color:#91aa9d;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.meta{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:14px;
+  color:#637a6e;
+  font-size:11px;
+}
+
+.read{
+  display:inline-block;
+  margin-top:14px;
+  color:#00ff88;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.read:hover{
+  text-shadow:0 0 12px #00ff88;
+}
+
+/* ===== FEATURE ===== */
+
+.feature{
+  position:relative;
+  overflow:hidden;
+  padding:30px;
+  border-radius:24px;
+  border:1px solid #00ff8840;
+  background:
+    radial-gradient(circle at 85% 20%,#00ff8825,transparent 32%),
+    linear-gradient(135deg,#07140d,#020604);
+}
+
+.feature h2{
+  color:#00ff88;
+  font-size:30px;
+  margin-bottom:10px;
+}
+
+.feature p{
+  color:#a2b9ad;
+  line-height:1.7;
+}
+
+.feature-btn{
+  display:inline-block;
+  margin-top:18px;
+  padding:11px 20px;
+  border-radius:25px;
+  background:#00ff88;
+  color:#001b0d;
+  text-decoration:none;
+  font-weight:bold;
+  transition:.3s;
+}
+
+.feature-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 25px #00ff8870;
+}
+
+/* ===== FOOTER ===== */
+
+footer{
+  text-align:center;
+  padding:35px 20px;
+  border-top:1px solid #00ff8825;
+  color:#6f8277;
+}
+
+footer span{
+  color:#00ff88;
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:800px){
+
+  .news-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:560px){
+
+  nav{
+    padding:13px 5%;
+  }
+
+  .hero{
+    padding-top:45px;
+  }
+
+  .ball{
+    font-size:55px;
+  }
+
+  .news-grid{
+    grid-template-columns:1fr;
+  }
+
+  .news-image{
+    height:215px;
+  }
+
+  .refresh{
+    width:100%;
+  }
+
+  .feature{
+    padding:24px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+
+  <div class="logo">
+    NipamVerse
+  </div>
+
+  <a href="index.html" class="home">
+    Home
+  </a>
+
+</nav>
+
+
+<!-- HERO -->
+<div class="hero">
+
+  <div class="ball">
+    ⚽
+  </div>
+
+  <h1>
+    Football <span>Recent</span>
+  </h1>
+
+  <p>
+    Latest football stories, matches &amp; updates
+  </p>
+
+</div>
+
+
+<!-- STATUS -->
+<div class="status">
+
+  <div>
+    🟢 <strong>Football Center</strong>
+    • Automatic News
+  </div>
+
+  <button class="refresh" onclick="loadNews()">
+    🔄 Refresh News
+  </button>
+
+</div>
+
+
+<!-- LATEST NEWS -->
+<section>
+
+  <div class="section-title">
+
+    <h2>
+      🔥 Latest Football News
+    </h2>
+
+    <div class="line"></div>
+
+  </div>
+
+
+  <div class="news-grid" id="newsGrid">
+
+    <!-- FALLBACK CARD 1 -->
+
+    <article class="news-card">
+
+      <div class="news-image">
+
+        <span class="tag">
+          FOOTBALL
+        </span>
+
+        <img
+          src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=80"
+          alt="Football"
+        >
+
+      </div>
+
+      <div class="news-content">
+
+        <h3>
+          Latest football stories
+        </h3>
+
+        <p>
+          Football news and major stories from around the world.
+        </p>
+
+        <div class="meta">
+          <span>Football Center</span>
+          <span>Latest</span>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- FALLBACK CARD 2 -->
+
+    <article class="news-card">
+
+      <div class="news-image">
+
+        <span class="tag">
+          MATCHES
+        </span>
+
+        <img
+          src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1000&q=80"
+          alt="Football match"
+        >
+
+      </div>
+
+      <div class="news-content">
+
+        <h3>
+          Matchday updates
+        </h3>
+
+        <p>
+          Follow important football matches and latest results.
+        </p>
+
+        <div class="meta">
+          <span>Match Center</span>
+          <span>Today</span>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- FALLBACK CARD 3 -->
+
+    <article class="news-card">
+
+      <div class="news-image">
+
+        <span class="tag">
+          WORLD
+        </span>
+
+        <img
+          src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=1000&q=80"
+          alt="Football field"
+        >
+
+      </div>
+
+      <div class="news-content">
+
+        <h3>
+          World football updates
+        </h3>
+
+        <p>
+          Discover stories from clubs, leagues and international football.
+        </p>
+
+        <div class="meta">
+          <span>World Football</span>
+          <span>Updates</span>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<!-- ARGENTINA -->
+<section>
+
+  <div class="section-title">
+
+    <h2>
+      🇦🇷 Argentina Zone
+    </h2>
+
+    <div class="line"></div>
+
+  </div>
+
+
+  <div class="feature">
+
+    <h2>
+      Argentina Football 🇦🇷
+    </h2>
+
+    <p>
+      Follow Argentina football, international matches,
+      team stories and major updates.
+    </p>
+
+    <a
+      class="feature-btn"
+      href="https://news.google.com/search?q=Argentina%20football"
+      target="_blank"
+      rel="noopener"
+    >
+      Explore Argentina News →
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- MESSI -->
+<section>
+
+  <div class="section-title">
+
+    <h2>
+      🐐 Messi Zone
+    </h2>
+
+    <div class="line"></div>
+
+  </div>
+
+
+  <div class="feature">
+
+    <h2>
+      Messi Updates ⚽
+    </h2>
+
+    <p>
+      Follow major football stories and updates
+      related to Lionel Messi.
+    </p>
+
+    <a
+      class="feature-btn"
+      href="https://news.google.com/search?q=Lionel%20Messi%20football"
+      target="_blank"
+      rel="noopener"
+    >
+      Explore Messi News →
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+
+  <p>
+    ⚽ <span>NipamVerse</span> Football Center
+  </p>
+
+  <p style="margin-top:8px">
+    Learn • Play • Create
+  </p>
+
+</footer>
+
+
+<script>
+
+async function loadNews(){
+
+  const grid =
+    document.getElementById("newsGrid");
+
+  try{
+
+    const response =
+      await fetch(
+        "football-news.json?x=" + Date.now()
+      );
+
+    if(!response.ok){
+      throw new Error("News file not available");
+    }
+
+    const news =
+      await response.json();
+
+    if(!Array.isArray(news) || news.length === 0){
+      throw new Error("No news available");
+    }
+
+    grid.innerHTML = "";
+
+    news.slice(0,12).forEach((item,index)=>{
+
+      const card =
+        document.createElement("article");
+
+      card.className = "news-card";
+
+      card.style.animationDelay =
+        (index * 0.08) + "s";
+
+
+      const fallback =
+        "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=80";
+
+
+      const image =
+        item.image && item.image.trim()
+        ? item.image
+        : fallback;
+
+
+      card.innerHTML = `
+
+        <div class="news-image">
+
+          <span class="tag">
+            FOOTBALL
+          </span>
+
+          <img
+            src="${image}"
+            alt="Football news"
+            onerror="this.src='${fallback}'"
+          >
+
+        </div>
+
+
+        <div class="news-content">
+
+          <h3>
+            ${escapeHTML(
+              item.title || "Football News"
+            )}
+          </h3>
+
+
+          <p>
+            Latest football story from
+            ${escapeHTML(
+              item.source || "Football News"
+            )}.
+          </p>
+
+
+          <div class="meta">
+
+            <span>
+              ${escapeHTML(
+                item.source || "Football"
+              )}
+            </span>
+
+            <span>
+              ${escapeHTML(
+                item.date || "Latest"
+              )}
+            </span>
+
+          </div>
+
+
+          ${
+            item.link
+            ?
+            `
+            <a
+              class="read"
+              href="${item.link}"
+              target="_blank"
+              rel="noopener"
+            >
+              Read Full News →
+            </a>
+            `
+            :
+            ""
+          }
+
+        </div>
+
+      `;
+
+
+      grid.appendChild(card);
+
+    });
+
+  }
+
+  catch(error){
+
+    console.log(
+      "Automatic news not available yet:",
+      error
+    );
+
+  }
+
+}
+
+
+function escapeHTML(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+
+}
+
+
+loadNews();
+
+</script>
+
+</body>
+  </html>
