@@ -6,1004 +6,1015 @@
 
 <title>NipamVerse — Football Recent</title>
 
-<meta name="description" content="NipamVerse Football Recent — latest football news, matches, Argentina and Messi updates.">
+<meta name="description"
+content="NipamVerse Football Recent — football news, Argentina, Messi, clubs, stadiums and football moments.">
 
 <style>
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-html{
-  scroll-behavior:smooth;
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#020604;
-  color:#fff;
-  overflow-x:hidden;
+    overflow-x:hidden;
 }
 
-/* ===== ANIMATED BACKGROUND ===== */
+/* =========================
+   HEADER
+========================= */
 
-body::before{
-  content:"";
-  position:fixed;
-  width:480px;
-  height:480px;
-  border-radius:50%;
-  background:#00ff8830;
-  filter:blur(120px);
-  top:-180px;
-  left:-180px;
-  z-index:-5;
-  animation:orbMove 9s infinite alternate ease-in-out;
+.top{
+    position:relative;
+    z-index:100;
+    padding:28px 20px 22px;
+    text-align:center;
+    background:
+        linear-gradient(180deg,#08150c 0%,#07100a 75%,transparent 100%);
 }
 
-body::after{
-  content:"";
-  position:fixed;
-  width:420px;
-  height:420px;
-  border-radius:50%;
-  background:#00ff8820;
-  filter:blur(120px);
-  bottom:-160px;
-  right:-160px;
-  z-index:-5;
-  animation:orbMove2 11s infinite alternate ease-in-out;
+.top h1{
+    font-size:clamp(30px,6vw,58px);
+    font-weight:800;
+    letter-spacing:-1.5px;
 }
 
-@keyframes orbMove{
-  from{transform:translate(0,0)}
-  to{transform:translate(170px,130px)}
-}
-
-@keyframes orbMove2{
-  from{transform:translate(0,0)}
-  to{transform:translate(-150px,-110px)}
-}
-
-/* ===== DRAG WORLD ===== */
-
-.football-space{
-  width:100%;
-  min-height:100vh;
-  overflow:hidden;
-  touch-action:none;
-  cursor:grab;
-}
-
-.football-space.dragging{
-  cursor:grabbing;
-}
-
-.football-world{
-  position:relative;
-  width:100%;
-  min-height:100vh;
-  transform:translate3d(0,0,0);
-  will-change:transform;
-}
-
-/* ===== NAV ===== */
-
-nav{
-  position:sticky;
-  top:0;
-  z-index:100;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 7%;
-  background:#020604dd;
-  backdrop-filter:blur(15px);
-  border-bottom:1px solid #00ff8830;
-  animation:navDown .8s ease;
-}
-
-@keyframes navDown{
-  from{
-    opacity:0;
-    transform:translateY(-30px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-.logo{
-  font-size:22px;
-  font-weight:bold;
-  color:#00ff88;
-  text-shadow:0 0 15px #00ff88;
-  animation:logoGlow 2.5s infinite alternate;
-}
-
-@keyframes logoGlow{
-  from{
-    text-shadow:0 0 8px #00ff88;
-  }
-  to{
-    text-shadow:0 0 25px #00ff88;
-  }
-}
-
-.home{
-  color:#fff;
-  text-decoration:none;
-  padding:9px 18px;
-  border:1px solid #00ff8860;
-  border-radius:25px;
-  transition:.3s;
-}
-
-.home:hover{
-  color:#00ff88;
-  background:#00ff8815;
-  box-shadow:0 0 20px #00ff8860;
-}
-
-/* ===== HERO ===== */
-
-.hero{
-  text-align:center;
-  padding:65px 20px 40px;
-}
-
-.ball{
-  display:inline-block;
-  font-size:65px;
-  filter:drop-shadow(0 0 18px #00ff88);
-  animation:ballFloat 2.5s infinite ease-in-out;
-}
-
-@keyframes ballFloat{
-  0%,100%{
-    transform:translateY(0) rotate(0);
-  }
-  50%{
-    transform:translateY(-14px) rotate(12deg);
-  }
-}
-
-.hero h1{
-  margin-top:15px;
-  font-size:clamp(40px,8vw,72px);
-  animation:titlePulse 3s infinite alternate;
-}
-
-.hero h1 span{
-  color:#00ff88;
-  text-shadow:0 0 25px #00ff88;
-}
-
-@keyframes titlePulse{
-  from{
-    text-shadow:0 0 8px #00ff88;
-  }
-  to{
-    text-shadow:0 0 30px #00ff88;
-  }
-}
-
-.hero p{
-  margin-top:12px;
-  color:#9bb8a8;
-  font-size:16px;
-}
-
-/* ===== STATUS ===== */
-
-.status{
-  width:min(1100px,90%);
-  margin:0 auto 40px;
-  padding:14px 18px;
-  border:1px solid #00ff8840;
-  border-radius:16px;
-  background:#00ff8808;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-.status strong{
-  color:#00ff88;
-}
-
-.refresh{
-  border:1px solid #00ff8870;
-  background:#00ff8812;
-  color:#00ff88;
-  padding:9px 18px;
-  border-radius:22px;
-  cursor:pointer;
-  transition:.3s;
-}
-
-.refresh:hover{
-  background:#00ff8825;
-  box-shadow:0 0 20px #00ff8855;
-}
-
-/* ===== SECTIONS ===== */
-
-section{
-  width:min(1100px,90%);
-  margin:0 auto 60px;
-}
-
-.section-title{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:22px;
-}
-
-.section-title h2{
-  font-size:25px;
+.top p{
+    margin-top:8px;
+    color:#a9b5ad;
+    font-size:14px;
 }
 
 .line{
-  flex:1;
-  height:2px;
-  background:linear-gradient(90deg,#00ff88,transparent);
+    width:90px;
+    height:3px;
+    margin:17px auto 0;
+    background:#45d978;
+    border-radius:20px;
 }
 
-/* ===== NEWS GRID ===== */
+/* =========================
+   WORLD VIEWPORT
+========================= */
 
-.news-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+.world-section{
+    position:relative;
+    width:100%;
+    height:78vh;
+    min-height:560px;
+    overflow:hidden;
+
+    background:
+        radial-gradient(circle at 50% 50%,rgba(26,76,43,.28),transparent 48%),
+        linear-gradient(135deg,#061009,#020403 55%,#07130b);
+
+    border-top:1px solid rgba(100,255,150,.08);
+    border-bottom:1px solid rgba(100,255,150,.08);
+
+    cursor:grab;
+
+    /* Important:
+       browser will not take over the gesture */
+    touch-action:none;
+
+    user-select:none;
+    -webkit-user-select:none;
 }
 
-/* ===== NEWS CARD ===== */
-
-.news-card{
-  position:relative;
-  overflow:hidden;
-  border-radius:20px;
-  border:1px solid #00ff8830;
-  background:linear-gradient(145deg,#08130d,#020604);
-  transition:.4s;
-  opacity:0;
-  transform:translateY(30px);
-  animation:cardShow .7s forwards;
+.world-section.dragging{
+    cursor:grabbing;
 }
 
-@keyframes cardShow{
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
+/* subtle football field lines */
+
+.world-section::before{
+    content:"";
+    position:absolute;
+    inset:-50%;
+    background:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:100px 100px;
+    transform:rotate(0deg);
+    pointer-events:none;
 }
 
-.news-card:hover{
-  transform:translateY(-8px) scale(1.015);
-  border-color:#00ff8890;
-  box-shadow:0 15px 45px #00ff8825;
+/* =========================
+   MOVING WORLD
+========================= */
+
+.world{
+    position:absolute;
+
+    width:3600px;
+    height:2400px;
+
+    left:0;
+    top:0;
+
+    will-change:transform;
 }
 
-/* ===== IMAGE ===== */
+/* =========================
+   CONTENT CARDS
+========================= */
 
-.news-image{
-  height:195px;
-  position:relative;
-  overflow:hidden;
-  background:#07110b;
+.card{
+    position:absolute;
+
+    width:330px;
+    min-height:220px;
+
+    border-radius:22px;
+    overflow:hidden;
+
+    background:#101611;
+
+    border:1px solid rgba(126,255,161,.18);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.48),
+        inset 0 0 0 1px rgba(255,255,255,.025);
+
+    transform:none !important;
+    perspective:none !important;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease;
+
+    pointer-events:none;
 }
 
-.news-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:.6s;
+.card:hover{
+    border-color:rgba(91,239,128,.38);
+
+    box-shadow:
+        0 20px 55px rgba(0,0,0,.55),
+        0 0 25px rgba(49,218,103,.08);
 }
 
-.news-card:hover .news-image img{
-  transform:scale(1.08);
+.card-image{
+    width:100%;
+    height:155px;
+    object-fit:cover;
+    display:block;
+    background:#101510;
 }
 
-.news-image::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    transparent 35%,
-    #020604ee
-  );
+.card-body{
+    padding:15px 16px 17px;
 }
 
-/* ===== TAG ===== */
-
-.tag{
-  position:absolute;
-  z-index:3;
-  top:12px;
-  left:12px;
-  padding:6px 11px;
-  border-radius:18px;
-  color:#00ff88;
-  background:#001f104d;
-  border:1px solid #00ff8860;
-  backdrop-filter:blur(8px);
-  font-size:11px;
-  font-weight:bold;
+.card-title{
+    font-size:17px;
+    line-height:1.35;
+    font-weight:700;
 }
 
-/* ===== CONTENT ===== */
-
-.news-content{
-  padding:17px;
+.card-meta{
+    margin-top:9px;
+    color:#8f9d93;
+    font-size:11px;
 }
 
-.news-content h3{
-  font-size:17px;
-  line-height:1.4;
-  margin-bottom:9px;
-}
-
-.news-content p{
-  color:#91aa9d;
-  font-size:13px;
-  line-height:1.5;
-}
-
-.meta{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:14px;
-  color:#637a6e;
-  font-size:11px;
-}
-
-.read{
-  display:inline-block;
-  margin-top:14px;
-  color:#00ff88;
-  text-decoration:none;
-  font-size:13px;
-  font-weight:bold;
-}
-
-.read:hover{
-  text-shadow:0 0 12px #00ff88;
-}
-
-/* ===== FEATURE ===== */
+/* =========================
+   FEATURE CARDS
+========================= */
 
 .feature{
-  position:relative;
-  overflow:hidden;
-  padding:30px;
-  border-radius:24px;
-  border:1px solid #00ff8840;
-  background:
-    radial-gradient(circle at 85% 20%,#00ff8825,transparent 32%),
-    linear-gradient(135deg,#07140d,#020604);
+    width:390px;
+    min-height:330px;
+}
+
+.feature .card-image{
+    height:205px;
+}
+
+.feature .card-body{
+    padding:18px 20px 21px;
 }
 
 .feature h2{
-  color:#00ff88;
-  font-size:30px;
-  margin-bottom:10px;
+    font-size:25px;
+    margin-bottom:8px;
 }
 
 .feature p{
-  color:#a2b9ad;
-  line-height:1.7;
+    color:#aab5ad;
+    font-size:13px;
+    line-height:1.55;
 }
 
-.feature-btn{
-  display:inline-block;
-  margin-top:18px;
-  padding:11px 20px;
-  border-radius:25px;
-  background:#00ff88;
-  color:#001b0d;
-  text-decoration:none;
-  font-weight:bold;
-  transition:.3s;
+/* =========================
+   IMAGE PANELS
+========================= */
+
+.image-panel{
+    position:absolute;
+
+    width:400px;
+    height:270px;
+
+    border-radius:24px;
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    box-shadow:0 20px 55px rgba(0,0,0,.55);
+
+    pointer-events:none;
 }
 
-.feature-btn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 0 25px #00ff8870;
+.image-panel img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
 }
 
-/* ===== FOOTER ===== */
+.image-panel::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent 35%,
+            rgba(0,0,0,.65)
+        );
+}
+
+/* =========================
+   NEWS AREA
+========================= */
+
+.news-label{
+    position:absolute;
+    left:50%;
+    top:20px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    padding:9px 18px;
+
+    background:rgba(5,10,7,.78);
+    border:1px solid rgba(86,224,122,.2);
+
+    border-radius:50px;
+
+    backdrop-filter:blur(10px);
+
+    font-size:12px;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+
+    color:#c9d4cc;
+
+    pointer-events:none;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    color:#94a39a;
+
+    font-size:14px;
+
+    pointer-events:none;
+}
+
+/* =========================
+   BOTTOM INFO
+========================= */
+
+.info{
+    position:absolute;
+
+    left:50%;
+    bottom:18px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    padding:8px 14px;
+
+    border-radius:30px;
+
+    background:rgba(4,8,5,.7);
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#7f8b83;
+
+    font-size:11px;
+
+    backdrop-filter:blur(8px);
+
+    pointer-events:none;
+}
+
+/* =========================
+   FOOTER
+========================= */
 
 footer{
-  text-align:center;
-  padding:35px 20px;
-  border-top:1px solid #00ff8825;
-  color:#6f8277;
+    text-align:center;
+    padding:40px 20px 50px;
+
+    color:#667169;
+    font-size:12px;
+
+    background:#030403;
 }
 
-footer span{
-  color:#00ff88;
-}
+/* =========================
+   MOBILE
+========================= */
 
-/* ===== MOBILE ===== */
+@media(max-width:600px){
 
-@media(max-width:800px){
+    .top{
+        padding:23px 15px 19px;
+    }
 
-  .news-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
+    .top h1{
+        font-size:32px;
+    }
 
-}
+    .world-section{
+        height:76vh;
+        min-height:520px;
+    }
 
-@media(max-width:560px){
+    .card{
+        width:275px;
+        min-height:195px;
+        border-radius:18px;
+    }
 
-  nav{
-    padding:13px 5%;
-  }
+    .card-image{
+        height:125px;
+    }
 
-  .hero{
-    padding-top:45px;
-  }
+    .card-body{
+        padding:13px;
+    }
 
-  .ball{
-    font-size:55px;
-  }
+    .card-title{
+        font-size:15px;
+    }
 
-  .news-grid{
-    grid-template-columns:1fr;
-  }
+    .feature{
+        width:310px;
+        min-height:275px;
+    }
 
-  .news-image{
-    height:215px;
-  }
+    .feature .card-image{
+        height:165px;
+    }
 
-  .refresh{
-    width:100%;
-  }
+    .feature h2{
+        font-size:21px;
+    }
 
-  .feature{
-    padding:24px;
-  }
+    .image-panel{
+        width:320px;
+        height:215px;
+        border-radius:20px;
+    }
 
+    .info{
+        bottom:12px;
+        font-size:10px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="football-space" id="footballSpace">
+<!-- =========================
+     FIXED HEADER
+========================= -->
 
-<div class="football-world" id="footballWorld">
-
-<!-- NAV -->
-
-<nav>
-
-  <div class="logo">
-    NipamVerse
-  </div>
-
-  <a href="index.html" class="home">
-    Home
-  </a>
-
-</nav>
-
-
-<!-- HERO -->
-
-<div class="hero">
-
-  <div class="ball">
-    ⚽
-  </div>
-
-  <h1>
-    Football <span>Recent</span>
-  </h1>
-
-  <p>
-    Latest football stories, matches &amp; updates
-  </p>
-
-</div>
-
-
-<!-- STATUS -->
-
-<div class="status">
-
-  <div>
-    🟢 <strong>Football Center</strong>
-    • Automatic News
-  </div>
-
-  <button class="refresh" onclick="loadNews()">
-    🔄 Refresh News
-  </button>
-
-</div>
-
-
-<!-- LATEST NEWS -->
-
-<section>
-
-  <div class="section-title">
-
-    <h2>
-      🔥 Latest Football News
-    </h2>
-
+<header class="top">
+    <h1>Football Recent</h1>
+    <p>Latest football stories, Argentina, Messi and the world of football</p>
     <div class="line"></div>
-
-  </div>
-
-
-  <div class="news-grid" id="newsGrid">
-
-    <article class="news-card">
-
-      <div class="news-image">
-
-        <span class="tag">
-          FOOTBALL
-        </span>
-
-        <img
-          src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=80"
-          alt="Football"
-        >
-
-      </div>
-
-      <div class="news-content">
-
-        <h3>
-          Latest football stories
-        </h3>
-
-        <p>
-          Football news and major stories from around the world.
-        </p>
-
-        <div class="meta">
-          <span>Football Center</span>
-          <span>Latest</span>
-        </div>
-
-      </div>
-
-    </article>
+</header>
 
 
-    <article class="news-card">
+<!-- =========================
+     2D FOOTBALL WORLD
+========================= -->
 
-      <div class="news-image">
+<section class="world-section" id="worldViewport">
 
-        <span class="tag">
-          MATCHES
-        </span>
+    <div class="news-label">
+        Football World
+    </div>
 
-        <img
-          src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1000&q=80"
-          alt="Football match"
-        >
+    <div class="loading" id="loading">
+        Loading football world...
+    </div>
 
-      </div>
+    <div class="world" id="footballWorld">
 
-      <div class="news-content">
+        <!--
+            CONTENT WILL BE CREATED HERE
+            BY JAVASCRIPT
+        -->
 
-        <h3>
-          Matchday updates
-        </h3>
+    </div>
 
-        <p>
-          Follow important football matches and latest results.
-        </p>
-
-        <div class="meta">
-          <span>Match Center</span>
-          <span>Today</span>
-        </div>
-
-      </div>
-
-    </article>
-
-
-    <article class="news-card">
-
-      <div class="news-image">
-
-        <span class="tag">
-          WORLD
-        </span>
-
-        <img
-          src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=1000&q=80"
-          alt="Football field"
-        >
-
-      </div>
-
-      <div class="news-content">
-
-        <h3>
-          World football updates
-        </h3>
-
-        <p>
-          Discover stories from clubs, leagues and international football.
-        </p>
-
-        <div class="meta">
-          <span>World Football</span>
-          <span>Updates</span>
-        </div>
-
-      </div>
-
-    </article>
-
-  </div>
+    <div class="info">
+        Drag in any direction
+    </div>
 
 </section>
 
-
-<!-- ARGENTINA -->
-
-<section>
-
-  <div class="section-title">
-
-    <h2>
-      🇦🇷 Argentina Zone
-    </h2>
-
-    <div class="line"></div>
-
-  </div>
-
-
-  <div class="feature">
-
-    <h2>
-      Argentina Football 🇦🇷
-    </h2>
-
-    <p>
-      Follow Argentina football, international matches,
-      team stories and major updates.
-    </p>
-
-    <a
-      class="feature-btn"
-      href="https://news.google.com/search?q=Argentina%20football"
-      target="_blank"
-      rel="noopener"
-    >
-      Explore Argentina News →
-    </a>
-
-  </div>
-
-</section>
-
-
-<!-- MESSI -->
-
-<section>
-
-  <div class="section-title">
-
-    <h2>
-      🐐 Messi Zone
-    </h2>
-
-    <div class="line"></div>
-
-  </div>
-
-
-  <div class="feature">
-
-    <h2>
-      Messi Updates ⚽
-    </h2>
-
-    <p>
-      Follow major football stories and updates
-      related to Lionel Messi.
-    </p>
-
-    <a
-      class="feature-btn"
-      href="https://news.google.com/search?q=Lionel%20Messi%20football"
-      target="_blank"
-      rel="noopener"
-    >
-      Explore Messi News →
-    </a>
-
-  </div>
-
-</section>
-
-
-<!-- FOOTER -->
 
 <footer>
-
-  <p>
-    ⚽ <span>NipamVerse</span> Football Center
-  </p>
-
-  <p style="margin-top:8px">
-    Learn • Play • Create
-  </p>
-
+    © 2026 NipamVerse · Football Recent
 </footer>
-
-</div>
-</div>
 
 
 <script>
 
-/* ===== AUTOMATIC FOOTBALL NEWS ===== */
+/* =========================================================
+   FOOTBALL IMAGES
+========================================================= */
+
+const footballImages = [
+
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1553778263-73a05d7f4e2d?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1000&q=85",
+
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85"
+];
+
+
+/* =========================================================
+   WORLD SETUP
+========================================================= */
+
+const viewport = document.getElementById("worldViewport");
+const world = document.getElementById("footballWorld");
+const loading = document.getElementById("loading");
+
+const WORLD_W = 3600;
+const WORLD_H = 2400;
+
+
+/* =========================================================
+   STATIC FOOTBALL CONTENT
+========================================================= */
+
+const staticContent = [
+
+    {
+        type:"feature",
+        title:"Argentina Zone",
+        text:"Argentina football, national team moments, major tournaments and the latest stories.",
+        image:footballImages[3],
+        x:250,
+        y:260
+    },
+
+    {
+        type:"feature",
+        title:"Messi Zone",
+        text:"Lionel Messi moments, career highlights, records and football stories.",
+        image:footballImages[0],
+        x:1760,
+        y:300
+    },
+
+    {
+        type:"image",
+        image:footballImages[4],
+        x:2900,
+        y:240
+    },
+
+    {
+        type:"image",
+        image:footballImages[6],
+        x:520,
+        y:900
+    },
+
+    {
+        type:"image",
+        image:footballImages[2],
+        x:2700,
+        y:900
+    },
+
+    {
+        type:"image",
+        image:footballImages[1],
+        x:1200,
+        y:1700
+    },
+
+    {
+        type:"image",
+        image:footballImages[5],
+        x:3000,
+        y:1700
+    }
+];
+
+
+/* =========================================================
+   CREATE STATIC CONTENT
+========================================================= */
+
+function createStaticContent(){
+
+    staticContent.forEach(item => {
+
+        if(item.type === "feature"){
+
+            const card = document.createElement("div");
+
+            card.className = "card feature";
+
+            card.style.left = item.x + "px";
+            card.style.top = item.y + "px";
+
+            card.innerHTML = `
+                <img
+                    class="card-image"
+                    src="${item.image}"
+                    alt="${item.title}"
+                >
+
+                <div class="card-body">
+                    <h2>${item.title}</h2>
+                    <p>${item.text}</p>
+                </div>
+            `;
+
+            world.appendChild(card);
+
+        }
+
+        if(item.type === "image"){
+
+            const panel = document.createElement("div");
+
+            panel.className = "image-panel";
+
+            panel.style.left = item.x + "px";
+            panel.style.top = item.y + "px";
+
+            panel.innerHTML = `
+                <img
+                    src="${item.image}"
+                    alt="Football image"
+                >
+            `;
+
+            world.appendChild(panel);
+        }
+
+    });
+}
+
+
+/* =========================================================
+   SAFE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   NEWS CARD
+========================================================= */
+
+function createNewsCard(item,index){
+
+    const card = document.createElement("article");
+
+    card.className = "card";
+
+    /*
+       Spread cards throughout the world.
+       This is deliberately NOT one horizontal row.
+    */
+
+    const columns = 6;
+
+    const col = index % columns;
+    const row = Math.floor(index / columns);
+
+    const positions = [
+        {x:80,y:80},
+        {x:720,y:100},
+        {x:1380,y:90},
+        {x:2060,y:80},
+        {x:2720,y:100},
+        {x:3260,y:90},
+
+        {x:100,y:650},
+        {x:750,y:700},
+        {x:1450,y:650},
+        {x:2100,y:690},
+        {x:2750,y:650},
+        {x:3300,y:700},
+
+        {x:90,y:1240},
+        {x:700,y:1300},
+        {x:1400,y:1240},
+        {x:2050,y:1290},
+        {x:2700,y:1240},
+        {x:3290,y:1300},
+
+        {x:120,y:1900},
+        {x:760,y:1860},
+        {x:1430,y:1930},
+        {x:2100,y:1870},
+        {x:2750,y:1920},
+        {x:3300,y:1870}
+    ];
+
+    const position = positions[index % positions.length];
+
+    card.style.left = position.x + "px";
+    card.style.top = position.y + "px";
+
+    const image =
+        item.image ||
+        footballImages[index % footballImages.length];
+
+    const title =
+        item.title ||
+        item.headline ||
+        "Latest football story";
+
+    const source =
+        item.source ||
+        "Football Recent";
+
+    const date =
+        item.date ||
+        item.published ||
+        "";
+
+    card.innerHTML = `
+        <img
+            class="card-image"
+            src="${escapeHTML(image)}"
+            alt="Football news"
+            onerror="this.src='${footballImages[index % footballImages.length]}'"
+        >
+
+        <div class="card-body">
+
+            <div class="card-title">
+                ${escapeHTML(title)}
+            </div>
+
+            <div class="card-meta">
+                ${escapeHTML(source)}
+                ${date ? " · " + escapeHTML(date) : ""}
+            </div>
+
+        </div>
+    `;
+
+    return card;
+}
+
+
+/* =========================================================
+   LOAD AUTOMATIC NEWS
+========================================================= */
 
 async function loadNews(){
 
-  const grid =
-    document.getElementById("newsGrid");
+    try{
 
-  try{
+        const response =
+            await fetch(
+                "football-news.json?cache=" +
+                Date.now()
+            );
 
-    const response =
-      await fetch(
-        "football-news.json?x=" + Date.now()
-      );
+        if(!response.ok){
+            throw new Error("News file not found");
+        }
 
-    if(!response.ok){
-      throw new Error("News file not available");
+        const data = await response.json();
+
+        let news = [];
+
+        if(Array.isArray(data)){
+            news = data;
+        }
+        else if(Array.isArray(data.news)){
+            news = data.news;
+        }
+        else if(Array.isArray(data.articles)){
+            news = data.articles;
+        }
+
+        /*
+           Keep enough cards to fill the world.
+        */
+
+        news = news.slice(0,24);
+
+        news.forEach((item,index)=>{
+
+            world.appendChild(
+                createNewsCard(item,index)
+            );
+
+        });
+
+    }
+    catch(error){
+
+        /*
+           If JSON temporarily fails,
+           create beautiful fallback cards.
+        */
+
+        const fallbackTitles = [
+
+            "Latest football news",
+
+            "World football update",
+
+            "Argentina football",
+
+            "European football",
+
+            "Champions League stories",
+
+            "International football",
+
+            "Football transfer update",
+
+            "Major football moments",
+
+            "Club football latest",
+
+            "Football world report",
+
+            "Argentina national team",
+
+            "Messi football update"
+
+        ];
+
+        fallbackTitles.forEach((title,index)=>{
+
+            world.appendChild(
+                createNewsCard(
+                    {
+                        title:title,
+                        source:"NipamVerse Football",
+                        image:footballImages[
+                            index % footballImages.length
+                        ]
+                    },
+                    index
+                )
+            );
+
+        });
+
     }
 
-    const news =
-      await response.json();
-
-    if(!Array.isArray(news) || news.length === 0){
-      throw new Error("No news available");
-    }
-
-    grid.innerHTML = "";
-
-    news.slice(0,12).forEach((item,index)=>{
-
-      const card =
-        document.createElement("article");
-
-      card.className = "news-card";
-
-      card.style.animationDelay =
-        (index * 0.08) + "s";
-
-      const fallback =
-        "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=80";
-
-      const image =
-        item.image && item.image.trim()
-        ? item.image
-        : fallback;
-
-      card.innerHTML = `
-
-        <div class="news-image">
-
-          <span class="tag">
-            FOOTBALL
-          </span>
-
-          <img
-            src="${image}"
-            alt="Football news"
-            onerror="this.src='${fallback}'"
-          >
-
-        </div>
-
-        <div class="news-content">
-
-          <h3>
-            ${escapeHTML(
-              item.title || "Football News"
-            )}
-          </h3>
-
-          <p>
-            Latest football story from
-            ${escapeHTML(
-              item.source || "Football News"
-            )}.
-          </p>
-
-          <div class="meta">
-
-            <span>
-              ${escapeHTML(
-                item.source || "Football"
-              )}
-            </span>
-
-            <span>
-              ${escapeHTML(
-                item.date || "Latest"
-              )}
-            </span>
-
-          </div>
-
-          ${
-            item.link
-            ?
-            `
-            <a
-              class="read"
-              href="${item.link}"
-              target="_blank"
-              rel="noopener"
-            >
-              Read Full News →
-            </a>
-            `
-            :
-            ""
-          }
-
-        </div>
-
-      `;
-
-      grid.appendChild(card);
-
-    });
-
-  }
-
-  catch(error){
-
-    console.log(
-      "Automatic news not available yet:",
-      error
-    );
-
-  }
+    loading.style.display = "none";
 
 }
 
 
-/* ===== HTML SAFETY ===== */
+/* =========================================================
+   2D INFINITE DRAG SYSTEM
+========================================================= */
 
-function escapeHTML(text){
-
-  const div =
-    document.createElement("div");
-
-  div.textContent = text;
-
-  return div.innerHTML;
-
-}
-
-
-/* ===== SIMPLE 2D DRAG CONTROL ===== */
-
-const space =
-  document.getElementById("footballSpace");
-
-const world =
-  document.getElementById("footballWorld");
-
-let dragging = false;
-
-let pointerId = null;
+let x = -700;
+let y = -450;
 
 let startX = 0;
 let startY = 0;
 
-let currentX = 0;
-let currentY = 0;
+let startWorldX = 0;
+let startWorldY = 0;
+
+let dragging = false;
+let pointerId = null;
 
 
-/* START DRAG */
+/*
+   We use a repeating 2D world.
 
-space.addEventListener("pointerdown", (e) => {
+   No rotation.
+   No perspective.
+   No 3D transforms.
 
-  if(e.button !== undefined && e.button !== 0){
-    return;
-  }
+   Only:
+       translateX
+       translateY
+*/
 
-  dragging = true;
+function applyWorld(){
 
-  pointerId = e.pointerId;
-
-  startX = e.clientX - currentX;
-  startY = e.clientY - currentY;
-
-  space.classList.add("dragging");
-
-  space.setPointerCapture(e.pointerId);
-
-});
-
-
-/* MOVE */
-
-space.addEventListener("pointermove", (e) => {
-
-  if(!dragging){
-    return;
-  }
-
-  if(e.pointerId !== pointerId){
-    return;
-  }
-
-  currentX =
-    e.clientX - startX;
-
-  currentY =
-    e.clientY - startY;
-
-  world.style.transform =
-    `translate3d(${currentX}px, ${currentY}px, 0)`;
-
-});
-
-
-/* END DRAG */
-
-function stopDrag(e){
-
-  if(e.pointerId !== pointerId){
-    return;
-  }
-
-  dragging = false;
-
-  space.classList.remove("dragging");
-
-  try{
-    space.releasePointerCapture(e.pointerId);
-  }catch(error){}
-
-  pointerId = null;
-
+    world.style.transform =
+        `translate3d(${x}px,${y}px,0)`;
 }
 
 
-space.addEventListener(
-  "pointerup",
-  stopDrag
+/* =========================================================
+   WRAP POSITION
+========================================================= */
+
+function wrapWorld(){
+
+    /*
+       Keep movement continuous.
+
+       The world repeats every WORLD_W / WORLD_H.
+    */
+
+    const repeatX = WORLD_W * 0.75;
+    const repeatY = WORLD_H * 0.75;
+
+    while(x < -repeatX){
+        x += repeatX;
+    }
+
+    while(x > 0){
+        x -= repeatX;
+    }
+
+    while(y < -repeatY){
+        y += repeatY;
+    }
+
+    while(y > 0){
+        y -= repeatY;
+    }
+}
+
+
+/* =========================================================
+   POINTER DOWN
+========================================================= */
+
+viewport.addEventListener(
+    "pointerdown",
+    function(e){
+
+        dragging = true;
+
+        pointerId = e.pointerId;
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        startWorldX = x;
+        startWorldY = y;
+
+        viewport.classList.add("dragging");
+
+        viewport.setPointerCapture(e.pointerId);
+
+        e.preventDefault();
+
+    },
+    {passive:false}
 );
 
-space.addEventListener(
-  "pointercancel",
-  stopDrag
+
+/* =========================================================
+   POINTER MOVE
+========================================================= */
+
+viewport.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(!dragging || e.pointerId !== pointerId){
+            return;
+        }
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        x = startWorldX + dx;
+        y = startWorldY + dy;
+
+        wrapWorld();
+
+        applyWorld();
+
+        e.preventDefault();
+
+    },
+    {passive:false}
 );
 
 
-/* ===== LOAD NEWS ===== */
+/* =========================================================
+   END DRAG
+========================================================= */
+
+function endDrag(e){
+
+    if(e.pointerId !== pointerId){
+        return;
+    }
+
+    dragging = false;
+
+    viewport.classList.remove("dragging");
+
+    try{
+        viewport.releasePointerCapture(e.pointerId);
+    }catch(err){}
+
+    pointerId = null;
+}
+
+
+viewport.addEventListener(
+    "pointerup",
+    endDrag
+);
+
+viewport.addEventListener(
+    "pointercancel",
+    endDrag
+);
+
+viewport.addEventListener(
+    "lostpointercapture",
+    function(){
+        dragging = false;
+        viewport.classList.remove("dragging");
+    }
+);
+
+
+/* =========================================================
+   INITIAL WORLD
+========================================================= */
+
+createStaticContent();
 
 loadNews();
+
+applyWorld();
 
 </script>
 
 </body>
-  </html>
+      </html>
