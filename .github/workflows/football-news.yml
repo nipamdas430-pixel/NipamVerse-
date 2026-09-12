@@ -2,117 +2,380 @@ name: Update Football News
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */3 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update-news:
+  update-football-news:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4
+          pip install feedparser requests beautifulsoup4
 
-      - name: Fetch football news with photos
+      - name: Fetch football news
         run: |
-          python3 - <<'PY'
-          import requests
-          import xml.etree.ElementTree as ET
+
+          python <<'PY'
+
+          import feedparser
           import json
-          import html
-          import time
+          import requests
+          import re
           from bs4 import BeautifulSoup
-          from urllib.parse import urlparse
+          from datetime import datetime, timezone
 
-          RSS = "https://news.google.com/rss/search?q=football%20soccer&hl=en-IN&gl=IN&ceid=IN:en"
+          FEEDS = [
 
-          headers = {
-              "User-Agent": "Mozilla/5.0"
-          }
+              {
+                  "name": "ESPN Football",
+                  "url": "https://www.espn.com/espn/rss/soccer/news"
+              },
 
-          xml = requests.get(RSS, headers=headers, timeout=20).text
-          root = ET.fromstring(xml)
+              {
+                  "name": "Football Italia",
+                  "url": "https://football-italia.net/feed/"
+              },
 
-          articles = []
+              {
+                  "name": "BBC Sport Football",
+                  "url": "https://feeds.bbci.co.uk/sport/football/rss.xml"
+              }
 
-          for item in root.findall(".//item")[:12]:
+          ]
 
-              title = html.unescape(item.findtext("title", "Football News"))
-              link = item.findtext("link", "")
-              date = item.findtext("pubDate", "")
-              source = item.findtext("source", "Football News")
+          news = []
+          seen = set()
 
-              image = ""
+
+          # -------------------------------------------------
+          # IMAGE FROM RSS ENTRY
+          # -------------------------------------------------
+
+          def get_rss_image(entry):
+
+              # media:content
+              media = entry.get("media_content")
+
+              if media:
+                  for item in media:
+                      if item.get("url"):
+                          return item["url"]
+
+              # media:thumbnail
+              thumb = entry.get("media_thumbnail")
+
+              if thumb:
+                  for item in thumb:
+                      if item.get("url"):
+                          return item["url"]
+
+              # enclosure
+              enclosure = entry.get("enclosures")
+
+              if enclosure:
+                  for item in enclosure:
+                      url = item.get("href") or item.get("url")
+
+                      if url:
+                          mime = item.get("type", "")
+
+                          if "image" in mime or not mime:
+                              return url
+
+              # image inside description
+              description = entry.get("description", "")
+
+              match = re.search(
+                  r'<img[^>]+src=["\']([^"\']+)["\']',
+                  description,
+                  re.I
+              )
+
+              if match:
+                  return match.group(1)
+
+              return ""
+
+
+          # -------------------------------------------------
+          # CLEAN HTML
+          # -------------------------------------------------
+
+          def clean_html(text):
+
+              if not text:
+                  return ""
+
+              soup = BeautifulSoup(text, "html.parser")
+
+              for img in soup.find_all("img"):
+                  img.decompose()
+
+              text = soup.get_text(" ", strip=True)
+
+              text = re.sub(
+                  r'\s+',
+                  ' ',
+                  text
+              )
+
+              return text.strip()
+
+
+          # -------------------------------------------------
+          # GET IMAGE FROM ARTICLE OG IMAGE
+          # -------------------------------------------------
+
+          def get_article_image(url):
+
+              if not url:
+                  return ""
 
               try:
-                  page = requests.get(
-                      link,
+
+                  headers = {
+                      "User-Agent":
+                      "Mozilla/5.0 (compatible; NipamVerseFootball/1.0)"
+                  }
+
+                  response = requests.get(
+                      url,
                       headers=headers,
-                      timeout=12,
-                      allow_redirects=True
+                      timeout=10
                   )
 
-                  soup = BeautifulSoup(page.text, "html.parser")
+                  if response.status_code != 200:
+                      return ""
 
-                  og = soup.find(
+                  soup = BeautifulSoup(
+                      response.text,
+                      "html.parser"
+                  )
+
+                  # og:image
+                  tag = soup.find(
                       "meta",
                       property="og:image"
                   )
 
-                  if og and og.get("content"):
-                      image = og["content"]
+                  if tag and tag.get("content"):
+                      return tag["content"]
 
-                  if not image:
-                      twitter = soup.find(
-                          "meta",
-                          attrs={"name": "twitter:image"}
+                  # twitter image
+                  tag = soup.find(
+                      "meta",
+                      attrs={"name": "twitter:image"}
+                  )
+
+                  if tag and tag.get("content"):
+                      return tag["content"]
+
+              except Exception:
+                  pass
+
+              return ""
+
+
+          # -------------------------------------------------
+          # READ FEEDS
+          # -------------------------------------------------
+
+          for feed_info in FEEDS:
+
+              try:
+
+                  feed = feedparser.parse(
+                      feed_info["url"]
+                  )
+
+                  for entry in feed.entries[:15]:
+
+                      title = clean_html(
+                          entry.get("title", "")
                       )
 
-                      if twitter and twitter.get("content"):
-                          image = twitter["content"]
+                      if not title:
+                          continue
 
-              except Exception as e:
-                  print("Image error:", e)
+                      title_key = title.lower()
 
-              articles.append({
-                  "title": title,
-                  "link": link,
-                  "date": date,
-                  "source": source,
-                  "image": image
-              })
+                      if title_key in seen:
+                          continue
 
-              time.sleep(1)
+                      seen.add(title_key)
+
+                      description = clean_html(
+                          entry.get(
+                              "summary",
+                              entry.get(
+                                  "description",
+                                  ""
+                              )
+                          )
+                      )
+
+                      link = entry.get(
+                          "link",
+                          ""
+                      )
+
+                      image = get_rss_image(
+                          entry
+                      )
+
+                      # If RSS has no image,
+                      # try the article page.
+                      if not image and link:
+
+                          image = get_article_image(
+                              link
+                          )
+
+                      published = entry.get(
+                          "published",
+                          entry.get(
+                              "updated",
+                              ""
+                          )
+                      )
+
+                      category = "Football"
+
+                      lower_title = title.lower()
+
+                      if (
+                          "messi" in lower_title
+                          or "inter miami" in lower_title
+                      ):
+                          category = "Messi"
+
+                      elif (
+                          "argentina" in lower_title
+                      ):
+                          category = "Argentina"
+
+                      elif (
+                          "ballon d'or" in lower_title
+                          or "ballon dor" in lower_title
+                      ):
+                          category = "Ballon d'Or"
+
+                      elif (
+                          "premier league"
+                          in lower_title
+                      ):
+                          category = "Premier League"
+
+                      news.append({
+
+                          "category": category,
+
+                          "title": title,
+
+                          "description":
+                              description,
+
+                          "summary":
+                              description,
+
+                          "content":
+                              description,
+
+                          "source":
+                              feed_info["name"],
+
+                          "published":
+                              published,
+
+                          "image":
+                              image,
+
+                          "link":
+                              link
+
+                      })
+
+              except Exception as error:
+
+                  print(
+                      "Feed error:",
+                      feed_info["name"],
+                      error
+                  )
+
+
+          # -------------------------------------------------
+          # LIMIT NEWS
+          # -------------------------------------------------
+
+          news = news[:30]
+
+
+          # -------------------------------------------------
+          # SAVE JSON
+          # -------------------------------------------------
+
+          output = {
+
+              "updated":
+                  datetime.now(
+                      timezone.utc
+                  ).isoformat(),
+
+              "news": news
+
+          }
+
 
           with open(
               "football-news.json",
               "w",
               encoding="utf-8"
-          ) as f:
+          ) as file:
+
               json.dump(
-                  articles,
-                  f,
+                  output,
+                  file,
                   ensure_ascii=False,
                   indent=2
               )
 
-          print("Updated:", len(articles), "articles")
+
+          print(
+              "Saved",
+              len(news),
+              "football stories."
+          )
+
           PY
+
 
       - name: Commit updated news
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git config user.name "github-actions"
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add football-news.json
 
-          git diff --cached --quiet || git commit -m "Update football news"
+          git diff --cached --quiet || \
+            git commit -m "Auto update football news"
 
           git push
