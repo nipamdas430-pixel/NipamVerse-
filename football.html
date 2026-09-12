@@ -65,22 +65,29 @@ body::after{
   from{transform:translate(0,0)}
   to{transform:translate(-150px,-110px)}
 }
-/* ===== 360° 3D WORLD ===== */
+
+/* ===== DRAG WORLD ===== */
 
 .football-space{
   width:100%;
   min-height:100vh;
-  perspective:1200px;
   overflow:hidden;
+  touch-action:none;
+  cursor:grab;
+}
+
+.football-space.dragging{
+  cursor:grabbing;
 }
 
 .football-world{
+  position:relative;
   width:100%;
   min-height:100vh;
-  transform-style:preserve-3d;
-  transition:transform .12s ease-out;
+  transform:translate3d(0,0,0);
   will-change:transform;
-  }
+}
+
 /* ===== NAV ===== */
 
 nav{
@@ -138,7 +145,6 @@ nav{
   color:#00ff88;
   background:#00ff8815;
   box-shadow:0 0 20px #00ff8860;
-  transform:translateY(-2px);
 }
 
 /* ===== HERO ===== */
@@ -223,7 +229,6 @@ nav{
 .refresh:hover{
   background:#00ff8825;
   box-shadow:0 0 20px #00ff8855;
-  transform:translateY(-2px);
 }
 
 /* ===== SECTIONS ===== */
@@ -271,12 +276,6 @@ section{
   transform:translateY(30px);
   animation:cardShow .7s forwards;
 }
-
-.news-card:nth-child(2){animation-delay:.1s}
-.news-card:nth-child(3){animation-delay:.2s}
-.news-card:nth-child(4){animation-delay:.3s}
-.news-card:nth-child(5){animation-delay:.4s}
-.news-card:nth-child(6){animation-delay:.5s}
 
 @keyframes cardShow{
   to{
@@ -478,10 +477,12 @@ footer span{
 
 <body>
 
-<div class="football-space">
-  <div class="football-world">
+<div class="football-space" id="footballSpace">
+
+<div class="football-world" id="footballWorld">
 
 <!-- NAV -->
+
 <nav>
 
   <div class="logo">
@@ -496,6 +497,7 @@ footer span{
 
 
 <!-- HERO -->
+
 <div class="hero">
 
   <div class="ball">
@@ -514,6 +516,7 @@ footer span{
 
 
 <!-- STATUS -->
+
 <div class="status">
 
   <div>
@@ -529,6 +532,7 @@ footer span{
 
 
 <!-- LATEST NEWS -->
+
 <section>
 
   <div class="section-title">
@@ -543,8 +547,6 @@ footer span{
 
 
   <div class="news-grid" id="newsGrid">
-
-    <!-- FALLBACK CARD 1 -->
 
     <article class="news-card">
 
@@ -581,8 +583,6 @@ footer span{
     </article>
 
 
-    <!-- FALLBACK CARD 2 -->
-
     <article class="news-card">
 
       <div class="news-image">
@@ -617,8 +617,6 @@ footer span{
 
     </article>
 
-
-    <!-- FALLBACK CARD 3 -->
 
     <article class="news-card">
 
@@ -660,6 +658,7 @@ footer span{
 
 
 <!-- ARGENTINA -->
+
 <section>
 
   <div class="section-title">
@@ -699,6 +698,7 @@ footer span{
 
 
 <!-- MESSI -->
+
 <section>
 
   <div class="section-title">
@@ -738,6 +738,7 @@ footer span{
 
 
 <!-- FOOTER -->
+
 <footer>
 
   <p>
@@ -750,8 +751,13 @@ footer span{
 
 </footer>
 
+</div>
+</div>
+
 
 <script>
+
+/* ===== AUTOMATIC FOOTBALL NEWS ===== */
 
 async function loadNews(){
 
@@ -788,16 +794,13 @@ async function loadNews(){
       card.style.animationDelay =
         (index * 0.08) + "s";
 
-
       const fallback =
         "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=80";
-
 
       const image =
         item.image && item.image.trim()
         ? item.image
         : fallback;
-
 
       card.innerHTML = `
 
@@ -815,7 +818,6 @@ async function loadNews(){
 
         </div>
 
-
         <div class="news-content">
 
           <h3>
@@ -824,14 +826,12 @@ async function loadNews(){
             )}
           </h3>
 
-
           <p>
             Latest football story from
             ${escapeHTML(
               item.source || "Football News"
             )}.
           </p>
-
 
           <div class="meta">
 
@@ -848,7 +848,6 @@ async function loadNews(){
             </span>
 
           </div>
-
 
           ${
             item.link
@@ -871,7 +870,6 @@ async function loadNews(){
 
       `;
 
-
       grid.appendChild(card);
 
     });
@@ -890,6 +888,8 @@ async function loadNews(){
 }
 
 
+/* ===== HTML SAFETY ===== */
+
 function escapeHTML(text){
 
   const div =
@@ -902,62 +902,108 @@ function escapeHTML(text){
 }
 
 
-loadNews();
-/* ===== 360° MOVEMENT ===== */
+/* ===== SIMPLE 2D DRAG CONTROL ===== */
 
-const world = document.querySelector(".football-world");
+const space =
+  document.getElementById("footballSpace");
 
-document.addEventListener("mousemove", (e) => {
+const world =
+  document.getElementById("footballWorld");
 
-  const x = (e.clientX / window.innerWidth - 0.5) * 2;
-  const y = (e.clientY / window.innerHeight - 0.5) * 2;
+let dragging = false;
 
-  world.style.transform =
-    `rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
-
-});
-  /* ===== MOBILE TOUCH 360° ===== */
+let pointerId = null;
 
 let startX = 0;
 let startY = 0;
-let rotX = 0;
-let rotY = 0;
 
-document.addEventListener("touchstart", (e) => {
-
-  if(e.touches.length !== 1) return;
-
-  startX = e.touches[0].clientX;
-  startY = e.touches[0].clientY;
-
-}, {passive:true});
+let currentX = 0;
+let currentY = 0;
 
 
-document.addEventListener("touchmove", (e) => {
+/* START DRAG */
 
-  if(e.touches.length !== 1) return;
+space.addEventListener("pointerdown", (e) => {
 
-  const currentX = e.touches[0].clientX;
-  const currentY = e.touches[0].clientY;
+  if(e.button !== undefined && e.button !== 0){
+    return;
+  }
 
-  const moveX = currentX - startX;
-  const moveY = currentY - startY;
+  dragging = true;
 
-  rotY += moveX * 0.15;
-  rotX -= moveY * 0.10;
+  pointerId = e.pointerId;
 
-  rotY = Math.max(-35, Math.min(35, rotY));
-  rotX = Math.max(-25, Math.min(25, rotX));
+  startX = e.clientX - currentX;
+  startY = e.clientY - currentY;
+
+  space.classList.add("dragging");
+
+  space.setPointerCapture(e.pointerId);
+
+});
+
+
+/* MOVE */
+
+space.addEventListener("pointermove", (e) => {
+
+  if(!dragging){
+    return;
+  }
+
+  if(e.pointerId !== pointerId){
+    return;
+  }
+
+  currentX =
+    e.clientX - startX;
+
+  currentY =
+    e.clientY - startY;
 
   world.style.transform =
-    `rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+    `translate3d(${currentX}px, ${currentY}px, 0)`;
 
-  startX = currentX;
-  startY = currentY;
+});
 
-}, {passive:true});
+
+/* END DRAG */
+
+function stopDrag(e){
+
+  if(e.pointerId !== pointerId){
+    return;
+  }
+
+  dragging = false;
+
+  space.classList.remove("dragging");
+
+  try{
+    space.releasePointerCapture(e.pointerId);
+  }catch(error){}
+
+  pointerId = null;
+
+}
+
+
+space.addEventListener(
+  "pointerup",
+  stopDrag
+);
+
+space.addEventListener(
+  "pointercancel",
+  stopDrag
+);
+
+
+/* ===== LOAD NEWS ===== */
+
+loadNews();
+
 </script>
-</div>
-</div>
+
 </body>
   </html>
