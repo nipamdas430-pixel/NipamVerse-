@@ -65,7 +65,22 @@ body::after{
   from{transform:translate(0,0)}
   to{transform:translate(-150px,-110px)}
 }
+/* ===== 360° 3D WORLD ===== */
 
+.football-space{
+  width:100%;
+  min-height:100vh;
+  perspective:1200px;
+  overflow:hidden;
+}
+
+.football-world{
+  width:100%;
+  min-height:100vh;
+  transform-style:preserve-3d;
+  transition:transform .12s ease-out;
+  will-change:transform;
+  }
 /* ===== NAV ===== */
 
 nav{
@@ -462,6 +477,9 @@ footer span{
 </head>
 
 <body>
+
+<div class="football-space">
+  <div class="football-world">
 
 <!-- NAV -->
 <nav>
@@ -885,8 +903,61 @@ function escapeHTML(text){
 
 
 loadNews();
+/* ===== 360° MOVEMENT ===== */
 
+const world = document.querySelector(".football-world");
+
+document.addEventListener("mousemove", (e) => {
+
+  const x = (e.clientX / window.innerWidth - 0.5) * 2;
+  const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+  world.style.transform =
+    `rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+
+});
+  /* ===== MOBILE TOUCH 360° ===== */
+
+let startX = 0;
+let startY = 0;
+let rotX = 0;
+let rotY = 0;
+
+document.addEventListener("touchstart", (e) => {
+
+  if(e.touches.length !== 1) return;
+
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+
+}, {passive:true});
+
+
+document.addEventListener("touchmove", (e) => {
+
+  if(e.touches.length !== 1) return;
+
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+
+  const moveX = currentX - startX;
+  const moveY = currentY - startY;
+
+  rotY += moveX * 0.15;
+  rotX -= moveY * 0.10;
+
+  rotY = Math.max(-35, Math.min(35, rotY));
+  rotX = Math.max(-25, Math.min(25, rotX));
+
+  world.style.transform =
+    `rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+
+  startX = currentX;
+  startY = currentY;
+
+}, {passive:true});
 </script>
-
+</div>
+</div>
 </body>
   </html>
