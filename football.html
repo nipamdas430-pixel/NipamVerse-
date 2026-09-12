@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>NipamVerse — Football Recent</title>
 
 <meta name="description"
-content="NipamVerse Football Recent — football news, Argentina, Messi, clubs, stadiums and football moments.">
+content="NipamVerse Football Recent — latest football news, Argentina, Messi and world football.">
 
 <style>
 *{
@@ -19,7 +19,7 @@ content="NipamVerse Football Recent — football news, Argentina, Messi, clubs, 
 html,body{
     width:100%;
     min-height:100%;
-    background:#050505;
+    background:#030504;
     color:#fff;
     font-family:Arial,Helvetica,sans-serif;
 }
@@ -29,261 +29,363 @@ body{
 }
 
 /* =========================
-   HEADER
+   FIXED HEADING
 ========================= */
 
-.top{
+.header{
     position:relative;
-    z-index:100;
-    padding:28px 20px 22px;
+    z-index:50;
     text-align:center;
+    padding:28px 18px 24px;
     background:
-        linear-gradient(180deg,#08150c 0%,#07100a 75%,transparent 100%);
+        linear-gradient(
+            180deg,
+            #08130c 0%,
+            #061009 72%,
+            #030504 100%
+        );
 }
 
-.top h1{
-    font-size:clamp(30px,6vw,58px);
+.header h1{
+    font-size:clamp(32px,6vw,58px);
     font-weight:800;
     letter-spacing:-1.5px;
 }
 
-.top p{
-    margin-top:8px;
-    color:#a9b5ad;
+.header p{
+    margin-top:9px;
+    color:#9eaaa1;
     font-size:14px;
 }
 
-.line{
-    width:90px;
+.header-line{
+    width:82px;
     height:3px;
-    margin:17px auto 0;
-    background:#45d978;
-    border-radius:20px;
+    margin:16px auto 0;
+    border-radius:10px;
+    background:#43dc76;
 }
 
+
 /* =========================
-   WORLD VIEWPORT
+   VIEWPORT
 ========================= */
 
-.world-section{
+.viewport{
     position:relative;
     width:100%;
     height:78vh;
     min-height:560px;
+
     overflow:hidden;
 
     background:
-        radial-gradient(circle at 50% 50%,rgba(26,76,43,.28),transparent 48%),
-        linear-gradient(135deg,#061009,#020403 55%,#07130b);
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(35,100,55,.25),
+            transparent 52%
+        ),
+        #030604;
 
     border-top:1px solid rgba(100,255,150,.08);
     border-bottom:1px solid rgba(100,255,150,.08);
 
     cursor:grab;
 
-    /* Important:
-       browser will not take over the gesture */
+    /*
+       Browser does not perform its own
+       touch scrolling inside this area.
+    */
     touch-action:none;
 
     user-select:none;
     -webkit-user-select:none;
 }
 
-.world-section.dragging{
+.viewport.dragging{
     cursor:grabbing;
 }
 
-/* subtle football field lines */
 
-.world-section::before{
+/* =========================
+   SUBTLE FIELD BACKGROUND
+========================= */
+
+.field{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.18;
+}
+
+.field::before,
+.field::after{
     content:"";
     position:absolute;
-    inset:-50%;
-    background:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:100px 100px;
-    transform:rotate(0deg);
     pointer-events:none;
 }
 
+.field::before{
+    width:700px;
+    height:700px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:1px solid rgba(91,224,124,.16);
+    border-radius:50%;
+}
+
+.field::after{
+    width:1px;
+    height:100%;
+
+    left:50%;
+    top:0;
+
+    background:rgba(91,224,124,.13);
+}
+
+
 /* =========================
-   MOVING WORLD
+   INFINITE WORLD
 ========================= */
 
 .world{
     position:absolute;
 
-    width:3600px;
-    height:2400px;
-
     left:0;
     top:0;
 
+    width:100%;
+    height:100%;
+
     will-change:transform;
+
+    /*
+       The world itself is visually infinite
+       because its tiles are repeated.
+    */
 }
 
+
 /* =========================
-   CONTENT CARDS
+   TILE
 ========================= */
 
-.card{
+.tile{
     position:absolute;
 
-    width:330px;
-    min-height:220px;
+    width:760px;
+    height:560px;
 
-    border-radius:22px;
+    pointer-events:none;
+}
+
+
+/* =========================
+   NEWS CARD
+========================= */
+
+.news-card{
+    position:absolute;
+
+    width:285px;
+
+    min-height:235px;
+
     overflow:hidden;
+
+    border-radius:20px;
 
     background:#101611;
 
-    border:1px solid rgba(126,255,161,.18);
+    border:1px solid rgba(118,240,148,.17);
 
     box-shadow:
-        0 18px 45px rgba(0,0,0,.48),
+        0 16px 40px rgba(0,0,0,.48),
         inset 0 0 0 1px rgba(255,255,255,.025);
 
     transform:none !important;
     perspective:none !important;
-
-    transition:
-        border-color .25s ease,
-        box-shadow .25s ease;
-
-    pointer-events:none;
 }
 
-.card:hover{
-    border-color:rgba(91,239,128,.38);
-
-    box-shadow:
-        0 20px 55px rgba(0,0,0,.55),
-        0 0 25px rgba(49,218,103,.08);
-}
-
-.card-image{
-    width:100%;
-    height:155px;
-    object-fit:cover;
+.news-image{
     display:block;
-    background:#101510;
+
+    width:100%;
+    height:140px;
+
+    object-fit:cover;
+
+    background:#0b100c;
 }
 
-.card-body{
-    padding:15px 16px 17px;
+.news-body{
+    padding:14px 15px 16px;
 }
 
-.card-title{
-    font-size:17px;
-    line-height:1.35;
+.news-title{
+    font-size:15px;
+    line-height:1.38;
     font-weight:700;
 }
 
-.card-meta{
+.news-meta{
     margin-top:9px;
-    color:#8f9d93;
-    font-size:11px;
+
+    color:#89958d;
+
+    font-size:10px;
 }
+
 
 /* =========================
-   FEATURE CARDS
+   ARGENTINA / MESSI
 ========================= */
 
-.feature{
-    width:390px;
-    min-height:330px;
-}
-
-.feature .card-image{
-    height:205px;
-}
-
-.feature .card-body{
-    padding:18px 20px 21px;
-}
-
-.feature h2{
-    font-size:25px;
-    margin-bottom:8px;
-}
-
-.feature p{
-    color:#aab5ad;
-    font-size:13px;
-    line-height:1.55;
-}
-
-/* =========================
-   IMAGE PANELS
-========================= */
-
-.image-panel{
+.feature-card{
     position:absolute;
 
-    width:400px;
-    height:270px;
+    width:360px;
+    min-height:310px;
 
-    border-radius:24px;
     overflow:hidden;
 
-    border:1px solid rgba(255,255,255,.12);
+    border-radius:22px;
 
-    box-shadow:0 20px 55px rgba(0,0,0,.55);
+    background:#101611;
 
-    pointer-events:none;
+    border:1px solid rgba(118,240,148,.18);
+
+    box-shadow:
+        0 18px 50px rgba(0,0,0,.5);
+
+    transform:none !important;
 }
 
-.image-panel img{
+.feature-image{
     width:100%;
-    height:100%;
+    height:195px;
+
     object-fit:cover;
+
     display:block;
 }
 
-.image-panel::after{
-    content:"";
-    position:absolute;
-    inset:0;
-
-    background:
-        linear-gradient(
-            180deg,
-            transparent 35%,
-            rgba(0,0,0,.65)
-        );
+.feature-body{
+    padding:17px 18px 19px;
 }
 
+.feature-body h2{
+    font-size:23px;
+    margin-bottom:8px;
+}
+
+.feature-body p{
+    color:#9aa69e;
+    font-size:12px;
+    line-height:1.55;
+}
+
+
 /* =========================
-   NEWS AREA
+   FOOTBALL IMAGE
 ========================= */
 
-.news-label{
+.photo{
     position:absolute;
+
+    width:300px;
+    height:205px;
+
+    overflow:hidden;
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.11);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.5);
+}
+
+.photo img{
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+
+/* =========================
+   WORLD LABEL
+========================= */
+
+.world-label{
+    position:absolute;
+
+    z-index:20;
+
     left:50%;
-    top:20px;
+    top:17px;
 
     transform:translateX(-50%);
 
-    z-index:10;
+    padding:8px 16px;
 
-    padding:9px 18px;
+    border-radius:30px;
 
-    background:rgba(5,10,7,.78);
-    border:1px solid rgba(86,224,122,.2);
+    background:rgba(3,7,4,.72);
 
-    border-radius:50px;
+    border:1px solid rgba(112,237,143,.16);
 
-    backdrop-filter:blur(10px);
+    color:#b7c2ba;
 
-    font-size:12px;
-    letter-spacing:1.2px;
+    font-size:11px;
+
+    letter-spacing:1.1px;
+
     text-transform:uppercase;
 
-    color:#c9d4cc;
+    backdrop-filter:blur(9px);
 
     pointer-events:none;
 }
+
+
+/* =========================
+   DRAG HINT
+========================= */
+
+.hint{
+    position:absolute;
+
+    z-index:20;
+
+    left:50%;
+    bottom:15px;
+
+    transform:translateX(-50%);
+
+    padding:7px 13px;
+
+    border-radius:20px;
+
+    background:rgba(3,7,4,.72);
+
+    border:1px solid rgba(255,255,255,.07);
+
+    color:#78847c;
+
+    font-size:10px;
+
+    pointer-events:none;
+}
+
 
 /* =========================
    LOADING
@@ -292,47 +394,20 @@ body{
 .loading{
     position:absolute;
 
+    z-index:30;
+
     left:50%;
     top:50%;
 
     transform:translate(-50%,-50%);
 
-    color:#94a39a;
+    color:#89968d;
 
-    font-size:14px;
-
-    pointer-events:none;
-}
-
-/* =========================
-   BOTTOM INFO
-========================= */
-
-.info{
-    position:absolute;
-
-    left:50%;
-    bottom:18px;
-
-    transform:translateX(-50%);
-
-    z-index:10;
-
-    padding:8px 14px;
-
-    border-radius:30px;
-
-    background:rgba(4,8,5,.7);
-    border:1px solid rgba(255,255,255,.08);
-
-    color:#7f8b83;
-
-    font-size:11px;
-
-    backdrop-filter:blur(8px);
+    font-size:13px;
 
     pointer-events:none;
 }
+
 
 /* =========================
    FOOTER
@@ -340,13 +415,16 @@ body{
 
 footer{
     text-align:center;
-    padding:40px 20px 50px;
 
-    color:#667169;
-    font-size:12px;
+    padding:38px 20px 48px;
 
-    background:#030403;
+    background:#020302;
+
+    color:#657169;
+
+    font-size:11px;
 }
+
 
 /* =========================
    MOBILE
@@ -354,101 +432,102 @@ footer{
 
 @media(max-width:600px){
 
-    .top{
-        padding:23px 15px 19px;
+    .header{
+        padding:23px 14px 20px;
     }
 
-    .top h1{
+    .header h1{
         font-size:32px;
     }
 
-    .world-section{
+    .header p{
+        font-size:12px;
+    }
+
+    .viewport{
         height:76vh;
         min-height:520px;
     }
 
-    .card{
-        width:275px;
-        min-height:195px;
-        border-radius:18px;
+    .news-card{
+        width:255px;
+        min-height:210px;
     }
 
-    .card-image{
-        height:125px;
+    .news-image{
+        height:122px;
     }
 
-    .card-body{
-        padding:13px;
+    .feature-card{
+        width:315px;
+        min-height:280px;
     }
 
-    .card-title{
-        font-size:15px;
-    }
-
-    .feature{
-        width:310px;
-        min-height:275px;
-    }
-
-    .feature .card-image{
+    .feature-image{
         height:165px;
     }
 
-    .feature h2{
+    .feature-body h2{
         font-size:21px;
     }
 
-    .image-panel{
-        width:320px;
-        height:215px;
-        border-radius:20px;
-    }
-
-    .info{
-        bottom:12px;
-        font-size:10px;
+    .photo{
+        width:270px;
+        height:180px;
     }
 }
 </style>
 </head>
 
+
 <body>
 
+
 <!-- =========================
-     FIXED HEADER
+     FIXED HEADING
 ========================= -->
 
-<header class="top">
+<header class="header">
+
     <h1>Football Recent</h1>
-    <p>Latest football stories, Argentina, Messi and the world of football</p>
-    <div class="line"></div>
+
+    <p>
+        Latest football stories, Argentina, Messi and world football
+    </p>
+
+    <div class="header-line"></div>
+
 </header>
 
 
 <!-- =========================
-     2D FOOTBALL WORLD
+     FOOTBALL WORLD
 ========================= -->
 
-<section class="world-section" id="worldViewport">
+<section
+    class="viewport"
+    id="viewport"
+>
 
-    <div class="news-label">
+    <div class="field"></div>
+
+    <div class="world-label">
         Football World
     </div>
 
-    <div class="loading" id="loading">
+    <div
+        class="loading"
+        id="loading"
+    >
         Loading football world...
     </div>
 
-    <div class="world" id="footballWorld">
+    <div
+        class="world"
+        id="world"
+    ></div>
 
-        <!--
-            CONTENT WILL BE CREATED HERE
-            BY JAVASCRIPT
-        -->
-
-    </div>
-
-    <div class="info">
+    <div class="hint">
         Drag in any direction
     </div>
 
@@ -463,164 +542,49 @@ footer{
 <script>
 
 /* =========================================================
-   FOOTBALL IMAGES
+   IMAGE COLLECTION
 ========================================================= */
 
-const footballImages = [
+const images = [
 
-    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=85",
 
-    "https://images.unsplash.com/photo-1553778263-73a05d7f4e2d?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=85",
 
-    "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1200&q=85",
 
-    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=85",
 
-    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1000&q=85",
+    "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=85",
 
-    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85",
-
-    "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1000&q=85",
-
-    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1000&q=85"
+    "https://images.unsplash.com/photo-1553778263-73a05d7f4e2d?auto=format&fit=crop&w=1200&q=85"
 ];
 
 
 /* =========================================================
-   WORLD SETUP
+   WORLD TILE SIZE
 ========================================================= */
 
-const viewport = document.getElementById("worldViewport");
-const world = document.getElementById("footballWorld");
+const TILE_W = 1520;
+const TILE_H = 1120;
+
+
+/* =========================================================
+   WORLD CONTENT
+========================================================= */
+
+const world = document.getElementById("world");
+
+const viewport = document.getElementById("viewport");
+
 const loading = document.getElementById("loading");
 
-const WORLD_W = 3600;
-const WORLD_H = 2400;
-
 
 /* =========================================================
-   STATIC FOOTBALL CONTENT
+   ESCAPE HTML
 ========================================================= */
 
-const staticContent = [
-
-    {
-        type:"feature",
-        title:"Argentina Zone",
-        text:"Argentina football, national team moments, major tournaments and the latest stories.",
-        image:footballImages[3],
-        x:250,
-        y:260
-    },
-
-    {
-        type:"feature",
-        title:"Messi Zone",
-        text:"Lionel Messi moments, career highlights, records and football stories.",
-        image:footballImages[0],
-        x:1760,
-        y:300
-    },
-
-    {
-        type:"image",
-        image:footballImages[4],
-        x:2900,
-        y:240
-    },
-
-    {
-        type:"image",
-        image:footballImages[6],
-        x:520,
-        y:900
-    },
-
-    {
-        type:"image",
-        image:footballImages[2],
-        x:2700,
-        y:900
-    },
-
-    {
-        type:"image",
-        image:footballImages[1],
-        x:1200,
-        y:1700
-    },
-
-    {
-        type:"image",
-        image:footballImages[5],
-        x:3000,
-        y:1700
-    }
-];
-
-
-/* =========================================================
-   CREATE STATIC CONTENT
-========================================================= */
-
-function createStaticContent(){
-
-    staticContent.forEach(item => {
-
-        if(item.type === "feature"){
-
-            const card = document.createElement("div");
-
-            card.className = "card feature";
-
-            card.style.left = item.x + "px";
-            card.style.top = item.y + "px";
-
-            card.innerHTML = `
-                <img
-                    class="card-image"
-                    src="${item.image}"
-                    alt="${item.title}"
-                >
-
-                <div class="card-body">
-                    <h2>${item.title}</h2>
-                    <p>${item.text}</p>
-                </div>
-            `;
-
-            world.appendChild(card);
-
-        }
-
-        if(item.type === "image"){
-
-            const panel = document.createElement("div");
-
-            panel.className = "image-panel";
-
-            panel.style.left = item.x + "px";
-            panel.style.top = item.y + "px";
-
-            panel.innerHTML = `
-                <img
-                    src="${item.image}"
-                    alt="Football image"
-                >
-            `;
-
-            world.appendChild(panel);
-        }
-
-    });
-}
-
-
-/* =========================================================
-   SAFE HTML
-========================================================= */
-
-function escapeHTML(value){
+function safe(value){
 
     return String(value ?? "")
         .replace(/&/g,"&amp;")
@@ -632,63 +596,29 @@ function escapeHTML(value){
 
 
 /* =========================================================
+   NEWS DATA
+========================================================= */
+
+let newsData = [];
+
+
+/* =========================================================
    NEWS CARD
 ========================================================= */
 
-function createNewsCard(item,index){
+function makeNews(item,x,y,index){
 
-    const card = document.createElement("article");
+    const card =
+        document.createElement("article");
 
-    card.className = "card";
+    card.className = "news-card";
 
-    /*
-       Spread cards throughout the world.
-       This is deliberately NOT one horizontal row.
-    */
-
-    const columns = 6;
-
-    const col = index % columns;
-    const row = Math.floor(index / columns);
-
-    const positions = [
-        {x:80,y:80},
-        {x:720,y:100},
-        {x:1380,y:90},
-        {x:2060,y:80},
-        {x:2720,y:100},
-        {x:3260,y:90},
-
-        {x:100,y:650},
-        {x:750,y:700},
-        {x:1450,y:650},
-        {x:2100,y:690},
-        {x:2750,y:650},
-        {x:3300,y:700},
-
-        {x:90,y:1240},
-        {x:700,y:1300},
-        {x:1400,y:1240},
-        {x:2050,y:1290},
-        {x:2700,y:1240},
-        {x:3290,y:1300},
-
-        {x:120,y:1900},
-        {x:760,y:1860},
-        {x:1430,y:1930},
-        {x:2100,y:1870},
-        {x:2750,y:1920},
-        {x:3300,y:1870}
-    ];
-
-    const position = positions[index % positions.length];
-
-    card.style.left = position.x + "px";
-    card.style.top = position.y + "px";
+    card.style.left = x + "px";
+    card.style.top = y + "px";
 
     const image =
         item.image ||
-        footballImages[index % footballImages.length];
+        images[index % images.length];
 
     const title =
         item.title ||
@@ -697,7 +627,7 @@ function createNewsCard(item,index){
 
     const source =
         item.source ||
-        "Football Recent";
+        "NipamVerse Football";
 
     const date =
         item.date ||
@@ -705,22 +635,23 @@ function createNewsCard(item,index){
         "";
 
     card.innerHTML = `
+
         <img
-            class="card-image"
-            src="${escapeHTML(image)}"
+            class="news-image"
+            src="${safe(image)}"
             alt="Football news"
-            onerror="this.src='${footballImages[index % footballImages.length]}'"
+            onerror="this.src='${images[index % images.length]}'"
         >
 
-        <div class="card-body">
+        <div class="news-body">
 
-            <div class="card-title">
-                ${escapeHTML(title)}
+            <div class="news-title">
+                ${safe(title)}
             </div>
 
-            <div class="card-meta">
-                ${escapeHTML(source)}
-                ${date ? " · " + escapeHTML(date) : ""}
+            <div class="news-meta">
+                ${safe(source)}
+                ${date ? " · " + safe(date) : ""}
             </div>
 
         </div>
@@ -731,7 +662,236 @@ function createNewsCard(item,index){
 
 
 /* =========================================================
-   LOAD AUTOMATIC NEWS
+   FEATURE CARD
+========================================================= */
+
+function makeFeature(
+    title,
+    text,
+    image,
+    x,
+    y
+){
+
+    const card =
+        document.createElement("article");
+
+    card.className = "feature-card";
+
+    card.style.left = x + "px";
+    card.style.top = y + "px";
+
+    card.innerHTML = `
+
+        <img
+            class="feature-image"
+            src="${image}"
+            alt="${safe(title)}"
+        >
+
+        <div class="feature-body">
+
+            <h2>
+                ${safe(title)}
+            </h2>
+
+            <p>
+                ${safe(text)}
+            </p>
+
+        </div>
+    `;
+
+    return card;
+}
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+function makePhoto(image,x,y){
+
+    const photo =
+        document.createElement("div");
+
+    photo.className = "photo";
+
+    photo.style.left = x + "px";
+    photo.style.top = y + "px";
+
+    photo.innerHTML = `
+
+        <img
+            src="${image}"
+            alt="Football"
+        >
+    `;
+
+    return photo;
+}
+
+
+/* =========================================================
+   CREATE ONE TILE
+========================================================= */
+
+function createTile(
+    tileX,
+    tileY
+){
+
+    const tile =
+        document.createElement("div");
+
+    tile.className = "tile";
+
+    tile.style.left = tileX + "px";
+    tile.style.top = tileY + "px";
+
+
+    /* -------------------------
+       FEATURES
+    ------------------------- */
+
+    tile.appendChild(
+        makeFeature(
+            "Argentina Zone",
+            "Argentina football, national team stories, tournaments and major moments.",
+            images[2],
+            40,
+            40
+        )
+    );
+
+
+    tile.appendChild(
+        makeFeature(
+            "Messi Zone",
+            "Lionel Messi moments, records, career highlights and football stories.",
+            images[0],
+            590,
+            40
+        )
+    );
+
+
+    /* -------------------------
+       NEWS CARDS
+    ------------------------- */
+
+    const positions = [
+
+        [20,400],
+        [340,400],
+        [660,400],
+        [980,400],
+
+        [20,670],
+        [340,670],
+        [660,670],
+        [980,670],
+
+        [20,940],
+        [340,940],
+        [660,940],
+        [980,940]
+    ];
+
+
+    positions.forEach(
+        (pos,index)=>{
+
+            const item =
+                newsData.length
+                    ? newsData[
+                        index %
+                        newsData.length
+                      ]
+                    : {
+                        title:
+                            "Football world update",
+                        source:
+                            "NipamVerse Football"
+                    };
+
+            tile.appendChild(
+                makeNews(
+                    item,
+                    pos[0],
+                    pos[1],
+                    index
+                )
+            );
+        }
+    );
+
+
+    /* -------------------------
+       FOOTBALL IMAGES
+    ------------------------- */
+
+    tile.appendChild(
+        makePhoto(
+            images[3],
+            1240,
+            70
+        )
+    );
+
+    tile.appendChild(
+        makePhoto(
+            images[4],
+            1240,
+            350
+        )
+    );
+
+    tile.appendChild(
+        makePhoto(
+            images[5],
+            1240,
+            630
+        )
+    );
+
+
+    world.appendChild(tile);
+}
+
+
+/* =========================================================
+   BUILD MANY REPEATED TILES
+========================================================= */
+
+function buildWorld(){
+
+    world.innerHTML = "";
+
+    /*
+       3 x 3 tiles are always kept around
+       the viewport.
+
+       The tiles repeat forever mathematically.
+    */
+
+    for(let row=-1;row<=1;row++){
+
+        for(let col=-1;col<=1;col++){
+
+            createTile(
+                col * TILE_W,
+                row * TILE_H
+            );
+
+        }
+    }
+
+}
+
+
+/* =========================================================
+   LOAD NEWS JSON
 ========================================================= */
 
 async function loadNews(){
@@ -740,96 +900,83 @@ async function loadNews(){
 
         const response =
             await fetch(
-                "football-news.json?cache=" +
+                "football-news.json?x=" +
                 Date.now()
             );
 
         if(!response.ok){
-            throw new Error("News file not found");
+            throw new Error("News unavailable");
         }
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
-        let news = [];
 
         if(Array.isArray(data)){
-            news = data;
+
+            newsData = data;
+
         }
         else if(Array.isArray(data.news)){
-            news = data.news;
+
+            newsData = data.news;
+
         }
         else if(Array.isArray(data.articles)){
-            news = data.articles;
+
+            newsData = data.articles;
+
         }
 
+
         /*
-           Keep enough cards to fill the world.
+           Use up to 24 current stories.
         */
 
-        news = news.slice(0,24);
-
-        news.forEach((item,index)=>{
-
-            world.appendChild(
-                createNewsCard(item,index)
-            );
-
-        });
+        newsData =
+            newsData.slice(0,24);
 
     }
     catch(error){
 
-        /*
-           If JSON temporarily fails,
-           create beautiful fallback cards.
-        */
+        newsData = [
 
-        const fallbackTitles = [
+            {
+                title:"Latest football news",
+                source:"NipamVerse Football"
+            },
 
-            "Latest football news",
+            {
+                title:"World football update",
+                source:"NipamVerse Football"
+            },
 
-            "World football update",
+            {
+                title:"Argentina football update",
+                source:"NipamVerse Football"
+            },
 
-            "Argentina football",
+            {
+                title:"Messi football update",
+                source:"NipamVerse Football"
+            },
 
-            "European football",
+            {
+                title:"Club football latest",
+                source:"NipamVerse Football"
+            },
 
-            "Champions League stories",
-
-            "International football",
-
-            "Football transfer update",
-
-            "Major football moments",
-
-            "Club football latest",
-
-            "Football world report",
-
-            "Argentina national team",
-
-            "Messi football update"
+            {
+                title:"International football",
+                source:"NipamVerse Football"
+            }
 
         ];
 
-        fallbackTitles.forEach((title,index)=>{
-
-            world.appendChild(
-                createNewsCard(
-                    {
-                        title:title,
-                        source:"NipamVerse Football",
-                        image:footballImages[
-                            index % footballImages.length
-                        ]
-                    },
-                    index
-                )
-            );
-
-        });
-
     }
+
+
+    buildWorld();
 
     loading.style.display = "none";
 
@@ -837,149 +984,209 @@ async function loadNews(){
 
 
 /* =========================================================
-   2D INFINITE DRAG SYSTEM
+   INFINITE POSITION
 ========================================================= */
 
-let x = -700;
-let y = -450;
-
-let startX = 0;
-let startY = 0;
-
-let startWorldX = 0;
-let startWorldY = 0;
-
-let dragging = false;
-let pointerId = null;
+let offsetX = -760;
+let offsetY = -560;
 
 
 /*
-   We use a repeating 2D world.
+   Instead of stopping at an edge,
+   we move the world back by exactly
+   one tile when necessary.
 
-   No rotation.
-   No perspective.
-   No 3D transforms.
-
-   Only:
-       translateX
-       translateY
+   Therefore the content never ends.
 */
 
-function applyWorld(){
+function normalize(){
+
+    while(offsetX <= -TILE_W){
+
+        offsetX += TILE_W;
+
+    }
+
+    while(offsetX > 0){
+
+        offsetX -= TILE_W;
+
+    }
+
+
+    while(offsetY <= -TILE_H){
+
+        offsetY += TILE_H;
+
+    }
+
+    while(offsetY > 0){
+
+        offsetY -= TILE_H;
+
+    }
+
+}
+
+
+/* =========================================================
+   APPLY MOVEMENT
+========================================================= */
+
+function render(){
 
     world.style.transform =
-        `translate3d(${x}px,${y}px,0)`;
+        "translate(" +
+        offsetX +
+        "px," +
+        offsetY +
+        "px)";
+
 }
 
 
 /* =========================================================
-   WRAP POSITION
+   POINTER DRAG
 ========================================================= */
 
-function wrapWorld(){
+let dragging = false;
 
-    /*
-       Keep movement continuous.
+let pointerId = null;
 
-       The world repeats every WORLD_W / WORLD_H.
-    */
+let startPointerX = 0;
+let startPointerY = 0;
 
-    const repeatX = WORLD_W * 0.75;
-    const repeatY = WORLD_H * 0.75;
-
-    while(x < -repeatX){
-        x += repeatX;
-    }
-
-    while(x > 0){
-        x -= repeatX;
-    }
-
-    while(y < -repeatY){
-        y += repeatY;
-    }
-
-    while(y > 0){
-        y -= repeatY;
-    }
-}
+let startOffsetX = 0;
+let startOffsetY = 0;
 
 
-/* =========================================================
-   POINTER DOWN
-========================================================= */
+/* -------------------------
+   DOWN
+------------------------- */
 
 viewport.addEventListener(
     "pointerdown",
-    function(e){
+    function(event){
 
-        dragging = true;
+        /*
+           Only primary pointer.
+        */
 
-        pointerId = e.pointerId;
-
-        startX = e.clientX;
-        startY = e.clientY;
-
-        startWorldX = x;
-        startWorldY = y;
-
-        viewport.classList.add("dragging");
-
-        viewport.setPointerCapture(e.pointerId);
-
-        e.preventDefault();
-
-    },
-    {passive:false}
-);
-
-
-/* =========================================================
-   POINTER MOVE
-========================================================= */
-
-viewport.addEventListener(
-    "pointermove",
-    function(e){
-
-        if(!dragging || e.pointerId !== pointerId){
+        if(!event.isPrimary){
             return;
         }
 
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
+        dragging = true;
 
-        x = startWorldX + dx;
-        y = startWorldY + dy;
+        pointerId =
+            event.pointerId;
 
-        wrapWorld();
+        startPointerX =
+            event.clientX;
 
-        applyWorld();
+        startPointerY =
+            event.clientY;
 
-        e.preventDefault();
+        startOffsetX =
+            offsetX;
+
+        startOffsetY =
+            offsetY;
+
+
+        viewport.classList.add(
+            "dragging"
+        );
+
+
+        /*
+           Keep receiving movement
+           even if pointer leaves viewport.
+        */
+
+        viewport.setPointerCapture(
+            event.pointerId
+        );
+
+
+        event.preventDefault();
 
     },
     {passive:false}
 );
 
 
-/* =========================================================
-   END DRAG
-========================================================= */
+/* -------------------------
+   MOVE
+------------------------- */
 
-function endDrag(e){
+viewport.addEventListener(
+    "pointermove",
+    function(event){
 
-    if(e.pointerId !== pointerId){
+        if(
+            !dragging ||
+            event.pointerId !== pointerId
+        ){
+            return;
+        }
+
+
+        const dx =
+            event.clientX -
+            startPointerX;
+
+        const dy =
+            event.clientY -
+            startPointerY;
+
+
+        offsetX =
+            startOffsetX + dx;
+
+        offsetY =
+            startOffsetY + dy;
+
+
+        normalize();
+
+        render();
+
+
+        event.preventDefault();
+
+    },
+    {passive:false}
+);
+
+
+/* -------------------------
+   END
+------------------------- */
+
+function stopDrag(event){
+
+    if(
+        event.pointerId !== pointerId
+    ){
         return;
     }
 
     dragging = false;
 
-    viewport.classList.remove("dragging");
+    viewport.classList.remove(
+        "dragging"
+    );
+
 
     try{
-        viewport.releasePointerCapture(e.pointerId);
-    }catch(err){}
+
+        viewport.releasePointerCapture(
+            event.pointerId
+        );
+
+    }catch(error){}
+
 
     pointerId = null;
 }
@@ -987,34 +1194,26 @@ function endDrag(e){
 
 viewport.addEventListener(
     "pointerup",
-    endDrag
+    stopDrag
 );
 
 viewport.addEventListener(
     "pointercancel",
-    endDrag
-);
-
-viewport.addEventListener(
-    "lostpointercapture",
-    function(){
-        dragging = false;
-        viewport.classList.remove("dragging");
-    }
+    stopDrag
 );
 
 
 /* =========================================================
-   INITIAL WORLD
+   START
 ========================================================= */
 
-createStaticContent();
+buildWorld();
 
 loadNews();
 
-applyWorld();
+render();
 
 </script>
 
 </body>
-      </html>
+    </html>
