@@ -3,19 +3,21 @@ name: Update Football News
 on:
   schedule:
     - cron: "0 */3 * * *"
+
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update-football-news:
+
+  update-news:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -23,263 +25,132 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install dependencies
+      - name: Install packages
         run: |
-          pip install feedparser requests beautifulsoup4
+          pip install feedparser beautifulsoup4
 
-      - name: Fetch football news
+      - name: Fetch latest football news
         run: |
 
           python <<'PY'
 
           import feedparser
           import json
-          import requests
           import re
           from bs4 import BeautifulSoup
           from datetime import datetime, timezone
 
+
           FEEDS = [
 
-              {
-                  "name": "ESPN Football",
-                  "url": "https://www.espn.com/espn/rss/soccer/news"
-              },
+              (
+                "BBC Sport Football",
+                "https://feeds.bbci.co.uk/sport/football/rss.xml"
+              ),
 
-              {
-                  "name": "Football Italia",
-                  "url": "https://football-italia.net/feed/"
-              },
-
-              {
-                  "name": "BBC Sport Football",
-                  "url": "https://feeds.bbci.co.uk/sport/football/rss.xml"
-              }
+              (
+                "ESPN Football",
+                "https://www.espn.com/espn/rss/soccer/news"
+              )
 
           ]
+
 
           news = []
           seen = set()
 
 
-          # -------------------------------------------------
-          # IMAGE FROM RSS ENTRY
-          # -------------------------------------------------
-
-          def get_rss_image(entry):
-
-              # media:content
-              media = entry.get("media_content")
-
-              if media:
-                  for item in media:
-                      if item.get("url"):
-                          return item["url"]
-
-              # media:thumbnail
-              thumb = entry.get("media_thumbnail")
-
-              if thumb:
-                  for item in thumb:
-                      if item.get("url"):
-                          return item["url"]
-
-              # enclosure
-              enclosure = entry.get("enclosures")
-
-              if enclosure:
-                  for item in enclosure:
-                      url = item.get("href") or item.get("url")
-
-                      if url:
-                          mime = item.get("type", "")
-
-                          if "image" in mime or not mime:
-                              return url
-
-              # image inside description
-              description = entry.get("description", "")
-
-              match = re.search(
-                  r'<img[^>]+src=["\']([^"\']+)["\']',
-                  description,
-                  re.I
-              )
-
-              if match:
-                  return match.group(1)
-
-              return ""
-
-
-          # -------------------------------------------------
-          # CLEAN HTML
-          # -------------------------------------------------
-
-          def clean_html(text):
+          def clean(text):
 
               if not text:
                   return ""
 
-              soup = BeautifulSoup(text, "html.parser")
-
-              for img in soup.find_all("img"):
-                  img.decompose()
-
-              text = soup.get_text(" ", strip=True)
-
-              text = re.sub(
-                  r'\s+',
-                  ' ',
-                  text
+              soup = BeautifulSoup(
+                  text,
+                  "html.parser"
               )
+
+              text =
+                  soup.get_text(
+                      " ",
+                      strip=True
+                  )
+
+              text =
+                  re.sub(
+                      r"\s+",
+                      " ",
+                      text
+                  )
 
               return text.strip()
 
 
-          # -------------------------------------------------
-          # GET IMAGE FROM ARTICLE OG IMAGE
-          # -------------------------------------------------
-
-          def get_article_image(url):
-
-              if not url:
-                  return ""
+          for source, url in FEEDS:
 
               try:
 
-                  headers = {
-                      "User-Agent":
-                      "Mozilla/5.0 (compatible; NipamVerseFootball/1.0)"
-                  }
+                  feed =
+                      feedparser.parse(url)
 
-                  response = requests.get(
-                      url,
-                      headers=headers,
-                      timeout=10
-                  )
+                  for entry in feed.entries[:20]:
 
-                  if response.status_code != 200:
-                      return ""
-
-                  soup = BeautifulSoup(
-                      response.text,
-                      "html.parser"
-                  )
-
-                  # og:image
-                  tag = soup.find(
-                      "meta",
-                      property="og:image"
-                  )
-
-                  if tag and tag.get("content"):
-                      return tag["content"]
-
-                  # twitter image
-                  tag = soup.find(
-                      "meta",
-                      attrs={"name": "twitter:image"}
-                  )
-
-                  if tag and tag.get("content"):
-                      return tag["content"]
-
-              except Exception:
-                  pass
-
-              return ""
-
-
-          # -------------------------------------------------
-          # READ FEEDS
-          # -------------------------------------------------
-
-          for feed_info in FEEDS:
-
-              try:
-
-                  feed = feedparser.parse(
-                      feed_info["url"]
-                  )
-
-                  for entry in feed.entries[:15]:
-
-                      title = clean_html(
-                          entry.get("title", "")
-                      )
+                      title =
+                          clean(
+                              entry.get(
+                                  "title",
+                                  ""
+                              )
+                          )
 
                       if not title:
                           continue
 
-                      title_key = title.lower()
+                      key =
+                          title.lower()
 
-                      if title_key in seen:
+                      if key in seen:
                           continue
 
-                      seen.add(title_key)
+                      seen.add(key)
 
-                      description = clean_html(
-                          entry.get(
-                              "summary",
+                      description =
+                          clean(
                               entry.get(
-                                  "description",
-                                  ""
+                                  "summary",
+                                  entry.get(
+                                      "description",
+                                      ""
+                                  )
                               )
                           )
-                      )
 
-                      link = entry.get(
-                          "link",
-                          ""
-                      )
+                      category =
+                          "Football"
 
-                      image = get_rss_image(
-                          entry
-                      )
-
-                      # If RSS has no image,
-                      # try the article page.
-                      if not image and link:
-
-                          image = get_article_image(
-                              link
-                          )
-
-                      published = entry.get(
-                          "published",
-                          entry.get(
-                              "updated",
-                              ""
-                          )
-                      )
-
-                      category = "Football"
-
-                      lower_title = title.lower()
+                      lower =
+                          title.lower()
 
                       if (
-                          "messi" in lower_title
-                          or "inter miami" in lower_title
+                          "messi" in lower
+                          or
+                          "inter miami" in lower
                       ):
                           category = "Messi"
 
-                      elif (
-                          "argentina" in lower_title
-                      ):
+                      elif "argentina" in lower:
                           category = "Argentina"
 
                       elif (
-                          "ballon d'or" in lower_title
-                          or "ballon dor" in lower_title
+                          "ballon d'or" in lower
+                          or
+                          "ballon dor" in lower
                       ):
                           category = "Ballon d'Or"
 
-                      elif (
-                          "premier league"
-                          in lower_title
-                      ):
+                      elif "premier league" in lower:
                           category = "Premier League"
+
 
                       news.append({
 
@@ -296,39 +167,30 @@ jobs:
                           "content":
                               description,
 
-                          "source":
-                              feed_info["name"],
+                          "source": source,
 
                           "published":
-                              published,
+                              entry.get(
+                                  "published",
+                                  entry.get(
+                                      "updated",
+                                      ""
+                                  )
+                              )
 
-                          "image":
-                              image,
-
-                          "link":
-                              link
-
-                      })
+                      )
 
               except Exception as error:
 
                   print(
                       "Feed error:",
-                      feed_info["name"],
+                      source,
                       error
                   )
 
 
-          # -------------------------------------------------
-          # LIMIT NEWS
-          # -------------------------------------------------
-
           news = news[:30]
 
-
-          # -------------------------------------------------
-          # SAVE JSON
-          # -------------------------------------------------
 
           output = {
 
@@ -357,15 +219,14 @@ jobs:
 
 
           print(
-              "Saved",
-              len(news),
-              "football stories."
+              "Football stories:",
+              len(news)
           )
 
           PY
 
 
-      - name: Commit updated news
+      - name: Save changes
         run: |
 
           git config user.name "github-actions"
@@ -376,6 +237,6 @@ jobs:
           git add football-news.json
 
           git diff --cached --quiet || \
-            git commit -m "Auto update football news"
+            git commit -m "Update football news"
 
           git push
