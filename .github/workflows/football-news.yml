@@ -3,213 +3,214 @@ name: Update Football News
 on:
   schedule:
     - cron: "0 */3 * * *"
-
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-
   update-news:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.12"
 
       - name: Install packages
         run: |
-          pip install feedparser beautifulsoup4
+          python -m pip install --upgrade pip
+          pip install feedparser requests beautifulsoup4
 
       - name: Fetch latest football news
         run: |
-
           python <<'PY'
-
-          import feedparser
           import json
           import re
-          from bs4 import BeautifulSoup
           from datetime import datetime, timezone
+          from html import unescape
 
+          import feedparser
+          import requests
+          from bs4 import BeautifulSoup
 
-          FEEDS = [
-
-              (
-                "BBC Sport Football",
-                "https://feeds.bbci.co.uk/sport/football/rss.xml"
-              ),
-
-              (
-                "ESPN Football",
-                "https://www.espn.com/espn/rss/soccer/news"
-              )
-
+          feeds = [
+              {
+                  "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+                  "source": "BBC Sport"
+              },
+              {
+                  "url": "https://www.espn.com/espn/rss/soccer/news",
+                  "source": "ESPN"
+              }
           ]
-
 
           news = []
           seen = set()
 
-
-          def clean(text):
-
+          def clean_html(text):
               if not text:
                   return ""
 
-              soup = BeautifulSoup(
-                  text,
-                  "html.parser"
-              )
-
-              text =
-                  soup.get_text(
-                      " ",
-                      strip=True
-                  )
-
-              text =
-                  re.sub(
-                      r"\s+",
-                      " ",
-                      text
-                  )
+              text = unescape(text)
+              soup = BeautifulSoup(text, "html.parser")
+              text = soup.get_text(" ", strip=True)
+              text = re.sub(r"\s+", " ", text)
 
               return text.strip()
 
+          def split_points(text):
+              if not text:
+                  return []
 
-          for source, url in FEEDS:
+              parts = re.split(r"(?<=[.!?])\s+", text)
+              parts = [p.strip() for p in parts if p.strip()]
 
+              return parts[:3]
+
+          def get_meta_description(url):
               try:
+                  response = requests.get(
+                      url,
+                      timeout=10,
+                      headers={
+                          "User-Agent": "Mozilla/5.0"
+                      }
+                  )
 
-                  feed =
-                      feedparser.parse(url)
+                  if response.status_code != 200:
+                      return ""
 
-                  for entry in feed.entries[:20]:
+                  soup = BeautifulSoup(
+                      response.text,
+                      "html.parser"
+                  )
 
-                      title =
-                          clean(
-                              entry.get(
-                                  "title",
-                                  ""
-                              )
+                  og = soup.find(
+                      "meta",
+                      attrs={"property": "og:description"}
+                  )
+
+                  if og and og.get("content"):
+                      return clean_html(og["content"])
+
+                  meta = soup.find(
+                      "meta",
+                      attrs={"name": "description"}
+                  )
+
+                  if meta and meta.get("content"):
+                      return clean_html(meta["content"])
+
+              except Exception:
+                  pass
+
+              return ""
+
+          for feed_info in feeds:
+              try:
+                  feed = feedparser.parse(feed_info["url"])
+
+                  for entry in feed.entries[:15]:
+                      title = clean_html(
+                          entry.get("title", "")
+                      )
+
+                      link = entry.get("link", "")
+
+                      description = clean_html(
+                          entry.get("summary", "")
+                      )
+
+                      if not description:
+                          description = clean_html(
+                              entry.get("description", "")
                           )
 
-                      if not title:
+                      if len(description) < 80 and link:
+                          extra = get_meta_description(link)
+
+                          if extra:
+                              description = extra
+
+                      if not title or not description:
                           continue
 
-                      key =
-                          title.lower()
+                      key = title.lower()
 
                       if key in seen:
                           continue
 
                       seen.add(key)
 
-                      description =
-                          clean(
-                              entry.get(
-                                  "summary",
-                                  entry.get(
-                                      "description",
-                                      ""
-                                  )
-                              )
-                          )
+                      points = split_points(description)
 
-                      category =
-                          "Football"
+                      if not points:
+                          points = [
+                              description
+                          ]
 
-                      lower =
-                          title.lower()
+                      published = (
+                          entry.get("published")
+                          or entry.get("updated")
+                          or ""
+                      )
+
+                      category = "Football"
+
+                      lower_title = title.lower()
 
                       if (
-                          "messi" in lower
-                          or
-                          "inter miami" in lower
+                          "messi" in lower_title
+                          or "inter miami" in lower_title
                       ):
                           category = "Messi"
 
-                      elif "argentina" in lower:
+                      elif (
+                          "argentina" in lower_title
+                          or "albiceleste" in lower_title
+                      ):
                           category = "Argentina"
 
-                      elif (
-                          "ballon d'or" in lower
-                          or
-                          "ballon dor" in lower
-                      ):
-                          category = "Ballon d'Or"
-
-                      elif "premier league" in lower:
-                          category = "Premier League"
-
-
                       news.append({
-
-                          "category": category,
-
                           "title": title,
-
-                          "description":
-                              description,
-
-                          "summary":
-                              description,
-
-                          "content":
-                              description,
-
-                          "source": source,
-
-                          "published":
-                              entry.get(
-                                  "published",
-                                  entry.get(
-                                      "updated",
-                                      ""
-                                  )
-                              )
-
-                      )
+                          "description": description,
+                          "content": description,
+                          "points": points,
+                          "source": feed_info["source"],
+                          "published": published,
+                          "category": category,
+                          "link": link
+                      })
 
               except Exception as error:
-
                   print(
-                      "Feed error:",
-                      source,
-                      error
+                      f"Feed error: {feed_info['source']}: {error}"
                   )
 
+          news.sort(
+              key=lambda item: item.get("published", ""),
+              reverse=True
+          )
 
           news = news[:30]
 
-
           output = {
-
-              "updated":
-                  datetime.now(
-                      timezone.utc
-                  ).isoformat(),
-
+              "updated": datetime.now(
+                  timezone.utc
+              ).isoformat(),
               "news": news
-
           }
-
 
           with open(
               "football-news.json",
               "w",
               encoding="utf-8"
           ) as file:
-
               json.dump(
                   output,
                   file,
@@ -217,26 +218,21 @@ jobs:
                   indent=2
               )
 
-
           print(
-              "Football stories:",
-              len(news)
+              f"Saved {len(news)} football news items."
           )
-
           PY
-
 
       - name: Save changes
         run: |
-
-          git config user.name "github-actions"
-
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add football-news.json
 
-          git diff --cached --quiet || \
+          if git diff --cached --quiet; then
+            echo "No news changes to commit."
+          else
             git commit -m "Update football news"
-
-          git push
+            git push
+          fi
