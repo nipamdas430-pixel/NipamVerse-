@@ -1,6 +1,30 @@
 {
-  "updated": "2026-09-13T06:17:29.385541+00:00",
+  "updated": "2026-09-13T09:38:20.592489+00:00",
   "news": [
+    {
+      "title": "Who am I? Guess WSL star No 4",
+      "description": "Work out the identity of today's player in as few attempts as possible.",
+      "content": "Work out the identity of today's player in as few attempts as possible.",
+      "points": [
+        "Work out the identity of today's player in as few attempts as possible."
+      ],
+      "source": "BBC Sport",
+      "published": "Sun, 13 Sep 2026 07:24:15 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/c804e74y1jeo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "title": "'I thought I was going to die' - Burnley boss on sepsis scare",
+      "description": "Burnley manager Jackie Bachteler will be in the dugout at Turf Moor on Sunday for the first time - but nine months ago she was fighting for her life.",
+      "content": "Burnley manager Jackie Bachteler will be in the dugout at Turf Moor on Sunday for the first time - but nine months ago she was fighting for her life.",
+      "points": [
+        "Burnley manager Jackie Bachteler will be in the dugout at Turf Moor on Sunday for the first time - but nine months ago she was fighting for her life."
+      ],
+      "source": "BBC Sport",
+      "published": "Sun, 13 Sep 2026 06:14:58 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cnvlrpn9dpgo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Flex your football brain with our daily quizzes",
       "description": "Test your ball knowledge with today's Who Am I?, Five in Five and Brainteaser.",
@@ -48,30 +72,6 @@
       "published": "Sat, 12 Sep 2026 21:53:50 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/sport/football/videos/c5ympj1m71ko?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Tottenham's wait for league goal continues after Everton draw",
-      "description": "Tottenham's wait for a first Premier League goal and win this season continues after Roberto de Zerbi's side were held to a goalless home draw by Everton.",
-      "content": "Tottenham's wait for a first Premier League goal and win this season continues after Roberto de Zerbi's side were held to a goalless home draw by Everton.",
-      "points": [
-        "Tottenham's wait for a first Premier League goal and win this season continues after Roberto de Zerbi's side were held to a goalless home draw by Everton."
-      ],
-      "source": "BBC Sport",
-      "published": "Sat, 12 Sep 2026 21:32:43 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/videos/cg49xg625n0o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Fulham take first point of the season at lacklustre Liverpool",
-      "description": "Fulham claim their first Premier League point of the season after a difficult start under Alvaro Arbeloa, as Liverpool fail to score for the first time this season just days after their Champions League victory over Atletico Madrid.",
-      "content": "Fulham claim their first Premier League point of the season after a difficult start under Alvaro Arbeloa, as Liverpool fail to score for the first time this season just days after their Champions League victory over Atletico Madrid.",
-      "points": [
-        "Fulham claim their first Premier League point of the season after a difficult start under Alvaro Arbeloa, as Liverpool fail to score for the first time this season just days after their Champions League victory over Atletico Madrid."
-      ],
-      "source": "BBC Sport",
-      "published": "Sat, 12 Sep 2026 21:31:46 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/videos/c780zx2wl9vo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Flemming's late strike earns Ipswich win over 10-man Crystal Palace",
@@ -146,6 +146,18 @@
       "link": "https://www.bbc.co.uk/sport/football/articles/cvgydkv0yxdo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "No away fans, Euro calamities & derby debuts - why Old Firm tie is crucial",
+      "description": "BBC Scotland previews the first meeting of Rangers and Celtic this season as the Old Firm rivals prepare to face off in the Premier Sports Cup quarter-finals.",
+      "content": "BBC Scotland previews the first meeting of Rangers and Celtic this season as the Old Firm rivals prepare to face off in the Premier Sports Cup quarter-finals.",
+      "points": [
+        "BBC Scotland previews the first meeting of Rangers and Celtic this season as the Old Firm rivals prepare to face off in the Premier Sports Cup quarter-finals."
+      ],
+      "source": "BBC Sport",
+      "published": "Sat, 12 Sep 2026 20:36:14 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cx2zpjpwz0wo?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "More dropped points at Anfield - is it too early for Liverpool to worry?",
       "description": "Liverpool have failed to win either of their first two Premier League games at Anfield. But is it too early to worry?",
       "content": "Liverpool have failed to win either of their first two Premier League games at Anfield. But is it too early to worry?",
@@ -169,18 +181,6 @@
       "published": "Sat, 12 Sep 2026 18:22:46 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/sport/football/articles/c1l6qd2qvyzo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Emery left searching for answers after another Villa loss",
-      "description": "Aston Villa have lost three of their opening four Premier League games to leave boss Unai Emery struggling for answers.",
-      "content": "Aston Villa have lost three of their opening four Premier League games to leave boss Unai Emery struggling for answers.",
-      "points": [
-        "Aston Villa have lost three of their opening four Premier League games to leave boss Unai Emery struggling for answers."
-      ],
-      "source": "BBC Sport",
-      "published": "Sat, 12 Sep 2026 18:06:29 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/clye91zj7l0o?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
