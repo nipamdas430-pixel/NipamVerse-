@@ -1,6 +1,18 @@
 {
-  "updated": "2026-09-19T06:13:07.390397+00:00",
+  "updated": "2026-09-19T09:10:18.490155+00:00",
   "news": [
+    {
+      "title": "From near oblivion to Europe - Brighton celebrate 125th anniversary",
+      "description": "From obscurity and near oblivion to Premier League and Europe - Brighton celebrate their 125th anniversary.",
+      "content": "From obscurity and near oblivion to Premier League and Europe - Brighton celebrate their 125th anniversary.",
+      "points": [
+        "From obscurity and near oblivion to Premier League and Europe - Brighton celebrate their 125th anniversary."
+      ],
+      "source": "BBC Sport",
+      "published": "Sat, 19 Sep 2026 06:30:32 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cm3wjl29qp4go?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Flex your football brain with our daily quizzes",
       "description": "Test your ball knowledge against today's Who Am I?, Five in Five and Brainteaser.",
@@ -169,18 +181,6 @@
       "published": "Fri, 18 Sep 2026 13:05:31 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/news/articles/cmr4v5v3zzr7o?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "Tuchel recalls Alexander-Arnold and Palmer with warning",
-      "description": "England boss Thomas Tuchel recalls Trent Alexander-Arnold and Cole Palmer but says players have to \"perform\".",
-      "content": "England boss Thomas Tuchel recalls Trent Alexander-Arnold and Cole Palmer but says players have to \"perform\".",
-      "points": [
-        "England boss Thomas Tuchel recalls Trent Alexander-Arnold and Cole Palmer but says players have to \"perform\"."
-      ],
-      "source": "BBC Sport",
-      "published": "Fri, 18 Sep 2026 12:55:26 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmly4gpnwk2go?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
