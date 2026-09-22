@@ -1,6 +1,18 @@
 {
-  "updated": "2026-09-22T03:10:32.725435+00:00",
+  "updated": "2026-09-22T06:13:33.039695+00:00",
   "news": [
+    {
+      "title": "Flex your football brain with our daily quizzes",
+      "description": "Test your ball knowledge against today's Who Am I?, Five in Five and Brainteaser.",
+      "content": "Test your ball knowledge against today's Who Am I?, Five in Five and Brainteaser.",
+      "points": [
+        "Test your ball knowledge against today's Who Am I?, Five in Five and Brainteaser."
+      ],
+      "source": "BBC Sport",
+      "published": "Tue, 22 Sep 2026 05:40:36 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cw20v5yelx3mo?at_medium=RSS&at_campaign=rss"
+    },
     {
       "title": "Being run over by pitch roller was 'terrifying' - Townsend",
       "description": "Townsend says he was lucky to only escape from under the roller with a few \"bumps and bruises\".",
@@ -157,18 +169,6 @@
       "published": "Mon, 21 Sep 2026 06:51:48 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/sport/football/articles/cq70d74g4d8go?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "'I've asked for forgiveness' - Eckert and Southampton braced for Spygate verdict",
-      "description": "As Southampton manager Tonda Eckert awaits the FA hearing into his 'Spygate' misconduct conduct charge BBC sports editor Dan Roan speaks to him and club chief executive Phil Parsons on what happens next.",
-      "content": "As Southampton manager Tonda Eckert awaits the FA hearing into his 'Spygate' misconduct conduct charge BBC sports editor Dan Roan speaks to him and club chief executive Phil Parsons on what happens next.",
-      "points": [
-        "As Southampton manager Tonda Eckert awaits the FA hearing into his 'Spygate' misconduct conduct charge BBC sports editor Dan Roan speaks to him and club chief executive Phil Parsons on what happens next."
-      ],
-      "source": "BBC Sport",
-      "published": "Mon, 21 Sep 2026 05:32:44 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/cmp30p934g4lo?at_medium=RSS&at_campaign=rss"
     }
   ]
 }
