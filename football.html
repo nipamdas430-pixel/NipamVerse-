@@ -1,827 +1,1025 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NipamVerse — Football Recent</title>
+<title>Football Recent — NipamVerse</title>
+
+<meta name="description"
+content="NipamVerse Football Recent — latest football, Messi, Argentina, transfers and Champions League updates.">
+
+<meta name="author" content="Nipam">
 
 <style>
+
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-html,body{
-  background:#050805;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-  overflow-x:hidden;
+    background:#050807;
+    color:#f4fff8;
+    font-family:Arial, sans-serif;
+    overflow-x:hidden;
 }
 
-/* HEADER */
+/* =========================
+   NAVBAR
+========================= */
 
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  height:68px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(5,8,5,.96);
-  border-bottom:1px solid #18351f;
-  backdrop-filter:blur(12px);
+nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:16px 7%;
+
+    background:#050807f2;
+    backdrop-filter:blur(10px);
+
+    border-bottom:1px solid #00ff8825;
 }
 
-header h1{
-  color:#70ff9d;
-  font-size:27px;
+.logo{
+    color:#00ff88;
+    text-decoration:none;
+
+    font-size:20px;
+    font-weight:bold;
+    letter-spacing:1px;
 }
 
-/* MAIN */
+.nav-links{
+    display:flex;
+    gap:22px;
+}
 
-main{
-  max-width:1150px;
-  margin:auto;
-  padding:22px 15px 70px;
+.nav-links a{
+    color:#aebdb4;
+    text-decoration:none;
+    font-size:13px;
+
+    transition:.2s;
+}
+
+.nav-links a:hover{
+    color:#00ff88;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    min-height:390px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:70px 20px;
+
+    background:
+        linear-gradient(
+            rgba(3,10,7,.88),
+            rgba(3,10,7,.96)
+        );
+}
+
+.hero-content{
+    max-width:850px;
+
+    animation:heroEnter .7s ease-out;
+}
+
+.hero-badge{
+    display:inline-block;
+
+    padding:8px 14px;
+
+    border:1px solid #00ff8850;
+    border-radius:30px;
+
+    color:#00ff88;
+
+    font-size:11px;
+    letter-spacing:2px;
+
+    margin-bottom:22px;
+}
+
+.hero h1{
+    font-size:clamp(42px,8vw,78px);
+
+    line-height:1.05;
+
+    margin-bottom:18px;
+}
+
+.hero h1 span{
+    color:#00ff88;
+}
+
+.hero p{
+    max-width:650px;
+
+    margin:auto;
+
+    color:#91a097;
+
+    line-height:1.7;
+
+    font-size:14px;
+}
+
+/* =========================
+   LIVE STATUS
+========================= */
+
+.live-status{
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:9px;
+
+    margin-top:24px;
+
+    color:#9aa9a1;
+
+    font-size:11px;
+}
+
+.live-dot{
+    width:8px;
+    height:8px;
+
+    background:#00ff88;
+
+    border-radius:50%;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+section{
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:70px 7%;
 }
 
 .section-title{
-  color:#7cffaa;
-  font-size:24px;
-  margin:12px 0 18px;
+    margin-bottom:35px;
 }
 
-/* NEWS */
+.section-title h2{
+    font-size:30px;
+
+    margin-bottom:8px;
+}
+
+.section-title h2 span{
+    color:#00ff88;
+}
+
+.section-title p{
+    color:#7f8d85;
+
+    font-size:12px;
+}
+
+/* =========================
+   NEWS GRID
+========================= */
 
 .news-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(260px,1fr));
+
+    gap:20px;
 }
 
+/* =========================
+   NEWS CARD
+========================= */
+
 .news-card{
-  min-height:220px;
-  padding:23px;
-  border-radius:20px;
-  background:
-    linear-gradient(145deg,#102217,#09110c);
-  border:1px solid #1d3b26;
-  cursor:pointer;
-  transition:.25s;
+    background:
+        linear-gradient(
+            145deg,
+            #0b120e,
+            #070b09
+        );
+
+    border:1px solid #00ff8818;
+
+    border-radius:16px;
+
+    padding:24px;
+
+    min-height:250px;
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease;
+
+    animation:cardEnter .5s ease-out;
 }
 
 .news-card:hover{
-  transform:translateY(-4px);
-  border-color:#39d86b;
-  box-shadow:0 15px 35px rgba(0,255,100,.10);
+    transform:translateY(-5px);
+
+    border-color:#00ff8860;
 }
 
-.news-card:first-child{
-  grid-column:span 2;
-  min-height:280px;
+.news-category{
+    display:inline-block;
+
+    color:#00ff88;
+
+    border:1px solid #00ff8830;
+
+    padding:6px 9px;
+
+    border-radius:20px;
+
+    font-size:9px;
+
+    letter-spacing:1px;
+
+    margin-bottom:18px;
 }
 
-.tag{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:20px;
-  background:#0ca849;
-  font-size:11px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
+.news-card h3{
+    font-size:17px;
 
-.news-card h2{
-  font-size:24px;
-  line-height:1.25;
-}
+    line-height:1.45;
 
-.news-card:first-child h2{
-  font-size:31px;
+    margin-bottom:13px;
 }
 
 .news-card p{
-  color:#aeb9b1;
-  margin-top:13px;
-  line-height:1.55;
-  font-size:14px;
+    color:#89968f;
+
+    font-size:11px;
+
+    line-height:1.7;
+
+    margin-bottom:20px;
 }
 
-.news-meta{
-  margin-top:18px;
-  color:#718078;
-  font-size:12px;
+.news-card a{
+    display:inline-block;
+
+    color:#00ff88;
+
+    text-decoration:none;
+
+    font-size:11px;
+
+    font-weight:bold;
 }
 
-/* SPECIAL ZONES */
-
-.zone-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
+.news-card a:hover{
+    text-decoration:underline;
 }
 
-.zone-card{
-  padding:25px;
-  min-height:190px;
-  border-radius:20px;
-  cursor:pointer;
-  background:linear-gradient(145deg,#101e15,#080d09);
-  border:1px solid #1d3b26;
-  transition:.25s;
+/* =========================
+   FEATURE SECTIONS
+========================= */
+
+.feature-section{
+    margin-bottom:15px;
 }
 
-.zone-card:hover{
-  transform:translateY(-4px);
-  border-color:#39d86b;
-}
-
-.zone-card h2{
-  color:#75ffa1;
-  font-size:25px;
-}
-
-.zone-card p{
-  margin-top:12px;
-  color:#aeb9b1;
-  line-height:1.6;
-}
-
-/* LOADING */
+/* =========================
+   EMPTY / LOADING
+========================= */
 
 .loading{
-  grid-column:1/-1;
-  text-align:center;
-  padding:50px;
-  color:#718078;
+    grid-column:1/-1;
+
+    text-align:center;
+
+    padding:50px;
+
+    color:#7f8d85;
+
+    font-size:13px;
 }
 
-/* DETAIL SCREEN */
+.error{
+    grid-column:1/-1;
 
-#detailScreen{
-  position:fixed;
-  inset:0;
-  z-index:5000;
-  display:none;
-  background:#050805;
+    text-align:center;
+
+    padding:40px;
+
+    border:1px solid #ff555530;
+
+    border-radius:14px;
+
+    color:#b8c2bc;
 }
 
-#detailScreen.active{
-  display:block;
+/* =========================
+   BACK BUTTON
+========================= */
+
+.back-home{
+    text-align:center;
+
+    padding:20px 20px 70px;
 }
 
-/* DETAIL HEADER */
+.back-home a{
+    display:inline-block;
 
-.detail-header{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:68px;
-  z-index:10;
+    padding:13px 22px;
 
-  display:flex;
-  align-items:center;
-  gap:12px;
+    border:1px solid #00ff88;
 
-  padding:0 15px;
+    border-radius:30px;
 
-  background:rgba(5,8,5,.97);
-  border-bottom:1px solid #18351f;
+    color:#00ff88;
+
+    text-decoration:none;
+
+    font-size:11px;
+
+    transition:.2s;
 }
 
-.back{
-  border:none;
-  background:#12351d;
-  color:#7cffaa;
-  padding:10px 15px;
-  border-radius:11px;
-  cursor:pointer;
-  font-size:15px;
+.back-home a:hover{
+    background:#00ff88;
+
+    color:#031008;
 }
 
-.detail-header h2{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:18px;
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    text-align:center;
+
+    padding:35px 20px;
+
+    border-top:1px solid #00ff8815;
+
+    color:#66736c;
+
+    font-size:10px;
 }
 
-/*
-  DETAIL AREA:
-  BOTH horizontal + vertical scrolling
-*/
-
-#detailScroll{
-  width:100%;
-  height:100%;
-  overflow:auto;
-  padding-top:90px;
-  padding-bottom:80px;
-
-  touch-action:pan-x pan-y;
-  overscroll-behavior:contain;
+footer strong{
+    color:#00ff88;
 }
 
-/*
-  Wider than mobile screen intentionally.
-  So horizontal scrolling is available.
-*/
+/* =========================
+   ANIMATIONS
+========================= */
 
-.detail-content{
-  width:1050px;
-  min-height:900px;
-  margin:auto;
-  padding:25px;
+@keyframes heroEnter{
+
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
-.detail-tag{
-  display:inline-block;
-  padding:7px 12px;
-  background:#0ca849;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
+@keyframes cardEnter{
+
+    from{
+        opacity:0;
+        transform:translateY(12px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
-.detail-title{
-  margin-top:18px;
-  max-width:950px;
-  font-size:44px;
-  line-height:1.13;
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:650px){
+
+    nav{
+        padding:14px 5%;
+    }
+
+    .nav-links{
+        gap:12px;
+    }
+
+    .nav-links a{
+        font-size:10px;
+    }
+
+    .hero{
+        min-height:350px;
+
+        padding:55px 18px;
+    }
+
+    .hero h1{
+        font-size:43px;
+    }
+
+    .hero p{
+        font-size:12px;
+    }
+
+    section{
+        padding:50px 18px;
+    }
+
+    .section-title h2{
+        font-size:26px;
+    }
+
+    .news-grid{
+        grid-template-columns:1fr;
+    }
+
 }
 
-.detail-meta{
-  color:#718078;
-  margin-top:14px;
-  font-size:13px;
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    html{
+        scroll-behavior:auto;
+    }
+
+    .hero-content,
+    .news-card{
+        animation:none;
+    }
+
+    .news-card{
+        transition:none;
+    }
 }
 
-.detail-section{
-  max-width:900px;
-  margin-top:35px;
-}
-
-.detail-section h3{
-  color:#70ff9d;
-  font-size:22px;
-  margin-bottom:12px;
-}
-
-.detail-section p{
-  color:#d5ddd7;
-  font-size:18px;
-  line-height:1.8;
-  margin-bottom:20px;
-}
-
-.points{
-  margin-top:25px;
-  padding:20px;
-  border-radius:18px;
-  background:#0c150f;
-  border:1px solid #1a3421;
-}
-
-.points div{
-  padding:12px 0;
-  color:#d5ddd7;
-  border-bottom:1px solid #17251b;
-}
-
-.points div:last-child{
-  border-bottom:none;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-  header{
-    height:62px;
-  }
-
-  header h1{
-    font-size:23px;
-  }
-
-  main{
-    padding:16px 10px 50px;
-  }
-
-  .news-grid{
-    grid-template-columns:1fr;
-  }
-
-  .news-card,
-  .news-card:first-child{
-    grid-column:span 1;
-    min-height:240px;
-  }
-
-  .news-card:first-child h2{
-    font-size:25px;
-  }
-
-  .zone-grid{
-    grid-template-columns:1fr;
-  }
-
-  .detail-content{
-    width:1000px;
-    margin:0;
-    padding:20px;
-  }
-
-  .detail-title{
-    font-size:36px;
-  }
-}
 </style>
 </head>
 
+
 <body>
 
-<header>
-  <h1>Football Recent</h1>
-</header>
 
-<main>
+<!-- =========================
+     NAVIGATION
+========================= -->
 
-  <h2 class="section-title">Latest Football</h2>
+<nav>
 
-  <div id="newsGrid" class="news-grid">
-    <div class="loading">
-      Loading latest football news...
-    </div>
-  </div>
+    <a href="index.html" class="logo">
+        NipamVerse
+    </a>
 
-  <h2 class="section-title">Special Zones</h2>
+    <div class="nav-links">
 
-  <div class="zone-grid">
+        <a href="index.html">
+            Home
+        </a>
 
-    <div class="zone-card"
-         onclick="openArgentina()">
+        <a href="games.html">
+            Games
+        </a>
 
-      <h2>Argentina Zone</h2>
-
-      <p>
-        Argentina national-team news,
-        major matches, players and the
-        latest developments.
-      </p>
+        <a href="tools.html">
+            Tools
+        </a>
 
     </div>
 
-    <div class="zone-card"
-         onclick="openMessi()">
-
-      <h2>Messi Zone</h2>
-
-      <p>
-        Messi, Inter Miami and major
-        updates from his football career.
-      </p>
-
-    </div>
-
-  </div>
-
-</main>
+</nav>
 
 
-<!-- DETAIL -->
+<!-- =========================
+     HERO
+========================= -->
 
-<div id="detailScreen">
+<header class="hero">
 
-  <div class="detail-header">
+    <div class="hero-content">
 
-    <button class="back"
-            onclick="closeDetail()">
-      ← Back
-    </button>
+        <div class="hero-badge">
+            NIPAMVERSE FOOTBALL
+        </div>
 
-    <h2 id="detailHeaderTitle">
-      Football News
-    </h2>
+        <h1>
+            Football <span>Recent</span>
+        </h1>
 
-  </div>
-
-
-  <div id="detailScroll">
-
-    <article class="detail-content">
-
-      <span id="detailTag"
-            class="detail-tag">
-        FOOTBALL
-      </span>
-
-      <h1 id="detailTitle"
-          class="detail-title">
-        Football News
-      </h1>
-
-      <div id="detailMeta"
-           class="detail-meta">
-        NipamVerse Football
-      </div>
-
-
-      <div class="detail-section">
-
-        <h3>What happened?</h3>
-
-        <p id="detailDescription">
-          Loading...
+        <p>
+            Latest football updates, Messi news,
+            Argentina news, transfers and major
+            football stories — all in one place.
         </p>
 
+        <div class="live-status">
 
-        <h3>Full Story</h3>
+            <div class="live-dot"></div>
 
-        <p id="detailContent">
-          Loading...
-        </p>
-
-
-        <div class="points">
-
-          <div id="point1">
-            • Key point
-          </div>
-
-          <div id="point2">
-            • Key point
-          </div>
-
-          <div id="point3">
-            • Key point
-          </div>
+            News updates automatically
 
         </div>
 
-      </div>
+    </div>
 
-    </article>
+</header>
 
-  </div>
+
+<!-- =========================
+     MESSI
+========================= -->
+
+<section class="feature-section">
+
+    <div class="section-title">
+
+        <h2>
+            Messi <span>🐐</span>
+        </h2>
+
+        <p>
+            Latest Lionel Messi updates
+        </p>
+
+    </div>
+
+    <div
+        class="news-grid"
+        id="messiNews"
+    >
+
+        <div class="loading">
+            Loading Messi news...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ARGENTINA
+========================= -->
+
+<section class="feature-section">
+
+    <div class="section-title">
+
+        <h2>
+            Argentina <span>🇦🇷</span>
+        </h2>
+
+        <p>
+            Latest Argentina national-team updates
+        </p>
+
+    </div>
+
+    <div
+        class="news-grid"
+        id="argentinaNews"
+    >
+
+        <div class="loading">
+            Loading Argentina news...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     TRANSFERS
+========================= -->
+
+<section class="feature-section">
+
+    <div class="section-title">
+
+        <h2>
+            Transfers <span>🔄</span>
+        </h2>
+
+        <p>
+            Latest transfer stories
+        </p>
+
+    </div>
+
+    <div
+        class="news-grid"
+        id="transferNews"
+    >
+
+        <div class="loading">
+            Loading transfer news...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CHAMPIONS LEAGUE
+========================= -->
+
+<section class="feature-section">
+
+    <div class="section-title">
+
+        <h2>
+            Champions League <span>🏆</span>
+        </h2>
+
+        <p>
+            Latest Champions League stories
+        </p>
+
+    </div>
+
+    <div
+        class="news-grid"
+        id="uclNews"
+    >
+
+        <div class="loading">
+            Loading Champions League news...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     GENERAL FOOTBALL
+========================= -->
+
+<section class="feature-section">
+
+    <div class="section-title">
+
+        <h2>
+            Latest Football <span>⚽</span>
+        </h2>
+
+        <p>
+            More football news and updates
+        </p>
+
+    </div>
+
+    <div
+        class="news-grid"
+        id="footballNews"
+    >
+
+        <div class="loading">
+            Loading football news...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     BACK HOME
+========================= -->
+
+<div class="back-home">
+
+    <a href="index.html">
+        ← Back to NipamVerse
+    </a>
 
 </div>
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        © 2026 <strong>NipamVerse</strong>
+    </p>
+
+    <p>
+        Football Recent • Made with 💚 by Nipam
+    </p>
+
+</footer>
+
+
 <script>
 
-/* ===============================
-   NEWS
-================================ */
-
-let allNews = [];
-
-
-/* ===============================
-   LOAD NEWS
-================================ */
+/* ==================================================
+   FOOTBALL NEWS LOADER
+================================================== */
 
 async function loadNews(){
 
-  const grid =
-    document.getElementById("newsGrid");
+    try{
 
-  try{
+        const response =
+            await fetch(
+                "football-news.json?cache=" +
+                Date.now()
+            );
 
-    const response =
-      await fetch(
-        "football-news.json?cache=" +
-        Date.now()
-      );
+        if(!response.ok){
 
-    if(!response.ok)
-      throw new Error("News file unavailable");
+            throw new Error(
+                "football-news.json not found"
+            );
 
-    const data =
-      await response.json();
+        }
 
-    if(Array.isArray(data)){
-      allNews = data;
-    }
-    else if(Array.isArray(data.news)){
-      allNews = data.news;
-    }
-    else{
-      allNews = [];
-    }
+        const data =
+            await response.json();
 
-    if(allNews.length === 0){
-      showFallback();
-      return;
-    }
+        const articles =
+            Array.isArray(data.articles)
+            ? data.articles
+            : [];
 
-    grid.innerHTML = "";
-
-    allNews.forEach(
-      (news,index)=>{
-        grid.appendChild(
-          createCard(news,index)
+        renderCategory(
+            articles,
+            "Messi",
+            "messiNews"
         );
-      }
-    );
 
-  }
-  catch(error){
+        renderCategory(
+            articles,
+            "Argentina",
+            "argentinaNews"
+        );
 
-    console.log(error);
+        renderCategory(
+            articles,
+            "Transfers",
+            "transferNews"
+        );
 
-    showFallback();
+        renderCategory(
+            articles,
+            "Champions League",
+            "uclNews"
+        );
 
-  }
-}
+        renderCategory(
+            articles,
+            "Football",
+            "footballNews"
+        );
 
+    }
 
-/* ===============================
-   CARD
-================================ */
+    catch(error){
 
-function createCard(news,index){
+        console.error(
+            "News loading error:",
+            error
+        );
 
-  const card =
-    document.createElement("article");
+        showError("messiNews");
+        showError("argentinaNews");
+        showError("transferNews");
+        showError("uclNews");
+        showError("footballNews");
 
-  card.className =
-    "news-card";
-
-  card.onclick = ()=>{
-    openNews(index);
-  };
-
-  const category =
-    news.category ||
-    "Football";
-
-  const title =
-    news.title ||
-    "Football News";
-
-  const description =
-    news.description ||
-    news.summary ||
-    "Latest football update.";
-
-  const source =
-    news.source ||
-    "NipamVerse Football";
-
-  const date =
-    news.published ||
-    "";
-
-  card.innerHTML = `
-
-    <span class="tag">
-      ${escapeHTML(category)}
-    </span>
-
-    <h2>
-      ${escapeHTML(title)}
-    </h2>
-
-    <p>
-      ${escapeHTML(description)}
-    </p>
-
-    <div class="news-meta">
-      ${escapeHTML(source)}
-      ${date ? " • " + escapeHTML(date) : ""}
-    </div>
-
-  `;
-
-  return card;
-}
-
-
-/* ===============================
-   OPEN NEWS
-================================ */
-
-function openNews(index){
-
-  const news =
-    allNews[index];
-
-  if(news)
-    showDetail(news);
-}
-
-
-/* ===============================
-   MESSI
-================================ */
-
-function openMessi(){
-
-  showDetail({
-
-    category:"Messi Zone",
-
-    title:
-      "Messi continues his Inter Miami journey",
-
-    source:
-      "NipamVerse Football",
-
-    published:
-      "September 2026",
-
-    description:
-      "Lionel Messi continues his club career with Inter Miami after announcing the end of his international career with Argentina.",
-
-    content:
-      "Messi returned to action for Inter Miami after his international retirement announcement. In his return against Atlanta United, he provided the assist for Casemiro's opening goal from a corner. The match eventually ended 2–2. Messi has remained one of Inter Miami's most important attacking players during the MLS season.",
-
-    points:[
-      "Messi returned to Inter Miami action.",
-      "He provided an assist against Atlanta United.",
-      "Inter Miami and Atlanta United finished 2–2."
-    ]
-
-  });
+    }
 
 }
 
 
-/* ===============================
-   ARGENTINA
-================================ */
+/* ==================================================
+   RENDER CATEGORY
+================================================== */
 
-function openArgentina(){
+function renderCategory(
+    articles,
+    category,
+    containerId
+){
 
-  showDetail({
+    const container =
+        document.getElementById(
+            containerId
+        );
 
-    category:"Argentina Zone",
+    if(!container){
+        return;
+    }
 
-    title:
-      "Argentina enters a new chapter after the 2026 World Cup",
+    const filtered =
+        articles.filter(
+            article =>
+                article.category === category
+        );
 
-    source:
-      "NipamVerse Football",
+    container.innerHTML = "";
 
-    published:
-      "September 2026",
+    if(filtered.length === 0){
 
-    description:
-      "Argentina's national team is entering a new phase after the 2026 World Cup, with major attention now on the future of the squad.",
+        container.innerHTML = `
+            <div class="loading">
+                No recent ${category} news available.
+            </div>
+        `;
 
-    content:
-      "Argentina reached the 2026 World Cup final and finished as runners-up. Messi's international career has now ended, making the team's future one of the major stories in international football. The next generation of Argentine players will have an increasingly important role as the national team moves forward.",
+        return;
+    }
 
-    points:[
-      "Argentina reached the 2026 World Cup final.",
-      "The national team is entering a transition period.",
-      "The next generation will have greater responsibility."
-    ]
+    filtered
+        .slice(0,6)
+        .forEach(article => {
 
-  });
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+            card.className =
+                "news-card";
+
+            const title =
+                escapeHTML(
+                    article.title || ""
+                );
+
+            const description =
+                escapeHTML(
+                    article.description || ""
+                );
+
+            const link =
+                safeURL(
+                    article.link
+                );
+
+            card.innerHTML = `
+
+                <div class="news-category">
+                    ${escapeHTML(category)}
+                </div>
+
+                <h3>
+                    ${title}
+                </h3>
+
+                <p>
+                    ${description}
+                </p>
+
+                <a
+                    href="${link}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Read Full News →
+                </a>
+
+            `;
+
+            container.appendChild(card);
+
+        });
 
 }
 
 
-/* ===============================
-   DETAIL
-================================ */
+/* ==================================================
+   ERROR
+================================================== */
 
-function showDetail(news){
+function showError(id){
 
-  document.getElementById(
-    "detailTag"
-  ).textContent =
-    news.category || "FOOTBALL";
+    const container =
+        document.getElementById(id);
 
-  document.getElementById(
-    "detailTitle"
-  ).textContent =
-    news.title || "Football News";
+    if(!container){
+        return;
+    }
 
-  document.getElementById(
-    "detailHeaderTitle"
-  ).textContent =
-    news.title || "Football News";
+    container.innerHTML = `
 
-  document.getElementById(
-    "detailMeta"
-  ).textContent =
-    (news.source || "NipamVerse Football") +
-    (news.published
-      ? " • " + news.published
-      : "");
+        <div class="error">
 
-  document.getElementById(
-    "detailDescription"
-  ).textContent =
-    news.description ||
-    news.summary ||
-    "Information unavailable.";
+            News is temporarily unavailable.
 
-  document.getElementById(
-    "detailContent"
-  ).textContent =
-    news.content ||
-    news.description ||
-    news.summary ||
-    "More information unavailable.";
+            <br><br>
 
-  const points =
-    Array.isArray(news.points)
-      ? news.points
-      : [];
+            Please try again later.
 
-  document.getElementById(
-    "point1"
-  ).textContent =
-    "• " +
-    (points[0] ||
-     "Latest football update");
+        </div>
 
-  document.getElementById(
-    "point2"
-  ).textContent =
-    "• " +
-    (points[1] ||
-     "More details available inside NipamVerse");
+    `;
 
-  document.getElementById(
-    "point3"
-  ).textContent =
-    "• " +
-    (points[2] ||
-     "News is displayed without leaving the website");
-
-  document.getElementById(
-    "detailScreen"
-  ).classList.add("active");
-
-  document.body.style.overflow =
-    "hidden";
-
-  document.getElementById(
-    "detailScroll"
-  ).scrollTo(0,0);
 }
 
 
-/* ===============================
-   CLOSE
-================================ */
+/* ==================================================
+   SECURITY HELPERS
+================================================== */
 
-function closeDetail(){
+function escapeHTML(value){
 
-  document.getElementById(
-    "detailScreen"
-  ).classList.remove("active");
+    const div =
+        document.createElement(
+            "div"
+        );
 
-  document.body.style.overflow =
-    "";
+    div.textContent =
+        value || "";
+
+    return div.innerHTML;
+
 }
 
 
-/* ===============================
-   ESCAPE HTML
-================================ */
+function safeURL(value){
 
-function escapeHTML(text){
+    try{
 
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+        const url =
+            new URL(
+                value,
+                window.location.href
+            );
+
+        if(
+            url.protocol === "http:" ||
+            url.protocol === "https:"
+        ){
+
+            return url.href;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+    return "#";
+
 }
 
 
-/* ===============================
-   ESC KEY
-================================ */
-
-document.addEventListener(
-  "keydown",
-  e=>{
-    if(e.key === "Escape")
-      closeDetail();
-  }
-);
-
-
-/* START */
+/* ==================================================
+   START
+================================================== */
 
 loadNews();
 
 </script>
+
 
 </body>
   </html>
