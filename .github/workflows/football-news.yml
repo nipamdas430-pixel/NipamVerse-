@@ -2,84 +2,227 @@ name: Update Football News
 
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    # Run every 30 minutes
+    - cron: "*/30 * * * *"
+
+  # Allow manual update from GitHub Actions
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+
   update-news:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+
+      # ==========================================
+      # CHECKOUT
+      # ==========================================
+
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+
+      # ==========================================
+      # SETUP PYTHON
+      # ==========================================
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
+
+      # ==========================================
+      # INSTALL PACKAGES
+      # ==========================================
+
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
           pip install feedparser requests beautifulsoup4
 
+
+      # ==========================================
+      # FETCH FOOTBALL NEWS
+      # ==========================================
+
       - name: Fetch latest football news
         run: |
+
           python <<'PY'
+
           import json
           import re
+
           from datetime import datetime, timezone
           from html import unescape
 
           import feedparser
           import requests
+
           from bs4 import BeautifulSoup
 
+
+          # ==========================================
+          # NEWS SOURCES
+          # ==========================================
+
           feeds = [
+
               {
-                  "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
-                  "source": "BBC Sport"
+                  "url":
+                  "https://feeds.bbci.co.uk/sport/football/rss.xml",
+
+                  "source":
+                  "BBC Sport"
               },
+
               {
-                  "url": "https://www.espn.com/espn/rss/soccer/news",
-                  "source": "ESPN"
+                  "url":
+                  "https://www.espn.com/espn/rss/soccer/news",
+
+                  "source":
+                  "ESPN"
               }
+
           ]
 
+
+          # ==========================================
+          # EXTRA SEARCH FEEDS
+          # ==========================================
+
+          search_feeds = [
+
+              {
+                  "url":
+                  "https://news.google.com/rss/search?q=Lionel+Messi&hl=en-US&gl=US&ceid=US:en",
+
+                  "source":
+                  "Google News",
+
+                  "category":
+                  "Messi"
+              },
+
+              {
+                  "url":
+                  "https://news.google.com/rss/search?q=Argentina+football+national+team&hl=en-US&gl=US&ceid=US:en",
+
+                  "source":
+                  "Google News",
+
+                  "category":
+                  "Argentina"
+              },
+
+              {
+                  "url":
+                  "https://news.google.com/rss/search?q=football+transfers&hl=en-US&gl=US&ceid=US:en",
+
+                  "source":
+                  "Google News",
+
+                  "category":
+                  "Transfers"
+              },
+
+              {
+                  "url":
+                  "https://news.google.com/rss/search?q=Champions+League+football&hl=en-US&gl=US&ceid=US:en",
+
+                  "source":
+                  "Google News",
+
+                  "category":
+                  "Champions League"
+              }
+
+          ]
+
+
           news = []
+
           seen = set()
 
+
+          # ==========================================
+          # CLEAN HTML
+          # ==========================================
+
           def clean_html(text):
+
               if not text:
                   return ""
 
               text = unescape(text)
-              soup = BeautifulSoup(text, "html.parser")
-              text = soup.get_text(" ", strip=True)
-              text = re.sub(r"\s+", " ", text)
+
+              soup = BeautifulSoup(
+                  text,
+                  "html.parser"
+              )
+
+              text = soup.get_text(
+                  " ",
+                  strip=True
+              )
+
+              text = re.sub(
+                  r"\s+",
+                  " ",
+                  text
+              )
 
               return text.strip()
 
+
+          # ==========================================
+          # SPLIT DESCRIPTION INTO POINTS
+          # ==========================================
+
           def split_points(text):
+
               if not text:
                   return []
 
-              parts = re.split(r"(?<=[.!?])\s+", text)
-              parts = [p.strip() for p in parts if p.strip()]
+              parts = re.split(
+                  r"(?<=[.!?])\s+",
+                  text
+              )
+
+              parts = [
+                  p.strip()
+                  for p in parts
+                  if p.strip()
+              ]
 
               return parts[:3]
 
+
+          # ==========================================
+          # GET ARTICLE DESCRIPTION
+          # ==========================================
+
           def get_meta_description(url):
+
               try:
+
                   response = requests.get(
+
                       url,
+
                       timeout=10,
+
                       headers={
-                          "User-Agent": "Mozilla/5.0"
+                          "User-Agent":
+                          "Mozilla/5.0"
                       }
+
                   )
 
                   if response.status_code != 200:
@@ -90,149 +233,494 @@ jobs:
                       "html.parser"
                   )
 
+
                   og = soup.find(
                       "meta",
-                      attrs={"property": "og:description"}
+                      attrs={
+                          "property":
+                          "og:description"
+                      }
                   )
 
+
                   if og and og.get("content"):
-                      return clean_html(og["content"])
+
+                      return clean_html(
+                          og.get("content")
+                      )
+
 
                   meta = soup.find(
                       "meta",
-                      attrs={"name": "description"}
+                      attrs={
+                          "name":
+                          "description"
+                      }
                   )
 
+
                   if meta and meta.get("content"):
-                      return clean_html(meta["content"])
+
+                      return clean_html(og.get("content")
+                      )
+
+
+                  meta = soup.find(
+                      "meta",
+                      attrs={
+                          "name":
+                          "description"
+                      }
+                  )
+
+
+                  if meta and meta.get("content"):
+
+                      return clean_html(
+                          meta.get("content")
+                      )
+
 
               except Exception:
+
                   pass
+
 
               return ""
 
-          for feed_info in feeds:
-              try:
-                  feed = feedparser.parse(feed_info["url"])
 
-                  for entry in feed.entries[:15]:
-                      title = clean_html(
-                          entry.get("title", "")
-                      )
+          # ==========================================
+          # ADD ARTICLE
+          # ==========================================
 
-                      link = entry.get("link", "")
+          def add_article(
+              entry,
+              source,
+              forced_category=None
+          ):
 
-                      description = clean_html(
-                          entry.get("summary", "")
-                      )
-
-                      if not description:
-                          description = clean_html(
-                              entry.get("description", "")
-                          )
-
-                      if len(description) < 80 and link:
-                          extra = get_meta_description(link)
-
-                          if extra:
-                              description = extra
-
-                      if not title or not description:
-                          continue
-
-                      key = title.lower()
-
-                      if key in seen:
-                          continue
-
-                      seen.add(key)
-
-                      points = split_points(description)
-
-                      if not points:
-                          points = [
-                              description
-                          ]
-
-                      published = (
-                          entry.get("published")
-                          or entry.get("updated")
-                          or ""
-                      )
-
-                      category = "Football"
-
-                      lower_title = title.lower()
-
-                      if (
-                          "messi" in lower_title
-                          or "inter miami" in lower_title
-                      ):
-                          category = "Messi"
-
-                      elif (
-                          "argentina" in lower_title
-                          or "albiceleste" in lower_title
-                      ):
-                          category = "Argentina"
-
-                      news.append({
-                          "title": title,
-                          "description": description,
-                          "content": description,
-                          "points": points,
-                          "source": feed_info["source"],
-                          "published": published,
-                          "category": category,
-                          "link": link
-                      })
-
-              except Exception as error:
-                  print(
-                      f"Feed error: {feed_info['source']}: {error}"
+              title = clean_html(
+                  entry.get(
+                      "title",
+                      ""
                   )
-
-          news.sort(
-              key=lambda item: item.get("published", ""),
-              reverse=True
-          )
-
-          news = news[:30]
-
-          output = {
-              "updated": datetime.now(
-                  timezone.utc
-              ).isoformat(),
-              "news": news
-          }
-
-          with open(
-              "football-news.json",
-              "w",
-              encoding="utf-8"
-          ) as file:
-              json.dump(
-                  output,
-                  file,
-                  ensure_ascii=False,
-                  indent=2
               )
 
-          print(
-              f"Saved {len(news)} football news items."
+
+              link = entry.get(
+                  "link",
+                  ""
+              )
+
+
+              description = clean_html(
+
+                  entry.get(
+                      "summary",
+                      ""
+                  )
+
+              )
+
+
+              if not description:
+
+                  description = clean_html(
+
+                      entry.get(
+                          "description",
+                          ""
+                      )
+
+                  )
+
+
+              # Try article page if description
+              # is too short
+
+              if (
+                  len(description) < 80
+                  and link
+              ):
+
+                  extra = get_meta_description(
+                      link
+                  )
+
+                  if extra:
+
+                      description = extra
+
+
+              if not title or not link:
+
+                  return
+
+
+              key = title.lower().strip()
+
+
+              if key in seen:
+
+                  return
+
+
+              seen.add(key)
+
+
+              # ======================================
+              # CATEGORY DETECTION
+              # ======================================
+
+              lower_title = title.lower()
+
+
+              if forced_category:
+
+                  category = forced_category
+
+              elif (
+                  "messi" in lower_title
+                  or "lionel" in lower_title
+                  or "inter miami" in lower_title
+              ):
+
+                  category = "Messi"
+
+              elif (
+                  "argentina" in lower_title
+                  or "albiceleste" in lower_title
+              ):
+
+                  category = "Argentina"
+
+              elif (
+                  "transfer" in lower_title
+                  or "transfers" in lower_title
+              ):
+
+                  category = "Transfers"
+
+              elif (
+                  "champions league"
+                  in lower_title
+              ):
+
+                  category = "Champions League"
+
+              else:
+
+                  category = "Football"
+
+
+              points = split_points(
+                  description
+              )
+
+
+              if not points:
+
+                  points = [
+                      description
+                  ] if description else []
+
+
+              published = (
+
+                  entry.get(
+                      "published",
+                      ""
+                  )
+
+                  or
+
+                  entry.get(
+                      "updated",
+                      ""
+                  )
+
+                  or ""
+
+              )
+
+
+              news.append({
+
+                  "title":
+                  title,
+
+                  "description":
+                  description,
+
+                  "content":
+                  description,
+
+                  "points":
+                  points,
+
+                  "source":
+                  source,
+
+                  "published":
+                  published,
+
+                  "category":
+                  category,
+
+                  "link":
+                  link
+
+              })
+
+
+          # ==========================================
+          # BBC + ESPN
+          # ==========================================
+
+          for feed_info in feeds:
+
+              try:
+
+                  feed = feedparser.parse(
+                      feed_info["url"]
+                  )
+
+
+                  for entry in feed.entries[:20]:
+
+                      add_article(
+
+                          entry,
+
+                          feed_info["source"]
+
+                      )
+
+
+              except Exception as error:
+
+                  print(
+                      "Feed error:",
+                      feed_info["source"],
+                      error
+                  )
+
+
+          # ==========================================
+          # MESSI / ARGENTINA / TRANSFERS SEARCH
+          # ==========================================
+
+          for feed_info in search_feeds:
+
+              try:
+
+                  feed = feedparser.parse(
+                      feed_info["url"]
+                  )
+
+
+                  for entry in feed.entries[:15]:
+
+                      add_article(
+
+                          entry,
+
+                          feed_info["source"],
+
+                          feed_info["category"]
+
+                      )
+
+
+              except Exception as error:
+
+                  print(
+                      "Search feed error:",
+                      feed_info["category"],
+                      error
+                  )
+
+
+          # ==========================================
+          # PRIORITY
+          # ==========================================
+
+          priority = {
+
+              "Messi": 0,
+
+              "Argentina": 1,
+
+              "Football": 2,
+
+              "Transfers": 3,
+
+              "Champions League": 4
+
+          }
+
+
+          # Sort by category first,
+          # then publication date
+
+          news.sort(
+
+              key=lambda item: (
+
+                  priority.get(
+                      item.get(
+                          "category",
+                          "Football"
+                      ),
+                      99
+                  ),
+
+                  item.get(
+                      "published",
+                      ""
+                  )
+
+              ),
+
+              reverse=False
+
           )
+
+
+          # ==========================================
+          # LIMIT
+          # ==========================================
+
+          news = news[:60]
+
+
+          # ==========================================
+          # CREATE JSON
+          # ==========================================
+
+          output = {
+
+              "updated":
+
+              datetime.now(
+                  timezone.utc
+              ).isoformat(),
+
+              "news":
+
+              news,
+
+              "articles":
+
+              news
+
+          }
+
+
+          # ==========================================
+          # SAVE FILE
+          # ==========================================
+
+          with open(
+
+              "football-news.json",
+
+              "w",
+
+              encoding="utf-8"
+
+          ) as file:
+
+              json.dump(
+
+                  output,
+
+                  file,
+
+                  ensure_ascii=False,
+
+                  indent=2
+
+              )
+
+
+          print(
+              "================================"
+          )
+
+          print(
+              "Football news update complete"
+          )
+
+          print(
+              "Total articles:",
+              len(news)
+          )
+
+          print(
+              "Messi:",
+              sum(
+                  1
+                  for item in news
+                  if item["category"]
+                  == "Messi"
+              )
+          )
+
+          print(
+              "Argentina:",
+              sum(
+                  1
+                  for item in news
+                  if item["category"]
+                  == "Argentina"
+              )
+          )
+
+          print(
+              "Transfers:",
+              sum(
+                  1
+                  for item in news
+                  if item["category"]
+                  == "Transfers"
+              )
+          )
+
+          print(
+              "================================"
+          )
+
           PY
 
-      - name: Save changes
+
+      # ==========================================
+      # SAVE CHANGES
+      # ==========================================
+
+      - name: Save updated football news
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git config user.name \
+            "github-actions[bot]"
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
 
           git add football-news.json
 
+
           if git diff --cached --quiet; then
-            echo "No news changes to commit."
+
+            echo "No news changes."
+
           else
-            git commit -m "Update football news"
+
+            git commit \
+              -m "Auto update football news"
+
             git push
+
           fi
+                         
