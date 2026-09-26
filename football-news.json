@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-26T17:12:23.342693+00:00",
+  "updated": "2026-09-26T17:41:21.213706+00:00",
   "news": [
     {
       "title": "Scaloni says he did his best to convince Messi to return for Argentina farewell - Reuters",
@@ -186,7 +186,7 @@
       "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOZW43ZUJ2NWRYSHEyYTB6SjgzQlFNajR3eDlybXdmVHB4WTVnQXl2anEzZV8zOGt0LU5BZHZzOUpTUlM5RmFuMWhONXI0R2FLaE40ai1fd1J2UTUtT2k5M3RvSTRXNERobUZmOVdYQzFsa00wSDBDek5ITXlIYlVuQTRaVFRqM2ViRmlpb2g2Ri11cXc5Vnh5Nm14NjhiNzgxaFJ3M2tXWDZGT0ZrREI5YWtWMm44SDZPYWNqV9IB0AFBVV95cUxQX2h4dXdiRkhnOUJLekI0c0VHcWFsX0lDc1hoVk5sbjkyLTZWZ1UtNi1qZ3NvbHJDVU9XSGxUT1R1aG9BT01LLXZjeUo5aXNYVXdkSnFjTkZjR1o4dy1NbmI2VFYzSTJOVWVTMkpELUFJOUw4OTN6cDFVNzZnckQ0clQ5ajBiQWRsUjNWcGNXQnFzZUNTWU5PdXVPQlhCUEY5cllIbC04VURmamxDczMzLVluZzQ5VWQtLUVrVC1EWTcxWU5jbXRGOUJHbU9DWmQ2?oc=5"
     },
     {
-      "title": "The number 10 shirt must not retire with Messi - Al Jazeera",
+      "title": "The number 10 shirt must not retire with Messi - aljazeera.com",
       "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "points": [
@@ -329,18 +329,6 @@
       "published": "Fri, 25 Sep 2026 15:54:03 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/sport/football/articles/cm9dww15527lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "O'Neill left baffled by refereeing in late NI win",
-      "description": "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League.",
-      "content": "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League.",
-      "points": [
-        "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League."
-      ],
-      "source": "BBC Sport",
-      "published": "Fri, 25 Sep 2026 19:54:46 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6qxvvw15p0lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Clubs seek legal advice over Man City charges compensation",
@@ -525,10 +513,10 @@
     },
     {
       "title": "Republic of Ireland to wear black armbands for Israel game",
-      "description": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture.",
-      "content": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture.",
+      "description": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel.",
+      "content": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel.",
       "points": [
-        "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture."
+        "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel."
       ],
       "source": "BBC Sport",
       "published": "Sat, 26 Sep 2026 14:58:44 GMT",
@@ -560,6 +548,18 @@
       "link": "https://www.bbc.co.uk/sport/football/videos/c6y9zzy79ewyo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Gilmour catalyst, impressive Welsh, but same issue for Scotland?",
+      "description": "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia.",
+      "content": "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia.",
+      "points": [
+        "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia."
+      ],
+      "source": "BBC Sport",
+      "published": "Sat, 26 Sep 2026 17:05:53 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqevwwnw10w9o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Summer transfer window 2026: The 20 biggest deals - BBC",
       "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
@@ -584,11 +584,11 @@
       "link": "https://news.google.com/rss/articles/CBMipwJBVV95cUxQckxHbGJEVkl1Q1VodjN5MXdmNG4yVnNDRVRlQXlDYUpFNjZneDZHZHJmck56OW9qem1ic2ZGT1Q3bjAxUWxNNkxmVlMyZ25CaTM4UlZKdkJydENnQkc4X0VuLWUzbGNpc01sZE9fTF94bXRUX2FISWpYQ2V3TTh1NUFwdHgwaVR5NXRjZGVxSVBaTXJwZ0JZQ0x4ejdTSERPamViSmp5Z0Q1ZVJrMnVFaDV2eHh5TmY4Zy1Ta0xER2h2YXB3SDEzR0VIb1Zoamt3WUdCMnh5RmFDN0p5VWFFY3pWT01KaDdQa3N6S1AzLTZ3czIyZF9TczlGSG5jYUVrVTgwcVJ0NWRyT0diVDh3U0p1VFZ0TGhSeTkxOTMyaHB0d0prUVVB?oc=5"
     },
     {
-      "title": "Hollister football fallout continues as former player transfers to South Bay school - mercurynews.com",
-      "description": "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com",
-      "content": "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com",
+      "title": "Hollister football fallout continues as former player transfers to South Bay school - The Mercury News",
+      "description": "Hollister football fallout continues as former player transfers to South Bay school The Mercury News",
+      "content": "Hollister football fallout continues as former player transfers to South Bay school The Mercury News",
       "points": [
-        "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com"
+        "Hollister football fallout continues as former player transfers to South Bay school The Mercury News"
       ],
       "source": "Google News",
       "published": "Fri, 25 Sep 2026 16:15:51 GMT",
@@ -644,11 +644,11 @@
       "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPem5jYzJ0Sm9pblg3TmZOalRkaXpDdGNvSGd1WUpQNlROVkw3UVdvdF9zXzhoWWE1RVBFZ3ROQ013OWZWdl9xOHM3d1ZMQWs5VHVfUWpFRDVzbDBIYXItY2lxTk5iYW4zVVptb0M0b29DSERtQVc1eGFkeE1DVWh5akF4anNQNjc1VWhQcVNZVTdFZEhuUXdWVnBHaVFybUpUbURhVEM2LUEwWEtYMEJibzdFZGFxc2tWMWc?oc=5"
     },
     {
-      "title": "Women’s transfer window summer 2026: all deals from world’s top six leagues - The Guardian",
-      "description": "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian",
-      "content": "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian",
+      "title": "Women’s transfer window summer 2026: all deals from world’s top six leagues - theguardian.com",
+      "description": "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com",
+      "content": "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com",
       "points": [
-        "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian"
+        "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com"
       ],
       "source": "Google News",
       "published": "Mon, 08 Jun 2026 07:00:00 GMT",
@@ -656,16 +656,16 @@
       "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQY010cllNLXE2b0dLaW9uc3BoSXJ3WUJ4Y1A2cVJsd3V1a1VZaTlMQUxQMkMxNzBQWHAwU2ZYeV9BeW5XOXBVOEtWclJZWFNnZFJQLWpvZUxCWmtYeXVBb3lYeEZXa1FXSENuU2I3QjlSdEllNXJqaGF1VENnYVh5RzdFd3hhQjhFS2tNUWM0Nlk4ZTlIQUtuWjYzZ1lnZDdER1BxcHkxT0N4R0JLZFdTbDczeE04cjJ0LXBRNWMzaU1Tb1hoR3UyZ0w5ZDRnUGpSaUE?oc=5"
     },
     {
-      "title": "The 50 Worst Transfers in Soccer History—Ranked - Sports Illustrated",
-      "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
-      "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
+      "title": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger - Sky Sports",
+      "description": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports",
+      "content": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports",
       "points": [
-        "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News."
+        "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports"
       ],
       "source": "Google News",
-      "published": "Mon, 10 Aug 2026 07:00:00 GMT",
+      "published": "Sat, 26 Sep 2026 04:08:55 GMT",
       "category": "Transfers",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iTTZ0SktFdFRWSDV2eTY5THlaYVp2WHZPQTloZzdOSkpfQXRxbVpnUmM1MmFscktPOG9IZUZBUHpZazhUMnVhZ3Vsc3ZlNk90TzRnYllPWHdPM2gtVS1hajU4Y1J2azNTZGU1dUk2bHY?oc=5"
+      "link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxONXo1bnhrMVk3UlQ5NHpDS1NVUXp3ZXJnVS02UlNwc0pXaHkxTE1INllVUHhzR1h4ZktDbVR2UFhwN29mb2d6SHNZbUt5c1VYLUFLeVYxX0tVX3JqSUM3LW9WU3V1Z0ZHM3FlNkxJSDBnQy1FOHhwdV95SWg5TzM3NHJuY0lGOWFSelpyM2FjbmkzbHRzaWFjc1dWa3U5LVJ5YWVtcGVJWHN1RjVDMThYWjNoYVYzMHJ3djJtc0V5SnhNRXZoY3ZtYnNHZ29oUThPZno1R2ZOMDJiWTh1TDVsSQ?oc=5"
     },
     {
       "title": "September surprises: Our unexpected all-portal team - ESPN",
@@ -680,11 +680,11 @@
       "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQeWlXc2pVcjdEZ3U5RndQN0Z2bU9ReVlnY1owVmVhWnVUU2NYOE9UUXhBa0Rha3VrZElkTzFoaWV4eXc4UEtMZVd0dktkMmNpRGNhSHJaUTk3N3lyNnR4eEl3WGpfTkU0VlZGcm05NmFMdUJDNFBvLTg1OHB0WkNpaVhjXzZpUXZvRy0zeHVVTmVxUE9ma3ZkejJTX09kMVg1TVI1eVVGWHdmU2wwUm5sUTB6MkdYQQ?oc=5"
     },
     {
-      "title": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues - The Guardian",
-      "description": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian",
-      "content": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian",
+      "title": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues - theguardian.com",
+      "description": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com",
+      "content": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com",
       "points": [
-        "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian"
+        "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com"
       ],
       "source": "Google News",
       "published": "Tue, 01 Sep 2026 07:00:00 GMT",
@@ -914,7 +914,7 @@
       "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOZW43ZUJ2NWRYSHEyYTB6SjgzQlFNajR3eDlybXdmVHB4WTVnQXl2anEzZV8zOGt0LU5BZHZzOUpTUlM5RmFuMWhONXI0R2FLaE40ai1fd1J2UTUtT2k5M3RvSTRXNERobUZmOVdYQzFsa00wSDBDek5ITXlIYlVuQTRaVFRqM2ViRmlpb2g2Ri11cXc5Vnh5Nm14NjhiNzgxaFJ3M2tXWDZGT0ZrREI5YWtWMm44SDZPYWNqV9IB0AFBVV95cUxQX2h4dXdiRkhnOUJLekI0c0VHcWFsX0lDc1hoVk5sbjkyLTZWZ1UtNi1qZ3NvbHJDVU9XSGxUT1R1aG9BT01LLXZjeUo5aXNYVXdkSnFjTkZjR1o4dy1NbmI2VFYzSTJOVWVTMkpELUFJOUw4OTN6cDFVNzZnckQ0clQ5ajBiQWRsUjNWcGNXQnFzZUNTWU5PdXVPQlhCUEY5cllIbC04VURmamxDczMzLVluZzQ5VWQtLUVrVC1EWTcxWU5jbXRGOUJHbU9DWmQ2?oc=5"
     },
     {
-      "title": "The number 10 shirt must not retire with Messi - Al Jazeera",
+      "title": "The number 10 shirt must not retire with Messi - aljazeera.com",
       "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "points": [
@@ -1057,18 +1057,6 @@
       "published": "Fri, 25 Sep 2026 15:54:03 GMT",
       "category": "Football",
       "link": "https://www.bbc.co.uk/sport/football/articles/cm9dww15527lo?at_medium=RSS&at_campaign=rss"
-    },
-    {
-      "title": "O'Neill left baffled by refereeing in late NI win",
-      "description": "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League.",
-      "content": "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League.",
-      "points": [
-        "Michael O'Neill has said he was \"baffled\" by some of the refereeing decisions in Friday's 1-0 win in Georgia in the Nations League."
-      ],
-      "source": "BBC Sport",
-      "published": "Fri, 25 Sep 2026 19:54:46 GMT",
-      "category": "Football",
-      "link": "https://www.bbc.co.uk/sport/football/articles/c6qxvvw15p0lo?at_medium=RSS&at_campaign=rss"
     },
     {
       "title": "Clubs seek legal advice over Man City charges compensation",
@@ -1253,10 +1241,10 @@
     },
     {
       "title": "Republic of Ireland to wear black armbands for Israel game",
-      "description": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture.",
-      "content": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture.",
+      "description": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel.",
+      "content": "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel.",
       "points": [
-        "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for Sunday's Nations League game against Israel in Hungary, after confirming they will go ahead with the fixture."
+        "Republic of Ireland players intend to wear black armbands \"in recognition of all lives lost in the [Gaza] conflict\" for match against Israel."
       ],
       "source": "BBC Sport",
       "published": "Sat, 26 Sep 2026 14:58:44 GMT",
@@ -1288,6 +1276,18 @@
       "link": "https://www.bbc.co.uk/sport/football/videos/c6y9zzy79ewyo?at_medium=RSS&at_campaign=rss"
     },
     {
+      "title": "Gilmour catalyst, impressive Welsh, but same issue for Scotland?",
+      "description": "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia.",
+      "content": "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia.",
+      "points": [
+        "BBC Sport Scotland picks out what we learned from Sebastien Pocognoli's first game in charge as Scotland drew with Slovenia."
+      ],
+      "source": "BBC Sport",
+      "published": "Sat, 26 Sep 2026 17:05:53 GMT",
+      "category": "Football",
+      "link": "https://www.bbc.co.uk/sport/football/articles/cqevwwnw10w9o?at_medium=RSS&at_campaign=rss"
+    },
+    {
       "title": "Summer transfer window 2026: The 20 biggest deals - BBC",
       "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
       "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
@@ -1312,11 +1312,11 @@
       "link": "https://news.google.com/rss/articles/CBMipwJBVV95cUxQckxHbGJEVkl1Q1VodjN5MXdmNG4yVnNDRVRlQXlDYUpFNjZneDZHZHJmck56OW9qem1ic2ZGT1Q3bjAxUWxNNkxmVlMyZ25CaTM4UlZKdkJydENnQkc4X0VuLWUzbGNpc01sZE9fTF94bXRUX2FISWpYQ2V3TTh1NUFwdHgwaVR5NXRjZGVxSVBaTXJwZ0JZQ0x4ejdTSERPamViSmp5Z0Q1ZVJrMnVFaDV2eHh5TmY4Zy1Ta0xER2h2YXB3SDEzR0VIb1Zoamt3WUdCMnh5RmFDN0p5VWFFY3pWT01KaDdQa3N6S1AzLTZ3czIyZF9TczlGSG5jYUVrVTgwcVJ0NWRyT0diVDh3U0p1VFZ0TGhSeTkxOTMyaHB0d0prUVVB?oc=5"
     },
     {
-      "title": "Hollister football fallout continues as former player transfers to South Bay school - mercurynews.com",
-      "description": "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com",
-      "content": "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com",
+      "title": "Hollister football fallout continues as former player transfers to South Bay school - The Mercury News",
+      "description": "Hollister football fallout continues as former player transfers to South Bay school The Mercury News",
+      "content": "Hollister football fallout continues as former player transfers to South Bay school The Mercury News",
       "points": [
-        "Hollister football fallout continues as former player transfers to South Bay school mercurynews.com"
+        "Hollister football fallout continues as former player transfers to South Bay school The Mercury News"
       ],
       "source": "Google News",
       "published": "Fri, 25 Sep 2026 16:15:51 GMT",
@@ -1372,11 +1372,11 @@
       "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPem5jYzJ0Sm9pblg3TmZOalRkaXpDdGNvSGd1WUpQNlROVkw3UVdvdF9zXzhoWWE1RVBFZ3ROQ013OWZWdl9xOHM3d1ZMQWs5VHVfUWpFRDVzbDBIYXItY2lxTk5iYW4zVVptb0M0b29DSERtQVc1eGFkeE1DVWh5akF4anNQNjc1VWhQcVNZVTdFZEhuUXdWVnBHaVFybUpUbURhVEM2LUEwWEtYMEJibzdFZGFxc2tWMWc?oc=5"
     },
     {
-      "title": "Women’s transfer window summer 2026: all deals from world’s top six leagues - The Guardian",
-      "description": "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian",
-      "content": "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian",
+      "title": "Women’s transfer window summer 2026: all deals from world’s top six leagues - theguardian.com",
+      "description": "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com",
+      "content": "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com",
       "points": [
-        "Women’s transfer window summer 2026: all deals from world’s top six leagues The Guardian"
+        "Women’s transfer window summer 2026: all deals from world’s top six leagues theguardian.com"
       ],
       "source": "Google News",
       "published": "Mon, 08 Jun 2026 07:00:00 GMT",
@@ -1384,16 +1384,16 @@
       "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQY010cllNLXE2b0dLaW9uc3BoSXJ3WUJ4Y1A2cVJsd3V1a1VZaTlMQUxQMkMxNzBQWHAwU2ZYeV9BeW5XOXBVOEtWclJZWFNnZFJQLWpvZUxCWmtYeXVBb3lYeEZXa1FXSENuU2I3QjlSdEllNXJqaGF1VENnYVh5RzdFd3hhQjhFS2tNUWM0Nlk4ZTlIQUtuWjYzZ1lnZDdER1BxcHkxT0N4R0JLZFdTbDczeE04cjJ0LXBRNWMzaU1Tb1hoR3UyZ0w5ZDRnUGpSaUE?oc=5"
     },
     {
-      "title": "The 50 Worst Transfers in Soccer History—Ranked - Sports Illustrated",
-      "description": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
-      "content": "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.",
+      "title": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger - Sky Sports",
+      "description": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports",
+      "content": "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports",
       "points": [
-        "Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News."
+        "Transfer news: Brentford hold Kevin Schade contract talks as Arsenal, Liverpool track Germany winger Sky Sports"
       ],
       "source": "Google News",
-      "published": "Mon, 10 Aug 2026 07:00:00 GMT",
+      "published": "Sat, 26 Sep 2026 04:08:55 GMT",
       "category": "Transfers",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iTTZ0SktFdFRWSDV2eTY5THlaYVp2WHZPQTloZzdOSkpfQXRxbVpnUmM1MmFscktPOG9IZUZBUHpZazhUMnVhZ3Vsc3ZlNk90TzRnYllPWHdPM2gtVS1hajU4Y1J2azNTZGU1dUk2bHY?oc=5"
+      "link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxONXo1bnhrMVk3UlQ5NHpDS1NVUXp3ZXJnVS02UlNwc0pXaHkxTE1INllVUHhzR1h4ZktDbVR2UFhwN29mb2d6SHNZbUt5c1VYLUFLeVYxX0tVX3JqSUM3LW9WU3V1Z0ZHM3FlNkxJSDBnQy1FOHhwdV95SWg5TzM3NHJuY0lGOWFSelpyM2FjbmkzbHRzaWFjc1dWa3U5LVJ5YWVtcGVJWHN1RjVDMThYWjNoYVYzMHJ3djJtc0V5SnhNRXZoY3ZtYnNHZ29oUThPZno1R2ZOMDJiWTh1TDVsSQ?oc=5"
     },
     {
       "title": "September surprises: Our unexpected all-portal team - ESPN",
@@ -1408,11 +1408,11 @@
       "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQeWlXc2pVcjdEZ3U5RndQN0Z2bU9ReVlnY1owVmVhWnVUU2NYOE9UUXhBa0Rha3VrZElkTzFoaWV4eXc4UEtMZVd0dktkMmNpRGNhSHJaUTk3N3lyNnR4eEl3WGpfTkU0VlZGcm05NmFMdUJDNFBvLTg1OHB0WkNpaVhjXzZpUXZvRy0zeHVVTmVxUE9ma3ZkejJTX09kMVg1TVI1eVVGWHdmU2wwUm5sUTB6MkdYQQ?oc=5"
     },
     {
-      "title": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues - The Guardian",
-      "description": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian",
-      "content": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian",
+      "title": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues - theguardian.com",
+      "description": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com",
+      "content": "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com",
       "points": [
-        "Men’s transfer window summer 2026: all deals from Europe’s top five leagues The Guardian"
+        "Men’s transfer window summer 2026: all deals from Europe’s top five leagues theguardian.com"
       ],
       "source": "Google News",
       "published": "Tue, 01 Sep 2026 07:00:00 GMT",
