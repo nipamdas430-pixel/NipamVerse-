@@ -1529,13 +1529,173 @@ footer{
     }
 
 }
+/* =====================================
+   NIPAMVERSE SIGNATURE INTRO
+===================================== */
 
+#signatureIntro {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #020604;
+    overflow: hidden;
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.8s ease,
+        visibility 0.8s ease;
+}
+
+#signatureIntro.signature-hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.signature-container {
+    width: min(88vw, 680px);
+
+    transform: rotate(-12deg);
+
+    animation: signatureEnter 0.5s ease both;
+}
+
+.signature-svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+}
+
+.signature-draw {
+    fill: none;
+
+    stroke: #00ff88;
+    stroke-width: 2.5;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+
+    animation: signatureWriting 3s ease-in-out forwards;
+}
+
+.signature-draw.underline {
+    animation-delay: 2.1s;
+    animation-duration: 0.9s;
+}
+
+.signature-dot {
+    fill: #00ff88;
+    opacity: 0;
+
+    animation: signatureDot 0.2s ease forwards;
+    animation-delay: 3s;
+}
+
+.signature-caption {
+    margin-top: 5px;
+    padding-right: 8%;
+
+    text-align: right;
+
+    font-family: Orbitron, sans-serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+
+    color: #00ff88;
+
+    opacity: 0;
+    animation: signatureCaption 0.5s ease forwards;
+    animation-delay: 2.8s;
+}
+
+@keyframes signatureWriting {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes signatureDot {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes signatureCaption {
+    to {
+        opacity: 0.8;
+    }
+}
+
+@keyframes signatureEnter {
+    from {
+        transform: translateY(12px) rotate(-12deg);
+    }
+
+    to {
+        transform: translateY(0) rotate(-12deg);
+    }
+   }
 </style>
 </head>
 
 
 <body>
+<!-- NIPAMVERSE SIGNATURE INTRO -->
+<div id="signatureIntro">
+    <div class="signature-container">
 
+        <svg viewBox="0 0 700 300"
+             class="signature-svg"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-label="Nipam signature">
+
+            <!-- Main handwritten signature -->
+            <path class="signature-draw"
+                  pathLength="1"
+                  d="M55 235
+                     C75 220 95 145 112 85
+                     C120 125 115 190 132 175
+                     C150 145 150 55 200 45
+                     C240 35 235 95 208 125
+                     C190 145 165 170 160 150
+                     C155 132 205 100 245 91
+                     C260 88 275 78 291 66
+                     C280 86 269 104 285 101
+                     C299 98 310 79 320 72
+                     C310 91 317 100 330 88
+                     C346 73 352 70 345 87
+                     C337 104 357 98 370 83
+                     C383 69 389 76 378 91
+                     C366 105 390 99 405 84
+                     C419 70 427 75 415 90
+                     C404 103 429 98 445 85
+                     C463 73 485 67 510 63
+                     C548 57 584 53 630 46"/>
+
+            <!-- Long signature underline -->
+            <path class="signature-draw underline"
+                  pathLength="1"
+                  d="M160 150 C285 112 445 72 630 46"/>
+
+            <!-- Signature finishing dot -->
+            <circle class="signature-dot"
+                    cx="642" cy="44" r="3"/>
+        </svg>
+
+        <div class="signature-caption">NIPAMVERSE</div>
+
+    </div>
+           </div>
 
 <!-- =====================================================
      NAVBAR
@@ -1944,7 +2104,35 @@ document.addEventListener(
 );
 
 </script>
+<script>
+(function () {
+    const intro = document.getElementById("signatureIntro");
 
+    if (!intro) return;
+
+    // Show the signature once per browser tab session.
+    try {
+        if (sessionStorage.getItem("nipamSignaturePlayed")) {
+            intro.remove();
+            return;
+        }
+
+        sessionStorage.setItem("nipamSignaturePlayed", "yes");
+    } catch (error) {
+        // Continue even if session storage is unavailable.
+    }
+
+    // Finish writing, then fade away.
+    setTimeout(function () {
+        intro.classList.add("signature-hide");
+
+        setTimeout(function () {
+            intro.remove();
+        }, 850);
+
+    }, 3900);
+})();
+</script>
 
 </body>
 </html>
